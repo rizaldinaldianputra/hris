@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:hris/pages/home/attedant.dart';
-
+import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/dashboard.dart';
+import 'package:hris/utility/globalwidget.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -12,24 +12,48 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage>
+    with AutomaticKeepAliveClientMixin {
   int selectedIndex = 0; // Menyimpan index tab yang dipilih
-  final List<Widget> widgetOptions = <Widget>[
-    const DashboardPage(),
-    const AttedantPage(),
-    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
-  ];
+  late PageController
+      _pageController; // Gunakan late untuk menjelaskan bahwa controller akan diinisialisasi di initState
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(); // Inisialisasi controller di sini
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       selectedIndex = index; // Mengubah tab yang dipilih
+      _pageController
+          .jumpToPage(index); // Pindah ke halaman yang sesuai saat tab ditekan
     });
   }
 
+  final List<Widget> widgetOptions = <Widget>[
+    const DashboardPage(),
+    const AttedantLogPage(),
+    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
-      body: widgetOptions[selectedIndex],
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            selectedIndex =
+                index; // Mengubah tab yang dipilih saat halaman berubah
+          });
+        },
+        children: widgetOptions,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -77,9 +101,11 @@ class _HomePageState extends ConsumerState<HomePage> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped, // Menangani tap pada tab
-        type: BottomNavigationBarType
-            .fixed, // Menetapkan tipe menjadi fixed untuk menghindari animasi zoom
+        type: BottomNavigationBarType.fixed, // Menghindari animasi zoom
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true; // Setel ke true untuk menjaga state
 }

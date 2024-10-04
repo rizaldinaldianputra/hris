@@ -45,6 +45,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   @override
   void initState() {
     super.initState();
+
     formattedDate = _getFormattedDate();
     _startTimer();
     _initializeCamera();
@@ -67,9 +68,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   @override
   void dispose() {
+    super.dispose();
     _timer.cancel();
     _cameraController?.dispose();
-    super.dispose();
   }
 
   Future<void> _initializeCamera() async {
@@ -204,7 +205,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         children: [
                           TextButton.icon(
                             onPressed: () {
-                              showBottomAttendant('Check In', context, ref);
+                              showBottomAttendant('Check In', context);
                             },
                             icon: const Icon(Icons.login, color: Colors.black),
                             label: Text(
@@ -219,7 +220,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           const Text('|', style: TextStyle(fontSize: 20)),
                           TextButton.icon(
                             onPressed: () {
-                              showBottomAttendant('Check Out', context, ref);
+                              showBottomAttendant(
+                                'Check Out',
+                                context,
+                              );
                             },
                             icon: const Icon(Icons.logout, color: Colors.black),
                             label: Text(
@@ -390,7 +394,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     );
   }
 
-  void showBottomAttendant(String type, BuildContext context, WidgetRef ref) {
+  void showBottomAttendant(String type, BuildContext context) {
     Uint8List? capturedImage;
     DateTime? timeCaputre;
 

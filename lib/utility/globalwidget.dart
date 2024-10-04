@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Widget inputData() {
   return Padding(
@@ -35,5 +36,31 @@ Widget inputData() {
         hintStyle: const TextStyle(color: Colors.grey),
       ),
     ),
+  );
+}
+
+AppBar appBarWidget(String title) {
+  return AppBar(
+    title: Text(
+      title,
+      style: GoogleFonts.inter(
+          textStyle: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+    ),
+    centerTitle: true,
+    backgroundColor: Colors.blue,
+  );
+}
+
+AppBar appBarWidgetWithTralling(String title) {
+  return AppBar(
+    title: Text(
+      title,
+      style: GoogleFonts.inter(
+          textStyle: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+    ),
+    centerTitle: true,
+    backgroundColor: Colors.blue,
   );
 }
