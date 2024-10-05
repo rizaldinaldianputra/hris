@@ -100,6 +100,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                   ? const Center(child: Text('No Data'))
                   : ListView.builder(
                       shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: expenses.length,
                       itemBuilder: (context, index) {
                         final expense = expenses[index];
