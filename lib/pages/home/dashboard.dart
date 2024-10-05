@@ -262,7 +262,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               physics: const NeverScrollableScrollPhysics(),
               crossAxisCount: 3,
               children: [
-                Image.asset('assets/attedant.png'),
+                GestureDetector(
+                    onTap: () {
+                      context.goNamed('attedantlog');
+                    },
+                    child: GestureDetector(
+                        child: Image.asset('assets/attedant.png'))),
                 GestureDetector(
                     onTap: () {
                       context.goNamed('leave');
@@ -273,7 +278,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       context.goNamed('overtime');
                     },
                     child: Image.asset('assets/overtime.png')),
-                Image.asset('assets/reimbursment.png'),
+                GestureDetector(
+                    onTap: () {
+                      context.goNamed('reimbursment');
+                    },
+                    child: Image.asset('assets/reimbursment.png')),
                 Image.asset('assets/earned.png'),
                 Image.asset('assets/payslip.png'),
               ],
