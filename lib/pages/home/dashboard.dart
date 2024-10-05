@@ -284,7 +284,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     },
                     child: Image.asset('assets/reimbursment.png')),
                 Image.asset('assets/earned.png'),
-                Image.asset('assets/payslip.png'),
+                GestureDetector(
+                    onTap: () {
+                      context.goNamed('payslip');
+                    },
+                    child: Image.asset('assets/payslip.png')),
               ],
             ),
           ),

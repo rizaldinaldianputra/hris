@@ -7,6 +7,8 @@ import 'package:hris/pages/leave/leave.dart';
 import 'package:hris/pages/leave/request_leave.dart';
 import 'package:hris/pages/overtime/overtime.dart';
 import 'package:hris/pages/overtime/request_overtime.dart';
+import 'package:hris/pages/payslip/detail_payslip.dart';
+import 'package:hris/pages/payslip/payslip.dart';
 import 'package:hris/pages/reimbursment/reimbursment.dart';
 import 'package:hris/pages/reimbursment/reimbursment_request.dart';
 
@@ -76,6 +78,22 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
             name: 'requestreimbursment',
             builder: (BuildContext context, GoRouterState state) {
               return const RequestRebursement();
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/payslip',
+        name: 'payslip',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PaySlipPage();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/paydetail',
+            name: 'paydetail',
+            builder: (BuildContext context, GoRouterState state) {
+              return const PaySlipDetailPage();
             },
           ),
         ],
