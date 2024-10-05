@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RequestOvertime extends ConsumerStatefulWidget {
@@ -79,10 +80,16 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
                 selectedValue: selectedValue,
                 title: 'Overtime Shift',
                 icons: Image.asset('assets/overtime/overtimeshift.png')),
-            dateTimePicker('Start Shift (start date & time)', 'Choose Duration',
-                overtimeController, Image.asset('assets/overtime/clock.png')),
-            dateTimePicker('End Shift (end date & time)', 'Choose Duration',
-                overtimeController, Image.asset('assets/overtime/clock.png')),
+            dateTimePicker(
+                'Start Shift (start date & time)',
+                'Choose Duration',
+                overtimeStartController,
+                Image.asset('assets/overtime/clock.png')),
+            dateTimePicker(
+                'End Shift (end date & time)',
+                'Choose Duration',
+                overtimeEndController,
+                Image.asset('assets/overtime/clock.png')),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Column(
@@ -90,7 +97,7 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Work note',
+                    'Compensation',
                     style: GoogleFonts.inter(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -275,8 +282,9 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
                   setState(() {
                     selectedDateTime =
                         newDateTime; // Simpan tanggal/waktu yang dipilih
-                    controller.text =
-                        newDateTime.toString(); // Simpan ke controller
+
+                    controller.text = DateFormat('yyyy-MM-dd HH:mm')
+                        .format(selectedDateTime!); // Simpan ke controller
                   });
                 }
               }
@@ -302,16 +310,17 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
                     ),
                     child: icons,
                   ),
-                  Text(
-                    selectedDateTime != null
-                        ? "${selectedDateTime!.day}/${selectedDateTime!.month}/${selectedDateTime!.year} ${selectedDateTime!.hour}:${selectedDateTime!.minute}"
-                        : hinttitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: selectedDateTime != null
-                          ? Colors.black
-                          : HexColor('#B3B3B3'),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      controller.text ?? hinttitle,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: selectedDateTime != null
+                            ? Colors.black
+                            : HexColor('#B3B3B3'),
+                      ),
                     ),
                   ),
                   const SizedBox(

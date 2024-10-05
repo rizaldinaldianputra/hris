@@ -55,6 +55,7 @@ class _HomePageState extends ConsumerState<HomePage>
         children: widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: SvgPicture.asset(

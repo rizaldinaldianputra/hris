@@ -275,7 +275,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             ],
           ),
         ),
-        toolbarHeight: MediaQuery.of(context).size.height * 0.35,
+        toolbarHeight: MediaQuery.of(context).size.height * 0.4,
       ),
       body: ListView(
         children: [

@@ -22,7 +22,6 @@ class _LogsPageState extends ConsumerState<LogsPage> {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.06,
                 width: double.infinity, // Membuat lebar dropdown penuh
                 child: DropdownButtonFormField<String>(
                   value: selectedMonthFilter,
@@ -205,8 +204,6 @@ class _LogsPageState extends ConsumerState<LogsPage> {
   Widget itemCardGrid(String count, String title) {
     return Column(children: [
       Container(
-        height: 50,
-        width: 50,
         decoration:
             BoxDecoration(color: HexColor('#F7F7F7'), shape: BoxShape.circle),
         child: Center(
