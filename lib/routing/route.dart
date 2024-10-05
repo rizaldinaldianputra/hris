@@ -4,6 +4,8 @@ import 'package:hris/pages/auth/login.dart';
 import 'package:hris/pages/home/home.dart';
 import 'package:hris/pages/leave/leave.dart';
 import 'package:hris/pages/leave/request_leave.dart';
+import 'package:hris/pages/overtime/overtime.dart';
+import 'package:hris/pages/overtime/request_overtime.dart';
 
 final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
   GoRoute(
@@ -32,6 +34,22 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
             name: 'requestleave',
             builder: (BuildContext context, GoRouterState state) {
               return const RequestLeavePage();
+            },
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/overtime',
+        name: 'overtime',
+        builder: (BuildContext context, GoRouterState state) {
+          return const OvertimePage();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/requestovertime',
+            name: 'requestovertime',
+            builder: (BuildContext context, GoRouterState state) {
+              return const RequestOvertime();
             },
           ),
         ],

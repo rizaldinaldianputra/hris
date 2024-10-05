@@ -268,7 +268,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       context.goNamed('leave');
                     },
                     child: Image.asset('assets/leave.png')),
-                Image.asset('assets/overtime.png'),
+                GestureDetector(
+                    onTap: () {
+                      context.goNamed('overtime');
+                    },
+                    child: Image.asset('assets/overtime.png')),
                 Image.asset('assets/reimbursment.png'),
                 Image.asset('assets/earned.png'),
                 Image.asset('assets/payslip.png'),
