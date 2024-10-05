@@ -3,9 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/helper/status_color.dart';
-import 'package:hris/pages/reimbursment/reimbursment.dart';
-import 'package:hris/utility/globalwidget.dart';
 
 class PaySlipPage extends ConsumerStatefulWidget {
   const PaySlipPage({super.key});
@@ -57,8 +54,11 @@ class _PaySlipPageState extends ConsumerState<PaySlipPage> {
                 height: 100,
                 child: Center(
                   child: ListTile(
-                    leading: const SizedBox(
-                        height: 40, width: 40, child: CircleAvatar()),
+                    leading: const CircleAvatar(
+                      radius: 40,
+                      backgroundImage: AssetImage(
+                          'assets/profile.png'), // Ganti dengan path gambar Anda
+                    ),
                     subtitle: Text(
                       'Supervisor',
                       style: GoogleFonts.inter(

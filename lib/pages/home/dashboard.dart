@@ -11,6 +11,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/statemanagament/attedant.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -52,17 +53,42 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     _getCurrentLocation();
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      setState(() {
-        currentLocation = LatLng(position.latitude, position.longitude);
-      });
+  Future<LatLng> _getCurrentLocation() async {
+    // Meminta izin lokasi
+    await _requestLocationPermission();
 
-      print(currentLocation);
+    try {
+      // Memeriksa izin lokasi
+      if (await Permission.location.isGranted) {
+        // Mendapatkan lokasi saat ini
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+
+        setState(() {
+          currentLocation = LatLng(position.latitude, position.longitude);
+        });
+      } else if (await Permission.location.isDenied) {
+        // Tampilkan pesan bahwa izin ditolak
+        print(
+            "Location permission denied. Please enable location permission in settings.");
+      } else if (await Permission.location.isPermanentlyDenied) {
+        // Arahkan pengguna ke pengaturan aplikasi
+        print(
+            "Location permission permanently denied. Please enable it in app settings.");
+        openAppSettings();
+      }
     } catch (e) {
       print("Error getting location: $e");
+    }
+
+    return currentLocation!;
+  }
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.location.status;
+    if (status.isDenied) {
+      // Jika izin belum diberikan, minta izin
+      await Permission.location.request();
     }
   }
 
@@ -121,9 +147,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   colors: [HexColor('#01A2E9'), HexColor('#274896')])),
           child: Column(
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 35),
               ListTile(
-                leading: const CircleAvatar(),
+                leading: const CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(
+                      'assets/profile.png'), // Ganti dengan path gambar Anda
+                ),
                 subtitle: Text(
                   'Supervisor',
                   style: GoogleFonts.inter(
@@ -440,36 +470,47 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     height: 200,
                     child: Stack(
                       children: [
-                        FlutterMap(
-                          options: MapOptions(
-                            initialZoom: 13,
-                            initialCenter:
-                                currentLocation ?? const LatLng(000000, 000000),
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate:
-                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'com.example.app',
-                            ),
-                            MarkerLayer(markers: [
-                              Marker(
-                                  point: currentLocation ??
-                                      const LatLng(2321, 221312),
-                                  child: const Icon(
-                                    Icons.pin_drop,
-                                    size: 40,
-                                    color: Colors.red,
-                                  )),
-                            ])
-                          ],
+                        FutureBuilder<LatLng>(
+                          future: _getCurrentLocation(),
+                          builder: (context, snapshot) {
+                            if (snapshot.data != null) {
+                              return FlutterMap(
+                                options: MapOptions(
+                                  initialZoom: 13,
+                                  initialCenter: snapshot.data!,
+                                ),
+                                children: [
+                                  TileLayer(
+                                    urlTemplate:
+                                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                    userAgentPackageName: 'com.example.app',
+                                  ),
+                                  MarkerLayer(markers: [
+                                    Marker(
+                                        point: snapshot.data!,
+                                        child: const Icon(
+                                          Icons.pin_drop,
+                                          size: 40,
+                                          color: Colors.red,
+                                        )),
+                                  ])
+                                ],
+                              );
+                            } else {
+                              return Container();
+                            }
+                          },
                         ),
                         Positioned(
                           bottom: 20,
                           right: 20,
                           child: FloatingActionButton(
                             backgroundColor: Colors.white,
-                            onPressed: _getCurrentLocation,
+                            onPressed: () {
+                              setstate() {
+                                _getCurrentLocation();
+                              }
+                            },
                             tooltip: 'Get Location',
                             child: const Icon(Icons.my_location),
                           ),
@@ -625,7 +666,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         },
                         child: Container(
                             margin: const EdgeInsets.all(20),
-                            color: Colors.white,
                             height: 200,
                             width: double.infinity,
                             child: const Icon(
@@ -639,8 +679,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 Text(
                   'Jhon Doe',
                   style: GoogleFonts.inter(
-                      textStyle: TextStyle(
-                          color: HexColor('#01A2E9'),
+                      textStyle: const TextStyle(
+                          color: Colors.black,
                           fontSize: 18,
                           fontWeight: FontWeight.w700)),
                 ),

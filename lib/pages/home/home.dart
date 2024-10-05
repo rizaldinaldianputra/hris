@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hris/pages/home/account.dart';
 import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/dashboard.dart';
 
@@ -36,7 +37,7 @@ class _HomePageState extends ConsumerState<HomePage>
     const AttedantLogPage(),
     const Center(child: Text('', style: TextStyle(fontSize: 24))),
     const Center(child: Text('', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('', style: TextStyle(fontSize: 24))),
+    const AccountPage()
   ];
 
   @override

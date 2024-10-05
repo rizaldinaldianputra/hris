@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hris/pages/attedance_logs/logs.dart';
 import 'package:hris/utility/globalwidget.dart';
 
