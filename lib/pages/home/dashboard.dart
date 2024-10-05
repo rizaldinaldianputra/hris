@@ -263,7 +263,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               crossAxisCount: 3,
               children: [
                 Image.asset('assets/attedant.png'),
-                Image.asset('assets/leave.png'),
+                GestureDetector(
+                    onTap: () {
+                      context.goNamed('leave');
+                    },
+                    child: Image.asset('assets/leave.png')),
                 Image.asset('assets/overtime.png'),
                 Image.asset('assets/reimbursment.png'),
                 Image.asset('assets/earned.png'),
@@ -422,7 +426,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         FlutterMap(
                           options: MapOptions(
                             initialZoom: 13,
-                            initialCenter: currentLocation!,
+                            initialCenter:
+                                currentLocation ?? const LatLng(000000, 000000),
                           ),
                           children: [
                             TileLayer(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 Widget inputData() {
   return Padding(
@@ -48,7 +49,10 @@ AppBar appBarWidget(String title) {
               fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
     ),
     centerTitle: true,
-    backgroundColor: Colors.blue,
+    backgroundColor: HexColor('#01A2E9'),
+    iconTheme: const IconThemeData(
+      color: Colors.white, // Ubah warna ikon back
+    ),
   );
 }
 
@@ -61,6 +65,49 @@ AppBar appBarWidgetWithTralling(String title) {
               fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
     ),
     centerTitle: true,
-    backgroundColor: Colors.blue,
+    backgroundColor: HexColor('#01A2E9'),
+    iconTheme: const IconThemeData(
+      color: Colors.white, // Ubah warna ikon back
+    ),
+    actions: [
+      Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: Image.asset('assets/filter.png'),
+      ),
+    ],
+  );
+}
+
+Widget bootomSubmit(
+  String title,
+  Widget icon,
+  route,
+) {
+  return GestureDetector(
+    onTap: route,
+    child: Container(
+        margin: const EdgeInsets.all(20),
+        height: 50,
+        decoration: BoxDecoration(
+            color: HexColor('#01A2E9'),
+            borderRadius: const BorderRadius.all(Radius.circular(8))),
+        child: Center(
+            child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            icon,
+            const SizedBox(
+              width: 5,
+            ),
+            Text(
+              title,
+              style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            ),
+          ],
+        ))),
   );
 }

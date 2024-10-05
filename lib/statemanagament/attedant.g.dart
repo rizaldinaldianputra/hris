@@ -6,7 +6,7 @@ part of 'attedant.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$xFileNotifierHash() => r'df44c0adf3df653432037aa7b662552c43e278af';
+String _$xFileNotifierHash() => r'3683783f13eebece122764daffbefef00d95ee13';
 
 /// See also [XFileNotifier].
 @ProviderFor(XFileNotifier)

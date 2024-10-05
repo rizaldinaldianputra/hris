@@ -11,6 +11,8 @@ dependencies:
   camera: ^0.11.0+2
   cupertino_icons: ^1.0.6
   dio: ^5.5.0+1
+  dropdown_button2: ^2.3.9
+  file_picker: ^8.1.2
   flutter:
     sdk: flutter
   flutter_cached_pdfview: ^0.4.2
@@ -58,3 +60,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/leave/

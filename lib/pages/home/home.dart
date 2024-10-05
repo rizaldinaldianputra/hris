@@ -35,9 +35,9 @@ class _HomePageState extends ConsumerState<HomePage>
   final List<Widget> widgetOptions = <Widget>[
     const DashboardPage(),
     const AttedantLogPage(),
-    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('', style: TextStyle(fontSize: 24))),
   ];
 
   @override
