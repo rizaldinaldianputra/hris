@@ -36,6 +36,7 @@ dependencies:
   riverpod_annotation: ^2.3.5
   shared_preferences: ^2.2.3
   uuid: ^4.5.0
+
 dev_dependencies:
   build_runner: ^2.4.9
   custom_lint: ^0.6.4
@@ -48,13 +49,9 @@ dev_dependencies:
   riverpod_generator: ^2.4.0
   riverpod_lint: ^2.3.10
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
-  ios: true
-  image_path: "assets/logo.png"
-  web:
-    generate: true
-    image_path: "assets/logo.png"
+  image_path: "assets/iconlogo.png"
 
 flutter:
   uses-material-design: true

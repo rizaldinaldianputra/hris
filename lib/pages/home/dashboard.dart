@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -150,7 +151,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               const SizedBox(height: 35),
               ListTile(
                 leading: const CircleAvatar(
-                  radius: 30,
+                  radius: 20,
                   backgroundImage: AssetImage(
                       'assets/profile.png'), // Ganti dengan path gambar Anda
                 ),
@@ -174,18 +175,27 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                 ),
                 trailing: Container(
-                  height: 46,
-                  width: 46,
+                  height: 36,
+                  width: 36,
+                  padding: const EdgeInsets.all(10),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: Image.asset('assets/notif.png'),
+                  child: SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: SvgPicture.asset(
+                      'assets/bell.svg',
+                      width: 16,
+                      height: 16,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               Container(
-                margin: const EdgeInsets.all(20),
+                margin: const EdgeInsets.only(left: 16, right: 16),
                 width: double.infinity,
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.4),
@@ -275,68 +285,237 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             ],
           ),
         ),
-        toolbarHeight: MediaQuery.of(context).size.height * 0.4,
+        toolbarHeight: MediaQuery.of(context).size.height * 0.35,
       ),
       body: ListView(
         children: [
           const SizedBox(height: 10),
           Container(
-            margin: const EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.height * 0.3,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(width: 0.5, color: Colors.grey),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-            ),
-            child: GridView.count(
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      context.goNamed('attedantlog');
-                    },
-                    child: GestureDetector(
-                        child: Image.asset('assets/attedant.png'))),
-                GestureDetector(
-                    onTap: () {
-                      context.goNamed('leave');
-                    },
-                    child: Image.asset('assets/leave.png')),
-                GestureDetector(
-                    onTap: () {
-                      context.goNamed('overtime');
-                    },
-                    child: Image.asset('assets/overtime.png')),
-                GestureDetector(
-                    onTap: () {
-                      context.goNamed('reimbursment');
-                    },
-                    child: Image.asset('assets/reimbursment.png')),
-                Image.asset('assets/earned.png'),
-                GestureDetector(
-                    onTap: () {
-                      context.goNamed('payslip');
-                    },
-                    child: Image.asset('assets/payslip.png')),
-              ],
-            ),
-          ),
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.only(
+                  top: 20, right: 12, left: 12, bottom: 20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 0.5, color: Colors.grey),
+                borderRadius: const BorderRadius.all(Radius.circular(8)),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed('attedantlog');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor('#E4FBF1')),
+                                child: SvgPicture.asset(
+                                  'assets/Clipboard.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Attendance\nLog',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed('leave');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor('#FFF0E7')),
+                                child: SvgPicture.asset(
+                                  'assets/Briefcase.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Leave\nRequest',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed('overtime');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor('#FFF7E4')),
+                                child: SvgPicture.asset(
+                                  'assets/Clock.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Overtime\nRequest',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed('reimbursment');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: HexColor('#F0F2FF'),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/Shopping.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Reimbursement\nRequest',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: HexColor('#FFF0F0'),
+                              ),
+                              child: SvgPicture.asset(
+                                'assets/Pie.svg',
+                                height: 20, // Ukuran ikon
+                                width: 20, // Ukuran ikon
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Earned Wage\nAccess',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                context.goNamed('payslip');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: HexColor('#FFF2FE'),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/File.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Payslip',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )),
           Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(left: 16, right: 16),
+            padding:
+                const EdgeInsets.only(top: 20, right: 12, left: 12, bottom: 20),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(width: 0.5, color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
             ),
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(top: 10, left: 10.0, right: 10),
-                  child: Row(
+            child: Container(
+              child: Column(
+                children: [
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Gaji Anda',
@@ -357,87 +536,85 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       ),
                     ],
                   ),
-                ),
-                Center(
-                  child: Text(
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      textStyle: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
-                          color: Colors.black),
-                    ),
-                    isObSecure ? 'Rp*********' : 'Rp.5.000.000',
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Text(
-                      DateFormat('dd MMM').format(DateTime.now()),
+                  Center(
+                    child: Text(
                       style: GoogleFonts.inter(
-                          textStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: HexColor('#333333'))),
+                        fontWeight: FontWeight.w500,
+                        textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            color: Colors.black),
+                      ),
+                      isObSecure ? 'Rp*********' : 'Rp.5.000.000',
                     ),
-                    Text(
-                      '$daysUntil25 hari hingga gajihan',
-                      style: GoogleFonts.inter(
-                          textStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: HexColor('#757575'))),
-                    ),
-                    Text(
-                      '25 $currentMonth',
-                      style: GoogleFonts.inter(
-                          textStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: HexColor('#333333'))),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[300],
-                    color: Colors.blue,
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  height: 50,
-                  margin: const EdgeInsets.only(left: 10, right: 19),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    color: HexColor('#EBF6FF'),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Ambil Dana untuk kebutuhan darurat',
+                        DateFormat('dd MMM').format(DateTime.now()),
                         style: GoogleFonts.inter(
                             textStyle: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: HexColor('#01A2E9'))),
+                                color: HexColor('#333333'))),
                       ),
-                      Icon(
-                        Icons.arrow_forward_outlined,
-                        color: HexColor('#01A2E9'),
-                      )
+                      Text(
+                        '$daysUntil25 hari hingga gajihan',
+                        style: GoogleFonts.inter(
+                            textStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: HexColor('#757575'))),
+                      ),
+                      Text(
+                        '25 $currentMonth',
+                        style: GoogleFonts.inter(
+                            textStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: HexColor('#333333'))),
+                      ),
                     ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  LinearProgressIndicator(
+                    value: progress,
+                    backgroundColor: Colors.grey[300],
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    height: 50,
+                    margin: const EdgeInsets.only(left: 10, right: 19),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      color: HexColor('#EBF6FF'),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          'Ambil Dana untuk kebutuhan darurat',
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: HexColor('#01A2E9'))),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_outlined,
+                          size: 20,
+                          color: HexColor('#01A2E9'),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -612,53 +789,54 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                                 child: CameraPreview(
                                   _cameraController!,
                                   child: Align(
-                                    alignment: Alignment.bottomCenter,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        if (_cameraController != null &&
-                                            _cameraController!
-                                                .value.isInitialized) {
-                                          try {
-                                            // Ambil gambar
-                                            final XFile image =
-                                                await _cameraController!
-                                                    .takePicture();
-                                            final Uint8List imageData = await image
-                                                .readAsBytes(); // Baca data gambar
+                                      alignment: Alignment.bottomCenter,
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          if (_cameraController != null &&
+                                              _cameraController!
+                                                  .value.isInitialized) {
+                                            try {
+                                              // Ambil gambar
+                                              final XFile image =
+                                                  await _cameraController!
+                                                      .takePicture();
+                                              final Uint8List imageData =
+                                                  await image
+                                                      .readAsBytes(); // Baca data gambar
 
-                                            setstate(() {
-                                              capturedImage = imageData;
-                                              timeCaputre = DateTime.now();
+                                              setstate(() {
+                                                capturedImage = imageData;
+                                                timeCaputre = DateTime.now();
 // Simpan data gambar
-                                            });
+                                              });
 
-                                            ref
-                                                .watch(xFileNotifierProvider
-                                                    .notifier)
-                                                .saveFile(
-                                                    image); // Simpan file ke state
-                                            Navigator.pop(
-                                                context); // Tutup modal
-                                          } catch (e) {
-                                            print("Gagal mengambil gambar: $e");
+                                              ref
+                                                  .watch(xFileNotifierProvider
+                                                      .notifier)
+                                                  .saveFile(
+                                                      image); // Simpan file ke state
+                                              Navigator.pop(
+                                                  context); // Tutup modal
+                                            } catch (e) {
+                                              print(
+                                                  "Gagal mengambil gambar: $e");
+                                            }
                                           }
-                                        }
-                                      },
-                                      child: Container(
-                                        height: 80,
-                                        width: 80,
-                                        decoration: const BoxDecoration(
-                                          color: Colors.white,
-                                          shape: BoxShape.circle,
+                                        },
+                                        child: Container(
+                                          height: 80,
+                                          width: 80,
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          margin: const EdgeInsets.all(20),
+                                          child: const Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 20,
+                                          ),
                                         ),
-                                        margin: const EdgeInsets.all(20),
-                                        child: const Icon(
-                                          Icons.camera_alt_outlined,
-                                          size: 20,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                      )),
                                 ),
                               );
                             },
@@ -666,7 +844,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         },
                         child: Container(
                             margin: const EdgeInsets.all(20),
-                            height: 200,
                             width: double.infinity,
                             child: const Icon(
                               Icons.camera_alt_outlined,
@@ -677,7 +854,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   height: 10,
                 ),
                 Text(
-                  'Jhon Doe',
+                  'Jhon sad',
                   style: GoogleFonts.inter(
                       textStyle: const TextStyle(
                           color: Colors.black,

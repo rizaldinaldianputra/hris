@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/pages/auth/login.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
@@ -67,112 +69,166 @@ class _AccountPageState extends ConsumerState<AccountPage> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListTile(
-                    leading: Text(
-                      'Information',
-                      style: GoogleFonts.inter(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Information section header
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Text(
+                    'Information',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  ListTile(
-                    leading: Image.asset('assets/account/personal.png'),
-                    title: const Text('Personal Info'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/employ.png'),
-                    title: const Text('Employment Info'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/emergency.png'),
-                    title: const Text('Emergency Contact Info'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/family.png'),
-                    title: const Text('Family Info'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/education.png'),
-                    title: const Text('Education'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/education.png'),
-                    title: const Text('Organization Experience'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/payrol.png'),
-                    title: const Text('Payroll Info'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Text(
-                      'Settings',
-                      style: GoogleFonts.inter(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+
+                // Menggunakan input function untuk setiap ListTile
+                input(
+                  lead: SvgPicture.asset('assets/account/personal.svg'),
+                  title: 'Personal Info',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+                input(
+                  lead: SvgPicture.asset('assets/account/employe.svg'),
+                  title: 'Employment Info',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+                input(
+                  lead: SvgPicture.asset('assets/account/emergency.svg'),
+                  title: 'Emergency Contact Info',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/family.svg'),
+                  title: 'Family Info',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/education.svg'),
+                  title: 'Education',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/education.svg'),
+                  title: 'Organization Experience',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/payrol.svg'),
+                  title: 'Payroll Info',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                // Settings section header
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Text(
+                    'Settings',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  ListTile(
-                    leading: Image.asset('assets/account/change.png'),
-                    title: const Text('Change Password'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/langguage.png'),
-                    title: const Text('Language'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/help.png'),
-                    title: const Text('Help Center'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  const Divider(),
-                  ListTile(
-                    leading: Text(
-                      'Other',
-                      style: GoogleFonts.inter(
-                          fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/change.svg'),
+                  title: 'Change Password',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/langguage.svg'),
+                  title: 'Language',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/help.svg'),
+                  title: 'Help Center',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                // Other section header
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Text(
+                    'Other',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  ListTile(
-                    leading: Image.asset('assets/account/safety.png'),
-                    title: const Text('Safety & Privacy'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    leading: Image.asset('assets/account/signout.png'),
-                    title: const Text('Sign Out'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      context.pushReplacement('/');
-                    },
-                  ),
-                ],
-              ),
-            ),
+                ),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/safety.svg'),
+                  title: 'Safety & Privacy',
+                  onTap: () {},
+                ),
+                Divider(color: HexColor('#EAEAEA')),
+
+                input(
+                  lead: SvgPicture.asset('assets/account/signout.svg'),
+                  title: 'Sign Out',
+                  onTap: () {
+                    context.pushReplacement('/');
+                  },
+                ),
+              ],
+            )),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget input({
+    required Widget lead,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          children: [
+            lead, // Gambar atau ikon di sebelah kiri
+            const SizedBox(width: 12), // Spasi antar elemen
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.inter(
+                    fontSize: 14, fontWeight: FontWeight.w400),
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 14,
+            ), // Ikon di sebelah kanan
+          ],
+        ),
       ),
     );
   }
