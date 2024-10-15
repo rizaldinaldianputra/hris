@@ -370,7 +370,10 @@ Widget inputText(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title),
+        Text(
+          title,
+          style: GoogleFonts.inter(fontWeight: FontWeight.w400, fontSize: 14),
+        ),
         const SizedBox(
           height: 8,
         ),

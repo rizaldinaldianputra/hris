@@ -6,6 +6,10 @@ import 'package:hris/pages/account/emergency/emergency_detail.dart';
 import 'package:hris/pages/account/emergency/emergency_edit.dart';
 import 'package:hris/pages/account/emergency/emergency_info_list.dart';
 import 'package:hris/pages/account/employment_info.dart';
+import 'package:hris/pages/account/family/family_add.dart';
+import 'package:hris/pages/account/family/family_detail.dart';
+import 'package:hris/pages/account/family/family_edit.dart';
+import 'package:hris/pages/account/family/family_info_list.dart';
 import 'package:hris/pages/account/personal_info.dart';
 import 'package:hris/pages/attedance_logs/camera_attedant.dart';
 import 'package:hris/pages/attedance_logs/camera_preview.dart';
@@ -84,6 +88,38 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
                         name: 'emergencyedit',
                         builder: (BuildContext context, GoRouterState state) {
                           return const EmergencyEditPage();
+                        },
+                      ),
+                    ]),
+              ]),
+        ],
+      ),
+      GoRoute(
+        path: '/familylist',
+        name: 'familylist',
+        builder: (BuildContext context, GoRouterState state) {
+          return const FamilyInfoListPage();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+              path: '/familyadd',
+              name: 'familyadd',
+              builder: (BuildContext context, GoRouterState state) {
+                return const FamilyAddPage();
+              },
+              routes: <RouteBase>[
+                GoRoute(
+                    path: '/familydetail',
+                    name: 'familydetail',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const FamilyDetailPage();
+                    },
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: '/familyedit',
+                        name: 'familyedit',
+                        builder: (BuildContext context, GoRouterState state) {
+                          return const FamilyEditPage();
                         },
                       ),
                     ]),

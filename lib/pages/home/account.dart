@@ -114,7 +114,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/family.svg'),
                   title: 'Family Info',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('familylist');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 
