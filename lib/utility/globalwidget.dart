@@ -248,46 +248,52 @@ Widget inputReadOnly(
     {required String title,
     required TextEditingController controller,
     required String hint}) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(title),
-      const SizedBox(
-        height: 8,
-      ),
-      SizedBox(
-        height: 50,
-        child: TextField(
-          readOnly: true,
-          controller: controller,
-          decoration: InputDecoration(
-            fillColor:
-                Colors.grey.shade50, // Warna latar belakang ketika readOnly
-            filled: true,
-            hintText: hint,
-            hintStyle: const TextStyle(color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0), // Sudut membulat
-              borderSide: BorderSide(
-                  color: HexColor('#D9D9D9'), width: 1), // Border biru
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                  color: HexColor('#D9D9D9'), width: 1), // Border saat aktif
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8.0),
-              borderSide: BorderSide(
-                  color: HexColor('#D9D9D9'), width: 2), // Border saat fokus
-            ),
+  return Padding(
+    padding: const EdgeInsets.only(top: 8.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        const SizedBox(
+          height: 8,
+        ),
+        SizedBox(
+          height: 50,
+          child: TextField(
+            readOnly: true,
+            controller: controller,
+            decoration: InputDecoration(
+              fillColor:
+                  Colors.grey.shade50, // Warna latar belakang ketika readOnly
+              filled: true,
+              hintText: hint,
+              hintStyle: GoogleFonts.inter(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: Colors.grey),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0), // Sudut membulat
+                borderSide: BorderSide(
+                    color: HexColor('#D9D9D9'), width: 1), // Border biru
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                    color: HexColor('#D9D9D9'), width: 1), // Border saat aktif
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(
+                    color: HexColor('#D9D9D9'), width: 2), // Border saat fokus
+              ),
 
-            // Padding di dalam TextField
+              // Padding di dalam TextField
+            ),
           ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 }
 

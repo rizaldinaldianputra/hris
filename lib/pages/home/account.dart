@@ -97,7 +97,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/employe.svg'),
                   title: 'Employment Info',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('employeeinfo');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
                 input(

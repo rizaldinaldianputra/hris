@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hris/pages/account/employment_info.dart';
 import 'package:hris/pages/account/personal_info.dart';
 import 'package:hris/pages/attedance_logs/camera_attedant.dart';
 import 'package:hris/pages/attedance_logs/camera_preview.dart';
@@ -44,6 +45,13 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
         name: 'personalinfo',
         builder: (BuildContext context, GoRouterState state) {
           return const PersonalInfoPage();
+        },
+      ),
+      GoRoute(
+        path: '/employeeinfo',
+        name: 'employeeinfo',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EmploymentInfoPage();
         },
       ),
       GoRoute(

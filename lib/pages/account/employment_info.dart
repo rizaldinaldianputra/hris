@@ -7,33 +7,20 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/pages/account/employment_info.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class PersonalInfoPage extends ConsumerStatefulWidget {
-  const PersonalInfoPage({super.key});
+class EmploymentInfoPage extends ConsumerStatefulWidget {
+  const EmploymentInfoPage({super.key});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
-      _PersonalInfoPageState();
+      _EmploymentInfoPageState();
 }
 
-final TextEditingController usernameController = TextEditingController();
-final TextEditingController emailController = TextEditingController();
-final TextEditingController phoneController = TextEditingController();
-final TextEditingController nikController = TextEditingController();
-final TextEditingController firstNameController = TextEditingController();
-final TextEditingController lastNameController = TextEditingController();
-final TextEditingController birthPlaceController = TextEditingController();
-final TextEditingController addressController = TextEditingController();
-final TextEditingController subDistrictController = TextEditingController();
-final TextEditingController districtController = TextEditingController();
-final TextEditingController cityController = TextEditingController();
-final TextEditingController provinceController = TextEditingController();
-final TextEditingController countryController = TextEditingController();
-final TextEditingController postalCodeController = TextEditingController();
+TextEditingController usernameController = TextEditingController();
+TextEditingController birhtDayController = TextEditingController();
 
 String? selectedValue;
 final List<String> items = [
@@ -43,11 +30,11 @@ final List<String> items = [
 DateTime? selectedDateTime;
 PlatformFile? selectedFile;
 
-class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
+class _EmploymentInfoPageState extends ConsumerState<EmploymentInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Personal Info'),
+      appBar: appBarWidget('Employement Info'),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
         child: SingleChildScrollView(
@@ -58,114 +45,99 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
               const SizedBox(height: 16),
               // Account Information
               Text(
-                'Account Information',
+                'Management Employee Information',
                 style: GoogleFonts.inter(
                     fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
+              //
               inputReadOnly(
                 controller: usernameController,
-                hint: 'Username',
-                title: 'Username',
+                hint: 'PT. Jasa Raharja',
+                title: 'Company',
               ),
-              inputWidget(
-                iconWidget: SvgPicture.asset(
-                  'assets/account/mail.svg',
-                  color: HexColor('#363538'),
-                ),
-                controller: emailController,
-                hint: 'Email',
-                title: 'Email',
+              inputReadOnly(
+                controller: usernameController,
+                hint: 'Digital Development',
+                title: 'Department',
               ),
-              inputWidget(
-                iconWidget: SvgPicture.asset(
-                  'assets/account/phone.svg',
-                  color: HexColor('#363538'),
-                ),
-                controller: phoneController,
-                hint: 'Phone',
-                title: 'Phone Number',
+              inputReadOnly(
+                controller: usernameController,
+                hint: 'IT Support',
+                title: 'Position',
               ),
-              inputWidget(
-                iconWidget: SvgPicture.asset(
-                  color: HexColor('#363538'),
-                  'assets/account/nik.svg',
-                ),
-                controller: nikController,
-                hint: 'NIK',
-                title: 'NIK',
+              inputReadOnly(
+                controller: usernameController,
+                hint: 'Staff',
+                title: 'Level',
               ),
-              const SizedBox(height: 24),
+              inputReadOnly(
+                controller: usernameController,
+                hint: '',
+                title: 'Shift',
+              ),
+              inputReadOnly(
+                controller: usernameController,
+                hint: '',
+                title: 'Head',
+              ),
+              const SizedBox(
+                height: 24,
+              ),
               Text(
-                'Basic Information',
+                'Document Info',
                 style: GoogleFonts.inter(
                     fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 14),
-              inputText(
-                controller: firstNameController,
-                hint: 'First Name',
-                title: 'First Name',
+              const SizedBox(
+                height: 16,
               ),
-              inputText(
-                controller: lastNameController,
-                hint: 'Last Name',
-                title: 'Last Name',
+              inputReadOnly(
+                controller: usernameController,
+                hint: '',
+                title: 'Tax Number',
               ),
-              dropdownIcon(
-                hinttitle: 'Gender',
-                selectedValue: selectedValue,
-                listiem: items,
-                title: 'Gender',
+              inputReadOnly(
+                controller: usernameController,
+                hint: '',
+                title: 'Tax Registered Name',
               ),
-              dateTimePicker(
-                'Birth Date',
-                'Choose date',
-                birhtDayController,
-                Image.asset('assets/leave/date.png'),
-              ),
-              inputText(
-                controller: birthPlaceController,
-                hint: 'Birth Place',
-                title: 'Birth Place',
+              inputReadOnly(
+                controller: usernameController,
+                hint: '',
+                title: 'Document Identity Number',
               ),
               dropdownIcon(
-                hinttitle: 'Religon',
+                hinttitle: 'Seumur Hidup',
                 selectedValue: selectedValue,
                 listiem: items,
-                title: 'Religon',
+                title: 'Document Identity Expiry',
               ),
-              dropdownIcon(
-                hinttitle: 'Martial Status',
-                selectedValue: selectedValue,
-                listiem: items,
-                title: 'Martial Status',
+
+              dateTimePicker('Document Identity Expiry', '07 December 1992',
+                  birhtDayController, Image.asset('assets/leave/date.png')),
+              const SizedBox(
+                height: 8,
               ),
-              dropdownIcon(
-                hinttitle: 'Nationality',
-                selectedValue: selectedValue,
-                listiem: items,
-                title: 'Nationality',
-              ),
-              const SizedBox(height: 8),
               Text(
-                'Upload ',
+                'Document Identity File',
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(
+                height: 8,
+              ),
               GestureDetector(
                 onTap: _pickFile,
                 child: Container(
                   height: 40,
                   width: 149,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: HexColor('#757575')),
-                  ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: HexColor('#757575'))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -175,7 +147,9 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                         size: 18,
                         color: HexColor('#757575'),
                       ),
-                      const SizedBox(width: 5),
+                      const SizedBox(
+                        width: 5,
+                      ),
                       Text(
                         'Upload Image',
                         style: GoogleFonts.inter(
@@ -183,12 +157,14 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                           fontWeight: FontWeight.w600,
                           color: HexColor('#757575'),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(
+                height: 8,
+              ),
               if (selectedFile != null && selectedFile!.path != null)
                 Image.file(
                   File(selectedFile!.path!), // Menampilkan file gambar
@@ -196,79 +172,166 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                   width: 150, // Atur lebar gambar sesuai kebutuhan
                   fit: BoxFit.cover, // Mengatur cara gambar diubah ukurannya
                 ),
-              const SizedBox(height: 24),
+              inputReadOnly(
+                controller: usernameController,
+                hint: '10992320012399',
+                title: 'Document Identity Number',
+              ),
+              inputReadOnly(
+                controller: usernameController,
+                hint: 'Jane Doe',
+                title: 'Document BPJS-TK Name',
+              ),
+              const SizedBox(
+                height: 8,
+              ),
               Text(
-                'Address Information',
+                'Document BPJS-TK File',
                 style: GoogleFonts.inter(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 16),
-              const Text('Address'),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 112,
-                child: TextField(
-                  maxLines: 3,
-                  controller: addressController,
-                  decoration: InputDecoration(
-                    hintText: 'Address',
-                    hintStyle: const TextStyle(color: Colors.grey),
-                    border: OutlineInputBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Sudut membulat
-                      borderSide: BorderSide(
-                        color: HexColor('#D9D9D9'),
-                        width: 1, // Border biru
+              const SizedBox(
+                height: 8,
+              ),
+              GestureDetector(
+                onTap: _pickFile,
+                child: Container(
+                  height: 40,
+                  width: 149,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: HexColor('#757575'))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        size: 18,
+                        color: HexColor('#757575'),
                       ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: HexColor('#D9D9D9'),
-                        width: 1, // Border saat aktif
+                      const SizedBox(
+                        width: 5,
                       ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: BorderSide(
-                        color: HexColor('#D9D9D9'),
-                        width: 2, // Border saat fokus
-                      ),
-                    ),
+                      Text(
+                        'Upload Image',
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: HexColor('#757575'),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
-              inputText(
-                title: 'Sub District',
-                controller: subDistrictController,
-                hint: 'Sub District',
+              const SizedBox(
+                height: 8,
               ),
-              inputText(
-                title: 'District',
-                controller: districtController,
-                hint: 'District',
+              if (selectedFile != null && selectedFile!.path != null)
+                Image.file(
+                  File(selectedFile!.path!), // Menampilkan file gambar
+                  height: 150, // Atur tinggi gambar sesuai kebutuhan
+                  width: 150, // Atur lebar gambar sesuai kebutuhan
+                  fit: BoxFit.cover, // Mengatur cara gambar diubah ukurannya
+                ),
+              const SizedBox(
+                height: 24,
               ),
-              inputText(
-                title: 'City',
-                controller: cityController,
-                hint: 'City',
+              Text(
+                'Contract Info',
+                style: GoogleFonts.inter(
+                    fontSize: 16, fontWeight: FontWeight.w600),
               ),
-              inputText(
-                title: 'Province',
-                controller: provinceController,
-                hint: 'Province',
+              const SizedBox(
+                height: 16,
               ),
-              inputText(
-                title: 'Country',
-                controller: countryController,
-                hint: 'Country',
-              ),
-              inputText(
-                title: 'Postal Code',
-                controller: postalCodeController,
-                hint: 'Postal Code',
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                    border: Border.all(color: HexColor('#EAEAEA'))),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Status Employee',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Container(
+                                    width: 80,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(4)),
+                                      color: HexColor('#2A4DDB'),
+                                    ),
+                                    child: Center(
+                                        child: Text(
+                                      'Contract',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white),
+                                    )),
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.navigate_next,
+                                color: HexColor('#3699FF'),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 24,
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                child: const Column(
+                                  children: [
+                                    Text('Start Date'),
+                                    Text('20 Jan 2023')
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 80,
+                              ),
+                              Container(
+                                child: const Column(
+                                  children: [
+                                    Text('Start Date'),
+                                    Text('20 Jan 2023')
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
