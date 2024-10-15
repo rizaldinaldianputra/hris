@@ -30,7 +30,8 @@ class _AttendantLogPageState extends State<AttedantLogPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidgetWithTralling('Attendance Log'), // Perbaiki penamaan
+      appBar: appBarWidgetWithTralling('Attendance Log',
+          Image.asset('assets/filter.png')), // Perbaiki penamaan
       body: Column(
         children: [
           SizedBox(

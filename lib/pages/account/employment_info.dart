@@ -338,7 +338,7 @@ class _EmploymentInfoPageState extends ConsumerState<EmploymentInfoPage> {
         ),
       ),
       bottomNavigationBar: bootomSubmit(
-        'Submit Request',
+        'Save',
         Container(),
         () => context.goNamed('home'),
       ),

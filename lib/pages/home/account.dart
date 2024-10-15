@@ -105,7 +105,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/emergency.svg'),
                   title: 'Emergency Contact Info',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('emergencylist');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 

@@ -18,7 +18,8 @@ class _OvertimePageState extends ConsumerState<OvertimePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidgetWithTralling('Overtime'),
+        appBar: appBarWidgetWithTralling(
+            'Overtime', Image.asset('assets/filter.png')),
         body: ListView.builder(
           itemBuilder: (context, index) {
             return Container(

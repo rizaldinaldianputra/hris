@@ -18,7 +18,8 @@ class _LeavePageState extends ConsumerState<LeavePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidgetWithTralling('Leave'),
+        appBar:
+            appBarWidgetWithTralling('Leave', Image.asset('assets/filter.png')),
         body: ListView.builder(
           itemBuilder: (context, index) {
             return Container(

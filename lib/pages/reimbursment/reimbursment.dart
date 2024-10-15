@@ -37,7 +37,8 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidgetWithTralling('Reimbursement'),
+        appBar: appBarWidgetWithTralling(
+            'Reimbursement', Image.asset('assets/filter.png')),
         body: Column(
           children: [
             Container(

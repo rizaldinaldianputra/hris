@@ -1,6 +1,10 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hris/pages/account/emergency/emergency_add.dart';
+import 'package:hris/pages/account/emergency/emergency_detail.dart';
+import 'package:hris/pages/account/emergency/emergency_edit.dart';
+import 'package:hris/pages/account/emergency/emergency_info_list.dart';
 import 'package:hris/pages/account/employment_info.dart';
 import 'package:hris/pages/account/personal_info.dart';
 import 'package:hris/pages/attedance_logs/camera_attedant.dart';
@@ -53,6 +57,38 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
         builder: (BuildContext context, GoRouterState state) {
           return const EmploymentInfoPage();
         },
+      ),
+      GoRoute(
+        path: '/emergencylist',
+        name: 'emergencylist',
+        builder: (BuildContext context, GoRouterState state) {
+          return const EmergencyInfoListPage();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+              path: '/emergencyadd',
+              name: 'emergencyadd',
+              builder: (BuildContext context, GoRouterState state) {
+                return const EmergencyAddContactPage();
+              },
+              routes: <RouteBase>[
+                GoRoute(
+                    path: '/emergencydetail',
+                    name: 'emergencydetail',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const EmergencyContactDetailPage();
+                    },
+                    routes: <RouteBase>[
+                      GoRoute(
+                        path: '/emergencyedit',
+                        name: 'emergencyedit',
+                        builder: (BuildContext context, GoRouterState state) {
+                          return const EmergencyEditPage();
+                        },
+                      ),
+                    ]),
+              ]),
+        ],
       ),
       GoRoute(
         path: '/camerapage',

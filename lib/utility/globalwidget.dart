@@ -57,7 +57,7 @@ AppBar appBarWidget(String title) {
   );
 }
 
-AppBar appBarWidgetWithTralling(String title) {
+AppBar appBarWidgetWithTralling(String title, Widget action) {
   return AppBar(
     title: Text(
       title,
@@ -73,7 +73,7 @@ AppBar appBarWidgetWithTralling(String title) {
     actions: [
       Padding(
         padding: const EdgeInsets.only(right: 15),
-        child: Image.asset('assets/filter.png'),
+        child: action,
       ),
     ],
     toolbarHeight: 56,
