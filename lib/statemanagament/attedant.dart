@@ -1,38 +1,29 @@
-import 'dart:typed_data';
-import 'package:camera/camera.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hris/models/attedance_model.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attedant.g.dart';
 
 @riverpod
-class XFileNotifier extends _$XFileNotifier {
+class AttendanceNotifier extends _$AttendanceNotifier {
   @override
-  XFile? build() {
-    return null; // Nilai awal, belum ada file yang disimpan
+  List<Attendance> build() {
+    return []; // State awal
   }
 
-  // Fungsi untuk menyimpan XFile
-  void saveFile(XFile file) {
-    print(
-        "File saved: ${file.path}"); // Log untuk memeriksa apakah file disimpan
-    state = file;
+  void addAttendance(Attendance attendance) {
+    state = [...state, attendance];
   }
 
-  // Fungsi untuk menghapus file (set ke null)
-  void clearFile() {
-    state = null;
+  void removeAttendance(String id) {
+    state = state.where((attendance) => attendance.id != id).toList();
   }
 
-  // Fungsi untuk mendapatkan byte array dari XFile
-  Future<Uint8List?> getFileBytes() async {
-    if (state != null) {
-      try {
-        return await state!.readAsBytes(); // Membaca file sebagai byte array
-      } catch (e) {
-        print("Error membaca file: $e");
-        return null;
-      }
-    }
-    return null; // Jika tidak ada file, kembalikan null
+  void updateAttendance(Attendance updatedAttendance) {
+    state = state.map((attendance) {
+      return attendance.id == updatedAttendance.id
+          ? updatedAttendance
+          : attendance;
+    }).toList();
   }
 }

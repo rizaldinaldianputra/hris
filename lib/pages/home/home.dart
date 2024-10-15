@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/pages/home/account.dart';
 import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/dashboard.dart';
@@ -43,68 +44,65 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            selectedIndex =
-                index; // Mengubah tab yang dipilih saat halaman berubah
-          });
-        },
-        children: widgetOptions,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/home_bottom.svg',
-              color:
-                  selectedIndex == 0 ? Colors.blue : Colors.grey, // Ubah warna
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) {
+            setState(() {
+              selectedIndex =
+                  index; // Mengubah tab yang dipilih saat halaman berubah
+            });
+          },
+          children: widgetOptions,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/home_bottom.svg',
+                color: selectedIndex == 0 ? HexColor('#378CCB') : Colors.grey,
+                height: 24, // Tentukan ukuran ikon SVG
+                width: 24,
+              ),
+              label: 'Home', // Anda bisa tambahkan label jika diperlukan
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/attedant_bottom.svg',
-              color:
-                  selectedIndex == 1 ? Colors.blue : Colors.grey, // Ubah warna
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/attedant_bottom.svg',
+                color: selectedIndex == 1 ? HexColor('#378CCB') : Colors.grey,
+              ),
+              label: 'Attendance',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/request_bottom.svg',
-              color:
-                  selectedIndex == 2 ? Colors.blue : Colors.grey, // Ubah warna
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/request_bottom.svg',
+                color: selectedIndex == 2 ? HexColor('#378CCB') : Colors.grey,
+              ),
+              label: 'Request',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/inbox_bottom.svg',
-              color:
-                  selectedIndex == 3 ? Colors.blue : Colors.grey, // Ubah warna
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/inbox_bottom.svg',
+                color: selectedIndex == 3 ? HexColor('#378CCB') : Colors.grey,
+              ),
+              label: 'Inbox',
             ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/account_bottom.svg',
-              color:
-                  selectedIndex == 4 ? Colors.blue : Colors.grey, // Ubah warna
+            BottomNavigationBarItem(
+              icon: SvgPicture.asset(
+                'assets/account_bottom.svg',
+                color: selectedIndex == 4 ? HexColor('#378CCB') : Colors.grey,
+              ), // Gunakan ikon bawaan Flutter
+              label: 'Account',
             ),
-            label: '',
-          ),
-        ],
-        currentIndex: selectedIndex, // Menentukan tab yang aktif
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped, // Menangani tap pada tab
-        type: BottomNavigationBarType.fixed, // Menghindari animasi zoom
-      ),
-    );
+          ],
+          currentIndex: selectedIndex,
+          selectedItemColor: HexColor('#378CCB'),
+          unselectedItemColor: Colors.grey,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed, // Menjaga ikon di posisi tetap
+        ));
   }
 
   @override

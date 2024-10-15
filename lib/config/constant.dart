@@ -1,1 +1,1 @@
-const String API_URL = 'https://etilang.sinar12.co.id/api';
+const String API_URL = 'https://hris.inotivedev.com/api';

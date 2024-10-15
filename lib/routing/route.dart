@@ -1,5 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hris/pages/account/personal_info.dart';
+import 'package:hris/pages/attedance_logs/camera_attedant.dart';
+import 'package:hris/pages/attedance_logs/camera_preview.dart';
+import 'package:hris/pages/attedance_logs/dialog_succes.dart';
 import 'package:hris/pages/auth/login.dart';
 import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/home.dart';
@@ -21,12 +26,44 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
     },
   ),
   GoRoute(
+    path: '/dialogsucces',
+    name: 'dialogsucces',
+    builder: (BuildContext context, GoRouterState state) {
+      return const DialogSuccesPage();
+    },
+  ),
+  GoRoute(
     path: '/home',
     name: 'home',
     builder: (BuildContext context, GoRouterState state) {
       return const HomePage();
     },
     routes: <RouteBase>[
+      GoRoute(
+        path: '/personalinfo',
+        name: 'personalinfo',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PersonalInfoPage();
+        },
+      ),
+      GoRoute(
+        path: '/camerapage',
+        name: 'camerapage',
+        builder: (BuildContext context, GoRouterState state) {
+          return const CameraPage();
+        },
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/camerapreview',
+            name: 'camerapreview',
+            builder: (BuildContext context, GoRouterState state) {
+              final imageBytes = state.extra as XFile?;
+
+              return CamerPreviewPage(imageByte: imageBytes);
+            },
+          ),
+        ],
+      ),
       GoRoute(
         path: '/attedantlog',
         name: 'attedantlog',

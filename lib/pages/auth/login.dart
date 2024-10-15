@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hris/service/auth_services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hris/statemanagament/auth.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +18,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isPasswordObscure = false;
+  @override
+  void initState() {
+    checkToken(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +168,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                   GestureDetector(
                     onTap: () {
-                      context.pushReplacementNamed('home');
+                      // doLogin(_emailController.text, _passwordController.text,
+                      //     context);
+                      GoRouter.of(context).pushReplacementNamed('home');
                     },
                     child: Container(
                       height: 50,

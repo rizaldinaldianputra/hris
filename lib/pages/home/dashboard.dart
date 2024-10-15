@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/statemanagament/attedant.dart';
+import 'package:hris/models/user_model.dart';
+import 'package:hris/statemanagament/user.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -102,14 +102,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
 
   Future<void> _initializeCamera() async {
     cameras = await availableCameras();
-    _cameraController =
-        CameraController(cameras![1], ResolutionPreset.ultraHigh);
+    _cameraController = CameraController(cameras![1], ResolutionPreset.high);
 
     await _cameraController!.initialize();
     setState(() {});
   }
 
   final int maxDays = 25;
+
+  final bool _isFlashOn = false;
 
   int getCurrentDay() {
     final now = DateTime.now();
@@ -131,17 +132,17 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   Widget build(BuildContext context) {
     int currentDay = getCurrentDay();
     int daysUntil25 = getDaysUntil25();
-
     double progress = currentDay <= maxDays
         ? currentDay / maxDays
         : (2 * maxDays - currentDay) / maxDays;
-
     String formattedDate =
         DateFormat('dd MMMM yyyy HH:mm:ss').format(DateTime.now());
     String currentMonth = DateFormat('MMM').format(DateTime.now());
+    final userData = ref.watch(userDataProvider(context));
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height * 0.32,
         flexibleSpace: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -149,54 +150,72 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           child: Column(
             children: [
               const SizedBox(height: 35),
-              ListTile(
-                leading: const CircleAvatar(
-                  radius: 20,
-                  backgroundImage: AssetImage(
-                      'assets/profile.png'), // Ganti dengan path gambar Anda
-                ),
-                subtitle: Text(
-                  'Supervisor',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w400,
-                    textStyle: const TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white),
-                  ),
-                ),
-                title: Text(
-                  'Jane Doe',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w700,
-                    textStyle:
-                        const TextStyle(fontSize: 24, color: Colors.white),
-                  ),
-                ),
-                trailing: Container(
-                  height: 36,
-                  width: 36,
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: SvgPicture.asset(
-                      'assets/bell.svg',
-                      width: 16,
-                      height: 16,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
               Container(
                 margin: const EdgeInsets.only(left: 16, right: 16),
                 width: double.infinity,
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // CircleAvatar(
+                    //   radius: 20,
+                    //   backgroundImage: NetworkImage(data.image ?? ''),
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w700,
+                              textStyle: const TextStyle(
+                                  fontSize: 24, color: Colors.white),
+                            ),
+                          ),
+                          Text(
+                            'data.position!.name!',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w400,
+                              textStyle: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 36,
+                      width: 36,
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: SvgPicture.asset(
+                          'assets/bell.svg',
+                          width: 16,
+                          height: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 18, right: 18),
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 10, right: 10),
                 decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.4),
                     borderRadius: const BorderRadius.all(Radius.circular(10))),
@@ -204,7 +223,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 10),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Text(
                       'Don’t miss your attendance today!',
                       style: GoogleFonts.inter(
@@ -245,7 +266,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         children: [
                           TextButton.icon(
                             onPressed: () {
-                              showBottomAttendant('Check In', context);
+                              context.goNamed('camerapage');
                             },
                             icon: const Icon(Icons.login, color: Colors.black),
                             label: Text(
@@ -260,10 +281,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           const Text('|', style: TextStyle(fontSize: 20)),
                           TextButton.icon(
                             onPressed: () {
-                              showBottomAttendant(
-                                'Check Out',
-                                context,
-                              );
+                              context.goNamed('camerapage');
                             },
                             icon: const Icon(Icons.logout, color: Colors.black),
                             label: Text(
@@ -278,14 +296,12 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10)
                   ],
                 ),
               ),
             ],
           ),
         ),
-        toolbarHeight: MediaQuery.of(context).size.height * 0.35,
       ),
       body: ListView(
         children: [
@@ -328,7 +344,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Attendance\nLog',
+                              'Attedance\n Log',
                               textAlign: TextAlign.center,
                               style: GoogleFonts.inter(
                                 fontSize: 12,
@@ -502,54 +518,58 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   ),
                 ],
               )),
+          // Card EWA
           Container(
             margin: const EdgeInsets.only(left: 16, right: 16),
-            padding:
-                const EdgeInsets.only(top: 20, right: 12, left: 12, bottom: 20),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(width: 0.5, color: Colors.grey),
               borderRadius: const BorderRadius.all(Radius.circular(8)),
             ),
-            child: Container(
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Gaji Anda',
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text('Gaji Anda',
                           style: GoogleFonts.inter(
                             fontWeight: FontWeight.w500,
                             textStyle: const TextStyle(
                                 fontSize: 14, color: Colors.black),
                           )),
-                      IconButton(
-                        icon: Icon(isObSecure
-                            ? Icons.visibility_off
-                            : Icons.visibility),
-                        onPressed: () {
-                          setState(() {
-                            isObSecure = !isObSecure;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  Center(
-                    child: Text(
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w500,
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20,
-                            color: Colors.black),
-                      ),
-                      isObSecure ? 'Rp*********' : 'Rp.5.000.000',
                     ),
+                    IconButton(
+                      icon: Icon(
+                          isObSecure ? Icons.visibility_off : Icons.visibility),
+                      onPressed: () {
+                        setState(() {
+                          isObSecure = !isObSecure;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Center(
+                  child: Text(
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w500,
+                      textStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          color: Colors.black),
+                    ),
+                    isObSecure ? 'Rp*********' : 'Rp.5.000.000',
                   ),
-                  const SizedBox(height: 20),
-                  Row(
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
@@ -568,361 +588,70 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                                 fontWeight: FontWeight.w400,
                                 color: HexColor('#757575'))),
                       ),
-                      Text(
-                        '25 $currentMonth',
-                        style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: HexColor('#333333'))),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16),
+                        child: Text(
+                          '25 $currentMonth',
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: HexColor('#333333'))),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  LinearProgressIndicator(
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: LinearProgressIndicator(
                     value: progress,
                     backgroundColor: Colors.grey[300],
                     color: Colors.blue,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    height: 50,
-                    margin: const EdgeInsets.only(left: 10, right: 19),
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      color: HexColor('#EBF6FF'),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          'Ambil Dana untuk kebutuhan darurat',
-                          style: GoogleFonts.inter(
-                              textStyle: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: HexColor('#01A2E9'))),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_outlined,
-                          size: 20,
-                          color: HexColor('#01A2E9'),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showBottomAttendant(String type, BuildContext context) {
-    Uint8List? capturedImage;
-    DateTime? timeCaputre;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (BuildContext context) {
-        return StatefulBuilder(builder: (context, setstate) {
-          return FractionallySizedBox(
-            heightFactor: 0.8,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    height: 200,
-                    child: Stack(
-                      children: [
-                        FutureBuilder<LatLng>(
-                          future: _getCurrentLocation(),
-                          builder: (context, snapshot) {
-                            if (snapshot.data != null) {
-                              return FlutterMap(
-                                options: MapOptions(
-                                  initialZoom: 13,
-                                  initialCenter: snapshot.data!,
-                                ),
-                                children: [
-                                  TileLayer(
-                                    urlTemplate:
-                                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                    userAgentPackageName: 'com.example.app',
-                                  ),
-                                  MarkerLayer(markers: [
-                                    Marker(
-                                        point: snapshot.data!,
-                                        child: const Icon(
-                                          Icons.pin_drop,
-                                          size: 40,
-                                          color: Colors.red,
-                                        )),
-                                  ])
-                                ],
-                              );
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-                        Positioned(
-                          bottom: 20,
-                          right: 20,
-                          child: FloatingActionButton(
-                            backgroundColor: Colors.white,
-                            onPressed: () {
-                              setstate() {
-                                _getCurrentLocation();
-                              }
-                            },
-                            tooltip: 'Get Location',
-                            child: const Icon(Icons.my_location),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                capturedImage != null
-                    ? Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                              isScrollControlled: true,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                              ),
-                              context: context,
-                              builder: (BuildContext context) {
-                                return FractionallySizedBox(
-                                  heightFactor: 1,
-                                  widthFactor: 1,
-                                  child: CameraPreview(
-                                    _cameraController!,
-                                    child: Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          if (_cameraController != null &&
-                                              _cameraController!
-                                                  .value.isInitialized) {
-                                            try {
-                                              // Ambil gambar
-                                              final XFile image =
-                                                  await _cameraController!
-                                                      .takePicture();
-                                              final Uint8List imageData =
-                                                  await image
-                                                      .readAsBytes(); // Baca data gambar
-
-                                              setstate(() {
-                                                capturedImage = imageData;
-                                                timeCaputre = DateTime.now();
-                                              });
-
-                                              ref
-                                                  .watch(xFileNotifierProvider
-                                                      .notifier)
-                                                  .saveFile(
-                                                      image); // Simpan file ke state
-                                              Navigator.pop(
-                                                  context); // Tutup modal
-                                            } catch (e) {
-                                              print(
-                                                  "Gagal mengambil gambar: $e");
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          height: 80,
-                                          width: 80,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          margin: const EdgeInsets.all(20),
-                                          child: const Icon(
-                                            Icons.camera_alt_outlined,
-                                            size: 20,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: Image.memory(
-                            capturedImage!,
-                          ),
-                        ),
-                      ) // Tampilkan gambar yang diambil
-                    : GestureDetector(
-                        onTap: () {
-                          showModalBottomSheet(
-                            isScrollControlled: true,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20)),
-                            ),
-                            context: context,
-                            builder: (BuildContext context) {
-                              return FractionallySizedBox(
-                                heightFactor: 1,
-                                widthFactor: 1,
-                                child: CameraPreview(
-                                  _cameraController!,
-                                  child: Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: GestureDetector(
-                                        onTap: () async {
-                                          if (_cameraController != null &&
-                                              _cameraController!
-                                                  .value.isInitialized) {
-                                            try {
-                                              // Ambil gambar
-                                              final XFile image =
-                                                  await _cameraController!
-                                                      .takePicture();
-                                              final Uint8List imageData =
-                                                  await image
-                                                      .readAsBytes(); // Baca data gambar
-
-                                              setstate(() {
-                                                capturedImage = imageData;
-                                                timeCaputre = DateTime.now();
-// Simpan data gambar
-                                              });
-
-                                              ref
-                                                  .watch(xFileNotifierProvider
-                                                      .notifier)
-                                                  .saveFile(
-                                                      image); // Simpan file ke state
-                                              Navigator.pop(
-                                                  context); // Tutup modal
-                                            } catch (e) {
-                                              print(
-                                                  "Gagal mengambil gambar: $e");
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          height: 80,
-                                          width: 80,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.white,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          margin: const EdgeInsets.all(20),
-                                          child: const Icon(
-                                            Icons.camera_alt_outlined,
-                                            size: 20,
-                                          ),
-                                        ),
-                                      )),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        child: Container(
-                            margin: const EdgeInsets.all(20),
-                            width: double.infinity,
-                            child: const Icon(
-                              Icons.camera_alt_outlined,
-                              size: 50,
-                            )),
-                      ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  'Jhon sad',
-                  style: GoogleFonts.inter(
-                      textStyle: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700)),
                 ),
                 const SizedBox(
-                  height: 10,
-                ), // Placeholder jika belum ada gambar
-                timeCaputre != null
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            DateFormat('dd MMMM yyyy').format(timeCaputre!),
-                            style: GoogleFonts.inter(
-                                textStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500)),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            DateFormat('HH:mm:ss').format(timeCaputre!),
-                            style: GoogleFonts.inter(
-                                textStyle: TextStyle(
-                                    color: HexColor('#01A2E9'),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500)),
-                          ),
-                        ],
-                      )
-                    : const Text(''),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      backgroundColor: HexColor('#01A2E9'),
-                    ),
-                    child: Center(
-                      child: Text(
-                        type,
+                  height: 20,
+                ),
+                Container(
+                  height: 50,
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(left: 16, right: 16),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.all(Radius.circular(10)),
+                    color: HexColor('#EBF6FF'),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        'Ambil Dana untuk kebutuhan darurat',
                         style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w500,
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
+                            textStyle: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: HexColor('#01A2E9'))),
                       ),
-                    ),
+                      Icon(
+                        Icons.arrow_forward_outlined,
+                        size: 20,
+                        color: HexColor('#01A2E9'),
+                      )
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 20,
+                ),
               ],
             ),
-          );
-        });
-      },
+          ),
+          const SizedBox(
+            height: 30,
+          )
+        ],
+      ),
     );
   }
 }

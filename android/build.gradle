@@ -1,3 +1,21 @@
+// build.gradle (project-level)
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Tambahkan plugin Android Gradle sesuai dengan versi yang kompatibel
+        classpath 'com.android.tools.build:gradle:7.4.2'
+
+        // Jika Anda menggunakan Kotlin, tambahkan plugin Kotlin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
+
+        // Tambahkan dependensi lainnya jika diperlukan, seperti untuk Firebase, Navigation, dll.
+    }
+}
+
 allprojects {
     repositories {
         google()

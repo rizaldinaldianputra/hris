@@ -46,14 +46,9 @@ class CommonService {
               await SharedPreferences.getInstance();
           sharedPreferences.remove("user");
           sharedPreferences.remove("token");
-          Navigator.pushReplacement<void, void>(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => const LoginPage(),
-            ),
-          );
+
           Fluttertoast.showToast(
-              msg: "No_Auth",
+              msg: "Error 401 Unauthorized",
               toastLength: Toast.LENGTH_SHORT,
               backgroundColor: Colors.red,
               textColor: Colors.white,
@@ -87,12 +82,7 @@ class CommonService {
               await SharedPreferences.getInstance();
           sharedPreferences.remove("user");
           sharedPreferences.remove("token");
-          Navigator.pushReplacement<void, void>(
-            context,
-            MaterialPageRoute<void>(
-              builder: (BuildContext context) => const LoginPage(),
-            ),
-          );
+
           if (response.statusCode == 403) {
             // Navigator.of(context).push(
             //   MaterialPageRoute(

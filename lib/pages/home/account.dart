@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/pages/auth/login.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({super.key});
@@ -90,7 +89,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/personal.svg'),
                   title: 'Personal Info',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('personalinfo');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
                 input(

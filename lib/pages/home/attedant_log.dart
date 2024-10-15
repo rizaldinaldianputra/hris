@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/pages/attedance_logs/logs.dart';
 import 'package:hris/utility/globalwidget.dart';
 
@@ -29,16 +30,21 @@ class _AttendantLogPageState extends State<AttedantLogPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Attendance Log'), // Perbaiki penamaan
+      appBar: appBarWidgetWithTralling('Attendance Log'), // Perbaiki penamaan
       body: Column(
         children: [
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Logs'),
-              Tab(text: 'Attendance'),
-              Tab(text: 'Shift'),
-            ],
+          SizedBox(
+            height: 57, // Atur tinggi menjadi 57
+            child: TabBar(
+              controller: _tabController,
+              indicatorColor: HexColor('#01A2E9'),
+              labelColor: HexColor('#01A2E9'),
+              tabs: const [
+                Tab(text: 'Logs'),
+                Tab(text: 'Attendance'),
+                Tab(text: 'Shift'),
+              ],
+            ),
           ),
           Expanded(
             // Tambahkan Expanded agar TabBarView mengambil ruang yang tersisa

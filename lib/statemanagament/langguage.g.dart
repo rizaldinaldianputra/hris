@@ -1,27 +1,26 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'attedant.dart';
+part of 'langguage.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$attendanceNotifierHash() =>
-    r'36aa16c38ff3cfc0a5bcb8d4378c43b0754d27b1';
+String _$languageNotifierHash() => r'2edbe9bb1e37a6a7960880dbd6acbd66ffd260ea';
 
-/// See also [AttendanceNotifier].
-@ProviderFor(AttendanceNotifier)
-final attendanceNotifierProvider =
-    AutoDisposeNotifierProvider<AttendanceNotifier, List<Attendance>>.internal(
-  AttendanceNotifier.new,
-  name: r'attendanceNotifierProvider',
+/// See also [LanguageNotifier].
+@ProviderFor(LanguageNotifier)
+final languageNotifierProvider =
+    AutoDisposeNotifierProvider<LanguageNotifier, Locale>.internal(
+  LanguageNotifier.new,
+  name: r'languageNotifierProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$attendanceNotifierHash,
+      : _$languageNotifierHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$AttendanceNotifier = AutoDisposeNotifier<List<Attendance>>;
+typedef _$LanguageNotifier = AutoDisposeNotifier<Locale>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

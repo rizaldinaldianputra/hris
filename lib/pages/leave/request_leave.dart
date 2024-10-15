@@ -7,6 +7,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:scroll_wheel_date_picker/scroll_wheel_date_picker.dart';
 
 class RequestLeavePage extends ConsumerStatefulWidget {
   const RequestLeavePage({super.key});
@@ -180,6 +181,9 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
 
   Widget dateTimePicker(String title, String hinttitle,
       TextEditingController controller, Widget icons) {
+    DateTime selectedDate = DateTime.now();
+    final DateTime startDate = DateTime(2000); // Tanggal awal
+    final DateTime lastDate = DateTime(DateTime.now().year, 12, 31);
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -197,39 +201,91 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
           const SizedBox(height: 5),
           GestureDetector(
             onTap: () async {
-              // Menampilkan pemilih tanggal
-              DateTime? pickedDate = await showDatePicker(
+              showModalBottomSheet(
                 context: context,
-                initialDate: selectedDateTime ?? DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2101),
-              );
-
-              if (pickedDate != null) {
-                // Menampilkan pemilih waktu
-                TimeOfDay? pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.fromDateTime(
-                      selectedDateTime ?? DateTime.now()),
-                );
-
-                if (pickedTime != null) {
-                  // Menggabungkan tanggal dan waktu yang dipilih
-                  DateTime newDateTime = DateTime(
-                    pickedDate.year,
-                    pickedDate.month,
-                    pickedDate.day,
-                    pickedTime.hour,
-                    pickedTime.minute,
+                backgroundColor: Colors.white,
+                isScrollControlled: true,
+                builder: (BuildContext context) {
+                  return Container(
+                    padding: const EdgeInsets.all(0),
+                    height: 350,
+                    width: double.infinity,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            height: 6,
+                            width: 40,
+                            decoration: BoxDecoration(
+                                color: HexColor('#EAEBEB'),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(200))),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          Text(
+                            title,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: 196,
+                            height: 164,
+                            child: ScrollWheelDatePicker(
+                              theme: FlatDatePickerTheme(
+                                backgroundColor: Colors.white,
+                                overlay: ScrollWheelDatePickerOverlay.holo,
+                                overAndUnderCenterOpacity: 0.2,
+                                itemTextStyle: defaultItemTextStyle.copyWith(
+                                    fontFamily: 'inter',
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: HexColor('#333333')),
+                                overlayColor: HexColor('#757575'),
+                              ),
+                              startDate: startDate, // Set tanggal awal
+                              lastDate:
+                                  lastDate, // Set batas maksimal ke tahun saat ini
+                              initialDate:
+                                  selectedDate, // Tanggal awal yang sudah divalidasi
+                              onSelectedItemChanged: (DateTime newDate) {},
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context); // Menutup Bottom Sheet
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    color: HexColor('#01A2E9'),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(8))),
+                                width: double.infinity,
+                                margin: const EdgeInsets.all(16),
+                                height: 48,
+                                child: Center(
+                                    child: Text(
+                                  'Next',
+                                  style: GoogleFonts.inter(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 16),
+                                ))),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
-                  setState(() {
-                    selectedDateTime =
-                        newDateTime; // Simpan tanggal/waktu yang dipilih
-                    controller.text =
-                        newDateTime.toString(); // Simpan ke controller
-                  });
-                }
-              }
+                },
+              );
             },
             child: Container(
               height: 50,
