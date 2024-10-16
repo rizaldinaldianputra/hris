@@ -5,6 +5,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/pages/home/account.dart';
 import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/dashboard.dart';
+import 'package:hris/pages/home/inbox.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -37,7 +38,7 @@ class _HomePageState extends ConsumerState<HomePage>
     const DashboardPage(),
     const AttedantLogPage(),
     const Center(child: Text('', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('', style: TextStyle(fontSize: 24))),
+    const InboxPage(),
     const AccountPage()
   ];
 

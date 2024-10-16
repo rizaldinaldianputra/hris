@@ -1,6 +1,6 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -72,34 +72,21 @@ class _CameraPageState extends ConsumerState<CameraPage> {
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 30.0),
                 child: GestureDetector(
-                  onTap: () async {
-                    if (_cameraController != null &&
-                        _cameraController!.value.isInitialized) {
-                      try {
-                        imageData = await _cameraController!.takePicture();
-                        setState(() {});
-                        if (imageData != null) {
-                          context.goNamed('camerapreview', extra: imageData);
+                    onTap: () async {
+                      if (_cameraController != null &&
+                          _cameraController!.value.isInitialized) {
+                        try {
+                          imageData = await _cameraController!.takePicture();
+                          setState(() {});
+                          if (imageData != null) {
+                            context.goNamed('camerapreview', extra: imageData);
+                          }
+                        } catch (e) {
+                          print("Gagal mengambil gambar: $e");
                         }
-                      } catch (e) {
-                        print("Gagal mengambil gambar: $e");
                       }
-                    }
-                  },
-                  child: Container(
-                    height: 60,
-                    width: 60,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      size: 30,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
+                    },
+                    child: SvgPicture.asset('assets/camera_button.svg')),
               ),
             ),
           ],
