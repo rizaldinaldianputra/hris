@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hris/pages/account/changepassword.dart';
 import 'package:hris/pages/account/education/education_add.dart';
 import 'package:hris/pages/account/education/education_detail.dart';
 import 'package:hris/pages/account/education/education_edit.dart';
@@ -18,6 +19,7 @@ import 'package:hris/pages/account/organization/organization_add.dart';
 import 'package:hris/pages/account/organization/organization_detail.dart';
 import 'package:hris/pages/account/organization/organization_edit.dart';
 import 'package:hris/pages/account/organization/organization_info_list.dart';
+import 'package:hris/pages/account/payroll_info.dart';
 import 'package:hris/pages/account/personal_info.dart';
 import 'package:hris/pages/attedance_logs/camera_attedant.dart';
 import 'package:hris/pages/attedance_logs/camera_preview.dart';
@@ -57,10 +59,24 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
     },
     routes: <RouteBase>[
       GoRoute(
+        path: '/changepassword',
+        name: 'changepassword',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ChangepasswordPage();
+        },
+      ),
+      GoRoute(
         path: '/personalinfo',
         name: 'personalinfo',
         builder: (BuildContext context, GoRouterState state) {
           return const PersonalInfoPage();
+        },
+      ),
+      GoRoute(
+        path: '/payrollinfo',
+        name: 'payrollinfo',
+        builder: (BuildContext context, GoRouterState state) {
+          return const PayrollInfoPage();
         },
       ),
       GoRoute(

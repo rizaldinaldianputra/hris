@@ -141,7 +141,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/payrol.svg'),
                   title: 'Payroll Info',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('payrollinfo');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 
@@ -161,7 +163,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/change.svg'),
                   title: 'Change Password',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('changepassword');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 
