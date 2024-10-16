@@ -123,14 +123,18 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                 input(
                   lead: SvgPicture.asset('assets/account/education.svg'),
                   title: 'Education',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('educationlist');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 
                 input(
                   lead: SvgPicture.asset('assets/account/education.svg'),
                   title: 'Organization Experience',
-                  onTap: () {},
+                  onTap: () {
+                    context.goNamed('organizationlist');
+                  },
                 ),
                 Divider(color: HexColor('#EAEAEA')),
 

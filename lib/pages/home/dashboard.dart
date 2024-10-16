@@ -158,10 +158,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // CircleAvatar(
-                    //   radius: 20,
-                    //   backgroundImage: NetworkImage(data.image ?? ''),
-                    // ),
+                    const CircleAvatar(
+                      radius: 20,
+                      backgroundImage: AssetImage('assets/profile.png'),
+                    ),
                     Padding(
                       padding: const EdgeInsets.only(left: 10.0),
                       child: Column(
@@ -169,7 +169,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '',
+                            'Jhone Doe',
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w700,
                               textStyle: const TextStyle(
@@ -177,7 +177,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                             ),
                           ),
                           Text(
-                            'data.position!.name!',
+                            'Supervisor',
                             style: GoogleFonts.inter(
                               fontWeight: FontWeight.w400,
                               textStyle: const TextStyle(

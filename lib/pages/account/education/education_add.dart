@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/routing/route.dart';
 import 'package:hris/utility/globalwidget.dart';
 
-class FamilyAddPage extends StatefulWidget {
-  const FamilyAddPage({super.key});
+class EducationAddPage extends StatefulWidget {
+  const EducationAddPage({super.key});
 
   @override
   _EmergencyContactPageState createState() => _EmergencyContactPageState();
 }
 
-class _EmergencyContactPageState extends State<FamilyAddPage> {
+class _EmergencyContactPageState extends State<EducationAddPage> {
   List<Map<String, String>> emergencyContacts = [
     {
       'name': 'Sutan Sahrir',
@@ -38,7 +38,7 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarWidget('Family Info'),
+      appBar: appBarWidget('Education Info'),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -46,7 +46,7 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
-              'List Family Info',
+              'List Education',
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
                 fontSize: 16,
@@ -61,7 +61,7 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    context.goNamed('familydetail');
+                    context.goNamed('educationdetail');
                   },
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -80,15 +80,27 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Sutan Sahir',
+                                  'Universitas Gadjah Mada',
                                   style: GoogleFonts.inter(
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16,
                                   ),
                                 ),
-                                Icon(
-                                  Icons.navigate_next,
-                                  color: HexColor('#3699FF'),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'See Detail',
+                                      style: GoogleFonts.inter(
+                                        color: HexColor('#3699FF'),
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.navigate_next,
+                                      color: HexColor('#3699FF'),
+                                    ),
+                                  ],
                                 )
                               ],
                             ),
@@ -96,30 +108,37 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
                               height: 8,
                             ),
                             Text(
-                              'Sutan Sahir',
+                              'Master’s Degree, Digital Innovation',
                               style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
-                                  color: HexColor('#878787')),
+                                  color: Colors.black),
                             ),
                             const SizedBox(
                               height: 24,
                             ),
                             Text(
-                              '089272612834',
+                              'IPK 3.8',
                               style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
                                   color: HexColor('#878787')),
                             ),
-                            Text(
-                              'Jl. Rawabambu Jl. Raya Rw. Bambu No.18, RT.13/RW.6, Ps. Minggu, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12520',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                  color: HexColor('#878787')),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '2020-2022',
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 12,
+                                      color: HexColor('#878787')),
+                                ),
+                                SvgPicture.asset(
+                                    'assets/account/education_icon.svg')
+                              ],
                             ),
                           ],
                         )
@@ -132,7 +151,7 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
             const SizedBox(height: 16),
             GestureDetector(
               onTap: () {
-                context.goNamed('familyedit');
+                context.goNamed('educationedit');
               },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -140,7 +159,7 @@ class _EmergencyContactPageState extends State<FamilyAddPage> {
                   Icon(Icons.add, color: Colors.blue),
                   SizedBox(width: 8),
                   Text(
-                    'Add Family Info',
+                    'Add Education',
                     style: TextStyle(color: Colors.blue, fontSize: 16),
                   ),
                 ],
