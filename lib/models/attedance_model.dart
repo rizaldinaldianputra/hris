@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class Attendance {
+class AttendanceModel {
   String? id;
   String? employeeId;
   String? employeeShiftId;
@@ -19,7 +19,7 @@ class Attendance {
   DateTime? createdAt;
   DateTime? updatedAt;
 
-  Attendance({
+  AttendanceModel({
     this.id,
     this.employeeId,
     this.employeeShiftId,
@@ -39,8 +39,8 @@ class Attendance {
     this.updatedAt,
   });
 
-  factory Attendance.fromJson(Map<String, dynamic> json) {
-    return Attendance(
+  factory AttendanceModel.fromJson(Map<String, dynamic> json) {
+    return AttendanceModel(
       id: json['id'],
       employeeId: json['employee_id'],
       employeeShiftId: json['employee_shift_id'],
@@ -97,12 +97,14 @@ class Attendance {
     };
   }
 
-  Attendance.blank();
+  AttendanceModel.blank();
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Attendance && runtimeType == other.runtimeType && id == other.id;
+      other is AttendanceModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;

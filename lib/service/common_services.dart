@@ -2,268 +2,138 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as diopackage;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris/config/constant.dart';
 import 'package:hris/pages/auth/login.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CommonService {
   static const String url = API_URL;
   static BaseOptions opts = BaseOptions(
-    baseUrl: url,
-    responseType: ResponseType.json,
-  );
+      baseUrl: url,
+      responseType: ResponseType.json,
+      contentType: 'application/x-www-form-urlencoded');
 
   late Dio _dio;
-  CommonService(context) {
+
+  CommonService(BuildContext context) {
     _dio = Dio(opts);
     _dio.interceptors.add(getInterceptorWrapper(context));
   }
 
-  InterceptorsWrapper getInterceptorWrapper(context) {
+  InterceptorsWrapper getInterceptorWrapper(BuildContext context) {
     return InterceptorsWrapper(
-      onError: (error, errorInterceptor) async {
+      onError: (error, handler) async {
         if (error.response == null) {
-          Fluttertoast.showToast(
-              msg: "Network Error",
-              toastLength: Toast.LENGTH_SHORT,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 13);
-          return errorInterceptor.resolve(error.response!);
-        }
-        if (error.response!.statusCode == 403) {
-          // Navigator.of(context).push(
-          //   MaterialPageRoute(
-          //     builder: (context) => const NotAuthPage(),
-          //   ),
+          // Fluttertoast.showToast(
+          //   msg: "Network Error",
+          //   toastLength: Toast.LENGTH_SHORT,
+          //   backgroundColor: Colors.red,
+          //   textColor: Colors.white,
+          //   fontSize: 13,
           // );
-          return errorInterceptor.resolve(error.response!);
+          return handler.next(error);
         }
-        if (error.response!.statusCode == 401) {
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          sharedPreferences.remove("user");
-          sharedPreferences.remove("token");
 
-          Fluttertoast.showToast(
-              msg: "Error 401 Unauthorized",
-              toastLength: Toast.LENGTH_SHORT,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 13);
-          return errorInterceptor.resolve(error.response!);
-        } else {
-          Fluttertoast.showToast(
-              // ignore: prefer_interpolation_to_compose_strings
-              msg: "${error.response!.statusCode}-" +
-                  error.response!.data["message"],
-              toastLength: Toast.LENGTH_SHORT,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 13);
-          return errorInterceptor.resolve(error.response!);
+        if (error.response!.statusCode == 403) {
+          // Handle forbidden access if needed
+          return handler.next(error);
         }
+
+        if (error.response!.statusCode == 401) {
+          await _handleUnauthorized(context);
+          return handler.next(error);
+        }
+
+        return handler.next(error);
       },
-      onRequest: (request, requestInterceptor) async {
-        String? token = '';
-        SharedPreferences sharedPreferences =
-            await SharedPreferences.getInstance();
-        token = sharedPreferences.getString("token");
+      onRequest: (options, handler) async {
+        final token = await _getToken();
         if (token != null) {
-          request.headers.addAll({"Authorization": "Bearer: $token"});
+          options.headers.addAll({"Authorization": "Bearer $token"});
         }
-        return requestInterceptor.next(request);
+        return handler.next(options);
       },
       onResponse: (response, handler) async {
         if (response.statusCode == 401) {
-          SharedPreferences sharedPreferences =
-              await SharedPreferences.getInstance();
-          sharedPreferences.remove("user");
-          sharedPreferences.remove("token");
-
-          if (response.statusCode == 403) {
-            // Navigator.of(context).push(
-            //   MaterialPageRoute(
-            //     builder: (context) => const NotAuthPage(),
-            //   ),
-            // );
-          }
-          return;
+          await _handleUnauthorized(context);
         }
-
         return handler.next(response);
       },
     );
   }
 
-  static dynamic errorInterceptor(RequestOptions options) async {
-    // Get your JWT token
-    const token = '';
-    options.headers.addAll({"Authorization": "Bearer: $token"});
-    return options;
+  Future<void> _handleUnauthorized(BuildContext context) async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    await sharedPreferences.remove("user");
+    await sharedPreferences.remove("token");
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
+    );
+  }
+
+  Future<String?> _getToken() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+    return sharedPreferences.getString("token");
   }
 
   Future<diopackage.Response> getHTTP(String url) async {
     try {
-      diopackage.Response response = await _dio.get(url);
-      return Future.value(response);
-    } on DioException catch (e) {
+      return await _dio.get(url);
+    } on diopackage.DioException catch (e) {
       return Future.error(e);
     }
   }
 
   Future<diopackage.Response> postHTTP(String url, dynamic data) async {
     try {
-      String json = jsonEncode(data);
+      return await _dio.post(url, data: jsonEncode(data));
+    } on diopackage.DioException catch (e) {
+      return Future.error(_getErrorMessage(e));
+    }
+  }
 
-      diopackage.Response response = await _dio.post(url, data: json);
-      return response;
-    } on DioException catch (e) {
-      if (e.response == null) {
-        return Future.error(e);
-      } else {
-        return Future.error(e.response!.data['message']);
-      }
+  Future<diopackage.Response> postLogout(String url) async {
+    try {
+      return await _dio.post(url);
+    } on diopackage.DioException catch (e) {
+      return Future.error(_getErrorMessage(e));
     }
   }
 
   Future<diopackage.Response> postHTTPFormData(
       String url, FormData data) async {
     try {
-      diopackage.Response response = await _dio.post(url, data: data);
-      return response;
-    } on DioException catch (e) {
-      if (e.response == null) {
-        return Future.error(e);
-      } else {
-        return Future.error(e.response!.data['message']);
-      }
-    }
-  }
-
-  Future<diopackage.Response> postHTTPMedia(String url, FormData data) async {
-    try {
-      diopackage.Response response = await _dio.post(url, data: data);
-      return response;
-    } on DioException catch (e) {
-      if (e.response == null) {
-        return Future.error(e);
-      } else {
-        return Future.error(e.response!.data['message']);
-      }
+      return await _dio.post(url, data: data);
+    } on diopackage.DioException catch (e) {
+      return Future.error(_getErrorMessage(e));
     }
   }
 
   Future<diopackage.Response> putHTTP(String url, dynamic data) async {
     try {
-      String json = jsonEncode(data);
-      diopackage.Response response = await _dio.put(url, data: json);
-      return Future.value(response);
-    } on DioException catch (e) {
-      return Future.error(e);
+      return await _dio.put(url, data: jsonEncode(data));
+    } on diopackage.DioException catch (e) {
+      return Future.error(_getErrorMessage(e));
     }
   }
 
   Future<diopackage.Response> deleteHTTP(String url) async {
     try {
-      diopackage.Response response = await _dio.delete(url);
-      return Future.value(response);
-    } on DioException catch (e) {
-      return Future.error(e);
+      return await _dio.delete(url);
+    } on diopackage.DioException catch (e) {
+      return Future.error(_getErrorMessage(e));
     }
   }
 
-  // Future<File> download2(String url, String filename) async {
-  //   try {
-  //     diopackage.Response response = await _dio.get(
-  //       url,
-  //       //Received data with List<int>
-  //       options: Options(
-  //           responseType: ResponseType.bytes,
-  //           followRedirects: false,
-  //           validateStatus: (status) {
-  //             return status! < 500;
-  //           }),
-  //     );
-
-  //     if (!kIsWeb) {
-  //       Directory? appDocDir = Platform.isAndroid
-  //           ? await getExternalStorageDirectory() //FOR ANDROID
-  //           : await getTemporaryDirectory();
-  //       String appDocPath = appDocDir!.path;
-  //       File file = File(appDocPath + "/" + filename);
-
-  //       if (!file.existsSync()) {
-  //         new File(appDocPath + "/" + filename).createSync(recursive: true);
-  //         file = File(appDocPath + "/" + filename);
-  //       }
-  //       var raf = file.openSync(mode: FileMode.write);
-  //       raf.writeFromSync(response.data);
-  //       await raf.close();
-  //       return file;
-  //     } else {
-  //       Uint8List bytes = response.data;
-  //       final blob = html.Blob([bytes]);
-  //       final url = html.Url.createObjectUrlFromBlob(blob);
-  //       final anchor = html.document.createElement('a') as html.AnchorElement
-  //         ..href = url
-  //         ..style.display = 'none'
-  //         ..download = filename;
-  //       html.document.body!.children.add(anchor);
-  //       anchor.click();
-  //       html.document.body!.children.remove(anchor);
-  //       html.Url.revokeObjectUrl(url);
-  //       File file = File(filename);
-  //       return file;
-  //     }
-  //   } catch (e) {
-  //     throw e;
-  //   }
-  // }
-
-  // Future<File> download2Post(String url, dynamic data, String filename) async {
-  //   try {
-  //     diopackage.Response response = await _dio.post(url,
-  //         options: Options(
-  //             responseType: ResponseType.bytes,
-  //             followRedirects: false,
-  //             validateStatus: (status) {
-  //               return status! < 500;
-  //             }),
-  //         data: data);
-
-  //     if (!kIsWeb) {
-  //       Directory? appDocDir = await getExternalStorageDirectory();
-  //       String appDocPath = appDocDir!.path;
-  //       File file = File(appDocPath + "/" + filename);
-
-  //       if (!file.existsSync()) {
-  //         new File(appDocPath + "/" + filename).createSync(recursive: true);
-  //         file = File(appDocPath + "/" + filename);
-  //       }
-  //       var raf = file.openSync(mode: FileMode.write);
-  //       raf.writeFromSync(response.data);
-  //       await raf.close();
-  //       return file;
-  //     } else {
-  //       Uint8List bytes = response.data;
-  //       final blob = html.Blob([bytes]);
-  //       final url = html.Url.createObjectUrlFromBlob(blob);
-  //       final anchor = html.document.createElement('a') as html.AnchorElement
-  //         ..href = url
-  //         ..style.display = 'none'
-  //         ..download = filename;
-  //       html.document.body!.children.add(anchor);
-  //       anchor.click();
-  //       html.document.body!.children.remove(anchor);
-  //       html.Url.revokeObjectUrl(url);
-  //       File file = File(filename);
-  //       return file;
-  //     }
-  //   } catch (e) {
-  //     throw e;
-  //   }
-  // }
+  String _getErrorMessage(diopackage.DioException e) {
+    if (e.response == null) {
+      return "Network Error";
+    } else {
+      return e.response!.data['message'] ?? "Unknown error";
+    }
+  }
 }

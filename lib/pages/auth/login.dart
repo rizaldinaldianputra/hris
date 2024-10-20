@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hris/service/auth_services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hris/statemanagament/auth.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -168,9 +167,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                   GestureDetector(
                     onTap: () {
-                      // doLogin(_emailController.text, _passwordController.text,
-                      //     context);
-                      GoRouter.of(context).pushReplacementNamed('home');
+                      doLogin(_emailController.text, _passwordController.text,
+                          context);
                     },
                     child: Container(
                       height: 50,

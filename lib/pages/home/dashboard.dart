@@ -140,176 +140,392 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     String currentMonth = DateFormat('MMM').format(DateTime.now());
     final userData = ref.watch(userDataProvider(context));
 
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: MediaQuery.of(context).size.height * 0.32,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [HexColor('#01A2E9'), HexColor('#274896')])),
-          child: Column(
-            children: [
-              const SizedBox(height: 35),
-              Container(
-                margin: const EdgeInsets.only(left: 16, right: 16),
-                width: double.infinity,
-                height: 100,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const CircleAvatar(
-                      radius: 20,
-                      backgroundImage: AssetImage('assets/profile.png'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Jhone Doe',
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w700,
-                              textStyle: const TextStyle(
-                                  fontSize: 24, color: Colors.white),
+    return userData.when(data: (data) {
+      return Scaffold(
+        appBar: AppBar(
+          toolbarHeight: MediaQuery.of(context).size.height * 0.32,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [HexColor('#01A2E9'), HexColor('#274896')])),
+            child: Column(
+              children: [
+                const SizedBox(height: 35),
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16),
+                  width: double.infinity,
+                  height: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const CircleAvatar(
+                        radius: 20,
+                        backgroundImage: AssetImage('assets/profile.png'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${'${data!.firstName!} '} ${data.lastName!}',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w700,
+                                textStyle: const TextStyle(
+                                    fontSize: 24, color: Colors.white),
+                              ),
                             ),
+                            Text(
+                              data.position!.name ?? '',
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w400,
+                                textStyle: const TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        height: 36,
+                        width: 36,
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: SvgPicture.asset(
+                            'assets/bell.svg',
+                            width: 16,
+                            height: 16,
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 18, right: 18),
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(left: 10, right: 10),
+                  decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.4),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        'Don’t miss your attendance today!',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w300,
+                          textStyle: const TextStyle(
+                              fontSize: 12, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.calendar_today_outlined,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 10),
                           Text(
-                            'Supervisor',
+                            formattedDate,
                             style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                               textStyle: const TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white),
+                                  fontSize: 14, color: Colors.white),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      height: 36,
-                      width: 36,
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: SvgPicture.asset(
-                          'assets/bell.svg',
-                          width: 16,
-                          height: 16,
+                      Container(
+                        margin: const EdgeInsets.all(20),
+                        height: 40,
+                        decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            color: Colors.white),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton.icon(
+                              onPressed: () {
+                                context.goNamed('camerapage');
+                              },
+                              icon:
+                                  const Icon(Icons.login, color: Colors.black),
+                              label: Text(
+                                'Clock In',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  textStyle: const TextStyle(
+                                      fontSize: 14, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                            const Text('|', style: TextStyle(fontSize: 20)),
+                            TextButton.icon(
+                              onPressed: () {
+                                context.goNamed('camerapage');
+                              },
+                              icon:
+                                  const Icon(Icons.logout, color: Colors.black),
+                              label: Text(
+                                'Clock Out',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w500,
+                                  textStyle: const TextStyle(
+                                      fontSize: 14, color: Colors.black),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 18, right: 18),
-                width: double.infinity,
-                padding: const EdgeInsets.only(left: 10, right: 10),
+              ],
+            ),
+          ),
+        ),
+        body: ListView(
+          children: [
+            const SizedBox(height: 10),
+            Container(
+                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(
+                    top: 20, right: 12, left: 12, bottom: 20),
                 decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
-                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                  color: Colors.white,
+                  border: Border.all(width: 0.5, color: Colors.grey),
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                ),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Don’t miss your attendance today!',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w300,
-                        textStyle:
-                            const TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(
-                          Icons.calendar_today_outlined,
-                          color: Colors.white,
-                          size: 16,
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.goNamed('attedantlog');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: HexColor('#E4FBF1')),
+                                  child: SvgPicture.asset(
+                                    'assets/Clipboard.svg',
+                                    height: 20, // Ukuran ikon
+                                    width: 20, // Ukuran ikon
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Attedance\n Log',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          formattedDate,
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w500,
-                            textStyle: const TextStyle(
-                                fontSize: 14, color: Colors.white),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.goNamed('leave');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: HexColor('#FFF0E7')),
+                                  child: SvgPicture.asset(
+                                    'assets/Briefcase.svg',
+                                    height: 20, // Ukuran ikon
+                                    width: 20, // Ukuran ikon
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Leave\nRequest',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.goNamed('overtime');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: HexColor('#FFF7E4')),
+                                  child: SvgPicture.asset(
+                                    'assets/Clock.svg',
+                                    height: 20, // Ukuran ikon
+                                    width: 20, // Ukuran ikon
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Overtime\nRequest',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
-                    Container(
-                      margin: const EdgeInsets.all(20),
-                      height: 40,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(8)),
-                          color: Colors.white),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton.icon(
-                            onPressed: () {
-                              context.goNamed('camerapage');
-                            },
-                            icon: const Icon(Icons.login, color: Colors.black),
-                            label: Text(
-                              'Clock In',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w500,
-                                textStyle: const TextStyle(
-                                    fontSize: 14, color: Colors.black),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.goNamed('reimbursment');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor('#F0F2FF'),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/Shopping.svg',
+                                    height: 20, // Ukuran ikon
+                                    width: 20, // Ukuran ikon
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          const Text('|', style: TextStyle(fontSize: 20)),
-                          TextButton.icon(
-                            onPressed: () {
-                              context.goNamed('camerapage');
-                            },
-                            icon: const Icon(Icons.logout, color: Colors.black),
-                            label: Text(
-                              'Clock Out',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w500,
-                                textStyle: const TextStyle(
-                                    fontSize: 14, color: Colors.black),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Reimbursement\nRequest',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: HexColor('#FFF0F0'),
+                                ),
+                                child: SvgPicture.asset(
+                                  'assets/Pie.svg',
+                                  height: 20, // Ukuran ikon
+                                  width: 20, // Ukuran ikon
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Earned Wage\nAccess',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  context.goNamed('payslip');
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: HexColor('#FFF2FE'),
+                                  ),
+                                  child: SvgPicture.asset(
+                                    'assets/File.svg',
+                                    height: 20, // Ukuran ikon
+                                    width: 20, // Ukuran ikon
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Payslip',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.inter(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 10),
-          Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.only(
-                  top: 20, right: 12, left: 12, bottom: 20),
+                )),
+            // Card EWA
+            Container(
+              margin: const EdgeInsets.only(left: 16, right: 16),
+              width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(width: 0.5, color: Colors.grey),
@@ -317,341 +533,135 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.goNamed('attedantlog');
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: HexColor('#E4FBF1')),
-                                child: SvgPicture.asset(
-                                  'assets/Clipboard.svg',
-                                  height: 20, // Ukuran ikon
-                                  width: 20, // Ukuran ikon
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Attedance\n Log',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.goNamed('leave');
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: HexColor('#FFF0E7')),
-                                child: SvgPicture.asset(
-                                  'assets/Briefcase.svg',
-                                  height: 20, // Ukuran ikon
-                                  width: 20, // Ukuran ikon
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Leave\nRequest',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.goNamed('overtime');
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: HexColor('#FFF7E4')),
-                                child: SvgPicture.asset(
-                                  'assets/Clock.svg',
-                                  height: 20, // Ukuran ikon
-                                  width: 20, // Ukuran ikon
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Overtime\nRequest',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.goNamed('reimbursment');
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: HexColor('#F0F2FF'),
-                                ),
-                                child: SvgPicture.asset(
-                                  'assets/Shopping.svg',
-                                  height: 20, // Ukuran ikon
-                                  width: 20, // Ukuran ikon
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Reimbursement\nRequest',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: HexColor('#FFF0F0'),
-                              ),
-                              child: SvgPicture.asset(
-                                'assets/Pie.svg',
-                                height: 20, // Ukuran ikon
-                                width: 20, // Ukuran ikon
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Earned Wage\nAccess',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                context.goNamed('payslip');
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: HexColor('#FFF2FE'),
-                                ),
-                                child: SvgPicture.asset(
-                                  'assets/File.svg',
-                                  height: 20, // Ukuran ikon
-                                  width: 20, // Ukuran ikon
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Payslip',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.inter(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )),
-          // Card EWA
-          Container(
-            margin: const EdgeInsets.only(left: 16, right: 16),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(width: 0.5, color: Colors.grey),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text('Gaji Anda',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w500,
-                            textStyle: const TextStyle(
-                                fontSize: 14, color: Colors.black),
-                          )),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                          isObSecure ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () {
-                        setState(() {
-                          isObSecure = !isObSecure;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                Center(
-                  child: Text(
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      textStyle: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
-                          color: Colors.black),
-                    ),
-                    isObSecure ? 'Rp*********' : 'Rp.5.000.000',
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16),
-                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        DateFormat('dd MMM').format(DateTime.now()),
-                        style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: HexColor('#333333'))),
-                      ),
-                      Text(
-                        '$daysUntil25 hari hingga gajihan',
-                        style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: HexColor('#757575'))),
-                      ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 16),
-                        child: Text(
-                          '25 $currentMonth',
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text('Gaji Anda',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w500,
+                              textStyle: const TextStyle(
+                                  fontSize: 14, color: Colors.black),
+                            )),
+                      ),
+                      IconButton(
+                        icon: Icon(isObSecure
+                            ? Icons.visibility_off
+                            : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            isObSecure = !isObSecure;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Text(
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w500,
+                        textStyle: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            color: Colors.black),
+                      ),
+                      isObSecure ? 'Rp*********' : 'Rp.5.000.000',
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          DateFormat('dd MMM').format(DateTime.now()),
                           style: GoogleFonts.inter(
                               textStyle: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w700,
                                   color: HexColor('#333333'))),
                         ),
-                      ),
-                    ],
+                        Text(
+                          '$daysUntil25 hari hingga gajihan',
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: HexColor('#757575'))),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16),
+                          child: Text(
+                            '25 $currentMonth',
+                            style: GoogleFonts.inter(
+                                textStyle: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: HexColor('#333333'))),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[300],
-                    color: Colors.blue,
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.grey[300],
+                      color: Colors.blue,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  height: 50,
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(left: 16, right: 16),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    color: HexColor('#EBF6FF'),
+                  const SizedBox(
+                    height: 20,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        'Ambil Dana untuk kebutuhan darurat',
-                        style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: HexColor('#01A2E9'))),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_outlined,
-                        size: 20,
-                        color: HexColor('#01A2E9'),
-                      )
-                    ],
+                  Container(
+                    height: 50,
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(10)),
+                      color: HexColor('#EBF6FF'),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          'Ambil Dana untuk kebutuhan darurat',
+                          style: GoogleFonts.inter(
+                              textStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: HexColor('#01A2E9'))),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_outlined,
+                          size: 20,
+                          color: HexColor('#01A2E9'),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 30,
-          )
-        ],
-      ),
-    );
+            const SizedBox(
+              height: 30,
+            )
+          ],
+        ),
+      );
+    }, error: (error, stack) {
+      return Scaffold(body: Text(error.toString()));
+    }, loading: () {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    });
   }
 }

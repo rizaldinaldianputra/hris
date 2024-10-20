@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/statemanagament/user.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({super.key});
@@ -207,7 +208,9 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                   lead: SvgPicture.asset('assets/account/signout.svg'),
                   title: 'Sign Out',
                   onTap: () {
-                    context.pushReplacement('/');
+                    ref
+                        .watch(userLogoutProvider(context).notifier)
+                        .logout(context: context);
                   },
                 ),
               ],

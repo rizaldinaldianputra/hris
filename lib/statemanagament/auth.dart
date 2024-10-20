@@ -37,7 +37,7 @@ Future doLogin(String user, String password, context) async {
   if (response.statusCode == 200) {
     GoRouter.of(context).pushReplacementNamed('home');
   } else {
-    Fluttertoast.showToast(msg: response.data['message']);
+    Fluttertoast.showToast(msg: response.data['data']);
   }
   return user;
 }

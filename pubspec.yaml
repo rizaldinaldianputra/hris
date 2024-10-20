@@ -32,6 +32,7 @@ dependencies:
   jwt_decoder: ^2.0.1
   latlong2: ^0.9.1
   linear_progress_bar: ^1.1.2
+  mime_type: ^1.0.1
   pdf: ^3.11.1
   permission_handler: ^11.3.1
   printing: ^5.13.3
@@ -49,10 +50,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   intl_translation: 0.20.0
+  intl_utils: ^2.8.7
   json_serializable: ^6.8.0
   riverpod_generator: ^2.4.0
   riverpod_lint: ^2.3.10
-  intl_utils: ^2.8.7
 
 flutter_launcher_icons:
   android: true

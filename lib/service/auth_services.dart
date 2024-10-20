@@ -1,12 +1,7 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hris/service/common_services.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -27,6 +22,11 @@ class AuthService {
           await SharedPreferences.getInstance();
       sharedPreferences.setString("token", response.data['data']['token']);
     }
+    return response;
+  }
+
+  Future<Response> logout(url, context) async {
+    Response response = await api.postLogout(url);
     return response;
   }
 }

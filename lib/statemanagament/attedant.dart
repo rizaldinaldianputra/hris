@@ -1,29 +1,52 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+import 'package:hris/models/attedance_list_logs_model.dart';
 import 'package:hris/models/attedance_model.dart';
+import 'package:hris/models/attedance_summary_model.dart';
+import 'package:hris/service/attedance_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attedant.g.dart';
 
 @riverpod
-class AttendanceNotifier extends _$AttendanceNotifier {
+class AttedantSumamry extends _$AttedantSumamry {
   @override
-  List<Attendance> build() {
-    return []; // State awal
+  Future<AttedanceSummaryModel> build(BuildContext context) async {
+    // Inisialisasi state tanpa mengembalikan null
+    return Future.value(); // Mengembalikan Future kosong tanpa null
   }
 
-  void addAttendance(Attendance attendance) {
-    state = [...state, attendance];
+  // Method untuk mengirim data ke API
+  Future<AttedanceSummaryModel> dataSummary(
+    BuildContext context,
+  ) async {
+    final attedanceService = AttedanceService(context);
+    final response = await attedanceService.summaryAttedance();
+
+    // Mengubah state berdasarkan hasil respons
+    state = AsyncValue.data(response);
+
+    return response;
+  }
+}
+
+@riverpod
+class AttedantListLogs extends _$AttedantListLogs {
+  @override
+  Future<List<AttendanceListLogsModel>> build(BuildContext context) async {
+    // Inisialisasi state tanpa mengembalikan null
+    return Future.value(); // Mengembalikan Future kosong tanpa null
   }
 
-  void removeAttendance(String id) {
-    state = state.where((attendance) => attendance.id != id).toList();
-  }
+  // Method untuk mengirim data ke API
+  Future<List<AttendanceListLogsModel>> listdataLogs(
+    BuildContext context,
+  ) async {
+    final attedanceService = AttedanceService(context);
+    final response = await attedanceService.listLogAttendance();
 
-  void updateAttendance(Attendance updatedAttendance) {
-    state = state.map((attendance) {
-      return attendance.id == updatedAttendance.id
-          ? updatedAttendance
-          : attendance;
-    }).toList();
+    // Mengubah state berdasarkan hasil respons
+    state = AsyncValue.data(response);
+
+    return response;
   }
 }

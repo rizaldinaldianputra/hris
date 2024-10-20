@@ -5,7 +5,7 @@ import 'package:hris/models/posisition_model.dart';
 import 'package:hris/models/shift_model.dart';
 
 class UserModel {
-  int? id;
+  String? id;
   String? companyId;
   String? employeeId;
   String? employeeShiftId;
@@ -18,11 +18,10 @@ class UserModel {
   String? departmentId;
   String? employeePositionId;
   String? employeeLevelId;
-  double? salary;
   String? image;
   double? reimbursementLimit;
   String? createdByUserId;
-  DateTime? birthDate;
+  String? birthDate;
   String? username;
   String? birthPlace;
   String? religion;
@@ -41,12 +40,16 @@ class UserModel {
   bool? documentIsUnlimited;
   String? documentFile;
   DateTime? documentExpiry;
+  String? documentBpjsNo;
+  String? documentBpjsName;
+  String? documentBpjstkNo;
+  String? documentBpjstkName;
   String? taxRegisteredName;
   String? taxNumber;
   String? bankAccountNumber;
   String? bankAccountName;
   String? headDepartmentId;
-  String? status;
+  int? status; // Menggunakan int untuk status
   DateTime? createdAt;
   DateTime? updatedAt;
   Department? department;
@@ -70,7 +73,6 @@ class UserModel {
     this.departmentId,
     this.employeePositionId,
     this.employeeLevelId,
-    this.salary,
     this.image,
     this.reimbursementLimit,
     this.createdByUserId,
@@ -93,6 +95,10 @@ class UserModel {
     this.documentIsUnlimited,
     this.documentFile,
     this.documentExpiry,
+    this.documentBpjsNo,
+    this.documentBpjsName,
+    this.documentBpjstkNo,
+    this.documentBpjstkName,
     this.taxRegisteredName,
     this.taxNumber,
     this.bankAccountNumber,
@@ -109,10 +115,9 @@ class UserModel {
     this.head,
   });
 
-  // Factory method to parse JSON into UserModel with null safety
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] as int?,
+      id: json['id'] as String?,
       companyId: json['companyId'] as String?,
       employeeId: json['employeeId'] as String?,
       employeeShiftId: json['employeeShiftId'] as String?,
@@ -125,13 +130,10 @@ class UserModel {
       departmentId: json['departmentId'] as String?,
       employeePositionId: json['employeePositionId'] as String?,
       employeeLevelId: json['employeeLevelId'] as String?,
-      salary: (json['salary'] as num?)?.toDouble(),
       image: json['image'] as String?,
       reimbursementLimit: (json['reimbursementLimit'] as num?)?.toDouble(),
       createdByUserId: json['createdByUserId'] as String?,
-      birthDate: json['birthDate'] != null
-          ? DateTime.parse(json['birthDate'] as String)
-          : null,
+      birthDate: json['birthDate'] as String?,
       username: json['username'] as String?,
       birthPlace: json['birthPlace'] as String?,
       religion: json['religion'] as String?,
@@ -154,12 +156,16 @@ class UserModel {
       documentExpiry: json['documentExpiry'] != null
           ? DateTime.parse(json['documentExpiry'] as String)
           : null,
+      documentBpjsNo: json['documentBpjsNo'] as String?,
+      documentBpjsName: json['documentBpjsName'] as String?,
+      documentBpjstkNo: json['documentBpjstkNo'] as String?,
+      documentBpjstkName: json['documentBpjstkName'] as String?,
       taxRegisteredName: json['taxRegisteredName'] as String?,
       taxNumber: json['taxNumber'] as String?,
       bankAccountNumber: json['bankAccountNumber'] as String?,
       bankAccountName: json['bankAccountName'] as String?,
-      headDepartmentId: json['headDepartmentId'] as String?,
-      status: json['status'] as String?,
+      headDepartmentId: json['headDepartmenId'] as String?,
+      status: json['status'] as int?, // Pastikan status adalah int
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : null,
@@ -185,6 +191,8 @@ class UserModel {
     );
   }
 
+  UserModel.blank();
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -200,11 +208,10 @@ class UserModel {
       'departmentId': departmentId,
       'employeePositionId': employeePositionId,
       'employeeLevelId': employeeLevelId,
-      'salary': salary,
       'image': image,
       'reimbursementLimit': reimbursementLimit,
       'createdByUserId': createdByUserId,
-      'birthDate': birthDate?.toIso8601String(),
+      'birthDate': birthDate,
       'username': username,
       'birthPlace': birthPlace,
       'religion': religion,
@@ -223,11 +230,15 @@ class UserModel {
       'documentIsUnlimited': documentIsUnlimited,
       'documentFile': documentFile,
       'documentExpiry': documentExpiry?.toIso8601String(),
+      'documentBpjsNo': documentBpjsNo,
+      'documentBpjsName': documentBpjsName,
+      'documentBpjstkNo': documentBpjstkNo,
+      'documentBpjstkName': documentBpjstkName,
       'taxRegisteredName': taxRegisteredName,
       'taxNumber': taxNumber,
       'bankAccountNumber': bankAccountNumber,
       'bankAccountName': bankAccountName,
-      'headDepartmentId': headDepartmentId,
+      'headDepartmenId': headDepartmentId,
       'status': status,
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
@@ -239,14 +250,4 @@ class UserModel {
       'head': head,
     };
   }
-
-  UserModel.blank();
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is UserModel && runtimeType == other.runtimeType && id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
 }
