@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hris/service/auth_services.dart';
-import 'package:hris/statemanagament/auth.dart';
+import 'package:hris/riverpod/auth.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});

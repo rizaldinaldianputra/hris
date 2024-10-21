@@ -3,14 +3,17 @@ import 'dart:io'; // Tambahkan ini untuk menggunakan File
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/helper/global_function.dart';
 
-import 'package:hris/statemanagament/leave.dart';
-import 'package:hris/statemanagament/user.dart';
+import 'package:hris/riverpod/leave.dart';
+import 'package:hris/riverpod/user.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:hris/utility/notifikasiwidget.dart';
 import 'package:intl/intl.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,11 +31,16 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
   PlatformFile? selectedFile;
   String? base64String; // Untuk menyimpan hasil konversi Base64
   bool isLoading = false; // Tambahkan variabel ini untuk mengontrol loading
-
+  Notifikasi? notifikasi;
   TextEditingController startdateTimeController = TextEditingController();
   TextEditingController enddateTimeController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
   String? leavetypeid;
+  @override
+  void initState() {
+    notifikasi = Notifikasi(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +48,8 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
 
     return userData.when(
       data: (data) {
-        final attedantProvider =
-            ref.watch(LeaveTypeProvider(context, data!.companyId!));
+        final leaveProvider =
+            ref.watch(leaveTypeProvider(context, data!.companyId!));
 
         return isLoading
             ? const Scaffold(
@@ -55,7 +63,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      attedantProvider.when(
+                      leaveProvider.when(
                         loading: () =>
                             const Center(child: CircularProgressIndicator()),
                         error: (error, stackTrace) => Text(error.toString()),
@@ -86,7 +94,9 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
                           );
                         },
                       ),
-
+                      const SizedBox(
+                        height: 8,
+                      ),
                       dateTimePicker(
                         title: 'Leave Date',
                         hinttitle: 'Start date',
@@ -94,8 +104,9 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
                         icons: Image.asset('assets/leave/date.png'),
                         context: context,
                       ),
+
                       dateTimePicker(
-                        title: 'Leave Date',
+                        title: '',
                         hinttitle: 'End date',
                         controller: enddateTimeController,
                         icons: Image.asset('assets/leave/date.png'),
@@ -272,31 +283,21 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
       setState(() {
         isLoading = false; // Set loading menjadi false setelah respons diterima
       });
+      final message = response.data['message'];
+
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.data['status'])),
-        );
+        notifikasi!.showSuccessToast(message);
         context.pushReplacementNamed('leave');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.data['status'])),
-        );
+        notifikasi!.showErrorToast(
+            message); // Menggunakan showErrorToast untuk kesalahan
       }
     }).catchError((error) {
       setState(() {
         isLoading = false; // Set loading menjadi false jika ada error
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $error')),
-      );
+      notifikasi!.showErrorToast('Error: $error'); // Menampilkan kesalahan
     });
-  }
-
-  String? getMimeType(String? filePath) {
-    if (filePath != null) {
-      return mime(filePath); // Dapatkan tipe MIME menggunakan mime_type package
-    }
-    return null;
   }
 
   Future<void> _selectDate(TextEditingController controller) async {
@@ -322,61 +323,58 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
     required Widget icons,
     required BuildContext context,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
           ),
-          const SizedBox(height: 5),
-          Container(
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border.all(color: HexColor('#D9D9D9'), width: 1),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(color: HexColor('#D9D9D9'), width: 1),
-                    ),
-                  ),
-                  child: icons,
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      hintText: hinttitle,
-                      hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    readOnly: true, // Membuat field hanya bisa dibaca
-                    onTap: () async {
-                      await _selectDate(
-                          controller); // Panggil fungsi untuk memilih tanggal
-                    },
+        ),
+        const SizedBox(height: 5),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            border: Border.all(color: HexColor('#D9D9D9'), width: 1),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: HexColor('#D9D9D9'), width: 1),
                   ),
                 ),
-              ],
-            ),
+                child: icons,
+              ),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 16),
+                    hintText: hinttitle,
+                    hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                    border: InputBorder.none,
+                  ),
+                  readOnly: true, // Membuat field hanya bisa dibaca
+                  onTap: () async {
+                    await _selectDate(
+                        controller); // Panggil fungsi untuk memilih tanggal
+                  },
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -413,7 +411,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
             isExpanded: true,
             // Membuat dropdown melebar sesuai lebar container
             hint: Padding(
-              padding: const EdgeInsets.only(left: 10.0),
+              padding: const EdgeInsets.only(left: 16.0),
               child: Text(
                 hinttitle,
                 maxLines: 2, // Membatasi teks maksimal 2 baris
@@ -427,6 +425,9 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
             ),
             value: selectedValue,
             decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(
+                  top: 12, left: 16.0, right: 12, bottom: 12),
+
               border: InputBorder.none, // Menghilangkan border default
               prefixIcon: Container(
                 decoration: BoxDecoration(
@@ -446,7 +447,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
               return DropdownMenuItem<String>(
                 value: item,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 3, left: 20.0),
+                  padding: const EdgeInsets.only(left: 20.0),
                   child: Text(
                     item,
                     maxLines: 2, // Membatasi teks maksimal 2 baris

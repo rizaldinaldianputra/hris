@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/statemanagament/user.dart';
+import 'package:hris/riverpod/user.dart';
 
 class AccountPage extends ConsumerStatefulWidget {
   const AccountPage({super.key});

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/models/attedance_list_logs_model.dart';
-import 'package:hris/statemanagament/attedant.dart';
+import 'package:hris/riverpod/attedant.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +17,25 @@ class LogsPage extends ConsumerStatefulWidget {
 class _LogsPageState extends ConsumerState<LogsPage> {
   final ScrollController _scrollController = ScrollController();
 
+  int selectedIndex = DateTime.now().month - 1;
+  List<String> months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+  String monthvalue = 'Choice Month';
+
+  TextEditingController choiceMonthController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -38,55 +57,22 @@ class _LogsPageState extends ConsumerState<LogsPage> {
               const SizedBox(
                 height: 24,
               ),
-              SizedBox(
-                height: 40,
-                child: TextField(
-                  onTap: () {
-                    showMonthWhell(context);
-                  },
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10), // Menambah ruang vertikal
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 1.0,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 0.3,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                      borderSide: const BorderSide(
-                        color: Colors.grey,
-                        width: 0.3,
-                      ),
-                    ),
-                    suffixIcon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.grey,
-                      size: 24,
-                    ),
-                    hintStyle: GoogleFonts.inter(
-                      textStyle: TextStyle(
-                          color: HexColor('#B3B3B3'),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 14),
-                    ),
-                    hintText: 'Choice Month',
-
-                    prefixIcon: Container(
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border.all(color: HexColor('#D9D9D9'), width: 1),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 50,
                       height: 50,
-                      decoration: const BoxDecoration(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
                         border: Border(
-                          right: BorderSide(color: Colors.grey, width: 0.3),
+                          right:
+                              BorderSide(color: HexColor('#D9D9D9'), width: 1),
                         ),
                       ),
                       child: const Icon(
@@ -94,7 +80,177 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                         color: Colors.grey,
                       ),
                     ),
-                  ),
+                    Expanded(
+                      child: TextField(
+                        controller: choiceMonthController,
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.white,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return StatefulBuilder(
+                                    builder: (context, setState) {
+                                  return SizedBox(
+                                    height: 350,
+                                    width: double.infinity,
+                                    child: SingleChildScrollView(
+                                      child: Column(
+                                        children: [
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            height: 6,
+                                            width: 40,
+                                            decoration: BoxDecoration(
+                                              color: HexColor('#EAEBEB'),
+                                              borderRadius:
+                                                  const BorderRadius.all(
+                                                      Radius.circular(200)),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 40),
+                                          const Text(
+                                            'Choose Month',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 196,
+                                            height: 170,
+                                            child: ListWheelScrollView(
+                                              itemExtent: 50,
+                                              onSelectedItemChanged: (index) {
+                                                setState(() {
+                                                  selectedIndex = index;
+                                                });
+                                              },
+                                              children: List.generate(
+                                                  months.length, (index) {
+                                                bool isSelected =
+                                                    index == selectedIndex;
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : Colors.transparent,
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      // Garis bawah
+                                                      Opacity(
+                                                        opacity: isSelected
+                                                            ? 1.0
+                                                            : 0.5,
+                                                        child: Center(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(16),
+                                                            child: Text(
+                                                              months[index],
+                                                              style: GoogleFonts
+                                                                  .inter(
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w400,
+                                                                color: isSelected
+                                                                    ? HexColor(
+                                                                        '#333333')
+                                                                    : Colors
+                                                                        .grey,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 120,
+                                                        child: Divider(
+                                                          color: Colors.black,
+                                                          height: 2,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          GestureDetector(
+                                            onTap: () {
+                                              // Ambil tanggal bulan sekarang
+                                              final int selectedMonth =
+                                                  selectedIndex +
+                                                      1; // +1 karena bulan dimulai dari 0
+                                              final int currentYear =
+                                                  DateTime.now().year;
+                                              final DateTime selectedDate =
+                                                  DateTime(currentYear,
+                                                      selectedMonth, 1);
+
+                                              String monthName = months[
+                                                  selectedDate.month - 1];
+                                              // Ambil nama bulan
+
+                                              setState(() {
+                                                choiceMonthController.text =
+                                                    monthName;
+                                              });
+                                              String formattedDate =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(selectedDate);
+                                              Navigator.of(context)
+                                                  .pop(); // Tutup modal
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: HexColor('#01A2E9'),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(8)),
+                                              ),
+                                              width: double.infinity,
+                                              margin: const EdgeInsets.all(16),
+                                              height: 48,
+                                              child: Center(
+                                                child: Text(
+                                                  'View',
+                                                  style: GoogleFonts.inter(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                });
+                              });
+                        },
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                              top: 12, left: 16, right: 16, bottom: 12),
+                          hintText: 'Choice Month',
+                          suffixIcon: const Icon(Icons.arrow_drop_down),
+                          hintStyle:
+                              GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(

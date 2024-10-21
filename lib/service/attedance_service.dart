@@ -7,7 +7,7 @@ import 'package:hris/models/attedance_list_logs_model.dart';
 import 'package:hris/models/attedance_summary_model.dart';
 import 'package:hris/models/user_model.dart';
 import 'package:hris/service/common_services.dart';
-import 'package:hris/statemanagament/attedant.dart';
+import 'package:hris/riverpod/attedant.dart';
 
 class AttedanceService {
   late CommonService api;

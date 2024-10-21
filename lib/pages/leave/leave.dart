@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/status_color.dart';
-import 'package:hris/statemanagament/leave.dart';
+import 'package:hris/riverpod/leave.dart';
 
 import 'package:hris/utility/globalwidget.dart';
 import 'package:intl/intl.dart';
@@ -106,7 +106,7 @@ class _LeavePageState extends ConsumerState<LeavePage> {
           ),
         ),
         bottomNavigationBar: bootomSubmit(
-            'Overtime Request',
+            'Leave Request',
             const Icon(
               Icons.add,
               color: Colors.white,

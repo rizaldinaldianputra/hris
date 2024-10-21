@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'leave.dart';
+part of 'overtime.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$leaveListHash() => r'527bca7d6edc5574a7866cbe5bca02f68e076280';
+String _$overtimeListHash() => r'0f7ce0df242b90b3fc38c3ea528ca85b60526e8c';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,36 +29,36 @@ class _SystemHash {
   }
 }
 
-abstract class _$LeaveList
-    extends BuildlessAutoDisposeNotifier<PagingController<int, LeaveModel>> {
+abstract class _$OvertimeList
+    extends BuildlessAutoDisposeNotifier<PagingController<int, Overtime>> {
   late final BuildContext context;
 
-  PagingController<int, LeaveModel> build(
+  PagingController<int, Overtime> build(
     BuildContext context,
   );
 }
 
-/// See also [LeaveList].
-@ProviderFor(LeaveList)
-const leaveListProvider = LeaveListFamily();
+/// See also [OvertimeList].
+@ProviderFor(OvertimeList)
+const overtimeListProvider = OvertimeListFamily();
 
-/// See also [LeaveList].
-class LeaveListFamily extends Family<PagingController<int, LeaveModel>> {
-  /// See also [LeaveList].
-  const LeaveListFamily();
+/// See also [OvertimeList].
+class OvertimeListFamily extends Family<PagingController<int, Overtime>> {
+  /// See also [OvertimeList].
+  const OvertimeListFamily();
 
-  /// See also [LeaveList].
-  LeaveListProvider call(
+  /// See also [OvertimeList].
+  OvertimeListProvider call(
     BuildContext context,
   ) {
-    return LeaveListProvider(
+    return OvertimeListProvider(
       context,
     );
   }
 
   @override
-  LeaveListProvider getProviderOverride(
-    covariant LeaveListProvider provider,
+  OvertimeListProvider getProviderOverride(
+    covariant OvertimeListProvider provider,
   ) {
     return call(
       provider.context,
@@ -77,173 +77,30 @@ class LeaveListFamily extends Family<PagingController<int, LeaveModel>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'leaveListProvider';
+  String? get name => r'overtimeListProvider';
 }
 
-/// See also [LeaveList].
-class LeaveListProvider extends AutoDisposeNotifierProviderImpl<LeaveList,
-    PagingController<int, LeaveModel>> {
-  /// See also [LeaveList].
-  LeaveListProvider(
+/// See also [OvertimeList].
+class OvertimeListProvider extends AutoDisposeNotifierProviderImpl<OvertimeList,
+    PagingController<int, Overtime>> {
+  /// See also [OvertimeList].
+  OvertimeListProvider(
     BuildContext context,
   ) : this._internal(
-          () => LeaveList()..context = context,
-          from: leaveListProvider,
-          name: r'leaveListProvider',
+          () => OvertimeList()..context = context,
+          from: overtimeListProvider,
+          name: r'overtimeListProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$leaveListHash,
-          dependencies: LeaveListFamily._dependencies,
-          allTransitiveDependencies: LeaveListFamily._allTransitiveDependencies,
-          context: context,
-        );
-
-  LeaveListProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.context,
-  }) : super.internal();
-
-  final BuildContext context;
-
-  @override
-  PagingController<int, LeaveModel> runNotifierBuild(
-    covariant LeaveList notifier,
-  ) {
-    return notifier.build(
-      context,
-    );
-  }
-
-  @override
-  Override overrideWith(LeaveList Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: LeaveListProvider._internal(
-        () => create()..context = context,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        context: context,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<LeaveList,
-      PagingController<int, LeaveModel>> createElement() {
-    return _LeaveListProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is LeaveListProvider && other.context == context;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, context.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin LeaveListRef
-    on AutoDisposeNotifierProviderRef<PagingController<int, LeaveModel>> {
-  /// The parameter `context` of this provider.
-  BuildContext get context;
-}
-
-class _LeaveListProviderElement extends AutoDisposeNotifierProviderElement<
-    LeaveList, PagingController<int, LeaveModel>> with LeaveListRef {
-  _LeaveListProviderElement(super.provider);
-
-  @override
-  BuildContext get context => (origin as LeaveListProvider).context;
-}
-
-String _$leaveListViewHash() => r'267e225a052967b0370d8cc63cba60888a3b7034';
-
-abstract class _$LeaveListView
-    extends BuildlessAutoDisposeAsyncNotifier<List<LeaveModel>> {
-  late final BuildContext context;
-
-  FutureOr<List<LeaveModel>> build(
-    BuildContext context,
-  );
-}
-
-/// See also [LeaveListView].
-@ProviderFor(LeaveListView)
-const leaveListViewProvider = LeaveListViewFamily();
-
-/// See also [LeaveListView].
-class LeaveListViewFamily extends Family<AsyncValue<List<LeaveModel>>> {
-  /// See also [LeaveListView].
-  const LeaveListViewFamily();
-
-  /// See also [LeaveListView].
-  LeaveListViewProvider call(
-    BuildContext context,
-  ) {
-    return LeaveListViewProvider(
-      context,
-    );
-  }
-
-  @override
-  LeaveListViewProvider getProviderOverride(
-    covariant LeaveListViewProvider provider,
-  ) {
-    return call(
-      provider.context,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'leaveListViewProvider';
-}
-
-/// See also [LeaveListView].
-class LeaveListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
-    LeaveListView, List<LeaveModel>> {
-  /// See also [LeaveListView].
-  LeaveListViewProvider(
-    BuildContext context,
-  ) : this._internal(
-          () => LeaveListView()..context = context,
-          from: leaveListViewProvider,
-          name: r'leaveListViewProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$leaveListViewHash,
-          dependencies: LeaveListViewFamily._dependencies,
+                  : _$overtimeListHash,
+          dependencies: OvertimeListFamily._dependencies,
           allTransitiveDependencies:
-              LeaveListViewFamily._allTransitiveDependencies,
+              OvertimeListFamily._allTransitiveDependencies,
           context: context,
         );
 
-  LeaveListViewProvider._internal(
+  OvertimeListProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -256,8 +113,8 @@ class LeaveListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
   final BuildContext context;
 
   @override
-  FutureOr<List<LeaveModel>> runNotifierBuild(
-    covariant LeaveListView notifier,
+  PagingController<int, Overtime> runNotifierBuild(
+    covariant OvertimeList notifier,
   ) {
     return notifier.build(
       context,
@@ -265,10 +122,10 @@ class LeaveListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
   }
 
   @override
-  Override overrideWith(LeaveListView Function() create) {
+  Override overrideWith(OvertimeList Function() create) {
     return ProviderOverride(
       origin: this,
-      override: LeaveListViewProvider._internal(
+      override: OvertimeListProvider._internal(
         () => create()..context = context,
         from: from,
         name: null,
@@ -281,14 +138,14 @@ class LeaveListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<LeaveListView, List<LeaveModel>>
-      createElement() {
-    return _LeaveListViewProviderElement(this);
+  AutoDisposeNotifierProviderElement<OvertimeList,
+      PagingController<int, Overtime>> createElement() {
+    return _OvertimeListProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LeaveListViewProvider && other.context == context;
+    return other is OvertimeListProvider && other.context == context;
   }
 
   @override
@@ -300,24 +157,168 @@ class LeaveListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
   }
 }
 
-mixin LeaveListViewRef
-    on AutoDisposeAsyncNotifierProviderRef<List<LeaveModel>> {
+mixin OvertimeListRef
+    on AutoDisposeNotifierProviderRef<PagingController<int, Overtime>> {
   /// The parameter `context` of this provider.
   BuildContext get context;
 }
 
-class _LeaveListViewProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<LeaveListView,
-        List<LeaveModel>> with LeaveListViewRef {
-  _LeaveListViewProviderElement(super.provider);
+class _OvertimeListProviderElement extends AutoDisposeNotifierProviderElement<
+    OvertimeList, PagingController<int, Overtime>> with OvertimeListRef {
+  _OvertimeListProviderElement(super.provider);
 
   @override
-  BuildContext get context => (origin as LeaveListViewProvider).context;
+  BuildContext get context => (origin as OvertimeListProvider).context;
 }
 
-String _$leaveTypeHash() => r'd16aea06b071df624b7c14f20cfcefeb57bee1a8';
+String _$overtimeListViewHash() => r'fdd52f3f171e5e56bd579f3b35d0ec05476fb134';
 
-abstract class _$LeaveType
+abstract class _$OvertimeListView
+    extends BuildlessAutoDisposeAsyncNotifier<List<Overtime>> {
+  late final BuildContext context;
+
+  FutureOr<List<Overtime>> build(
+    BuildContext context,
+  );
+}
+
+/// See also [OvertimeListView].
+@ProviderFor(OvertimeListView)
+const overtimeListViewProvider = OvertimeListViewFamily();
+
+/// See also [OvertimeListView].
+class OvertimeListViewFamily extends Family<AsyncValue<List<Overtime>>> {
+  /// See also [OvertimeListView].
+  const OvertimeListViewFamily();
+
+  /// See also [OvertimeListView].
+  OvertimeListViewProvider call(
+    BuildContext context,
+  ) {
+    return OvertimeListViewProvider(
+      context,
+    );
+  }
+
+  @override
+  OvertimeListViewProvider getProviderOverride(
+    covariant OvertimeListViewProvider provider,
+  ) {
+    return call(
+      provider.context,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'overtimeListViewProvider';
+}
+
+/// See also [OvertimeListView].
+class OvertimeListViewProvider extends AutoDisposeAsyncNotifierProviderImpl<
+    OvertimeListView, List<Overtime>> {
+  /// See also [OvertimeListView].
+  OvertimeListViewProvider(
+    BuildContext context,
+  ) : this._internal(
+          () => OvertimeListView()..context = context,
+          from: overtimeListViewProvider,
+          name: r'overtimeListViewProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$overtimeListViewHash,
+          dependencies: OvertimeListViewFamily._dependencies,
+          allTransitiveDependencies:
+              OvertimeListViewFamily._allTransitiveDependencies,
+          context: context,
+        );
+
+  OvertimeListViewProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.context,
+  }) : super.internal();
+
+  final BuildContext context;
+
+  @override
+  FutureOr<List<Overtime>> runNotifierBuild(
+    covariant OvertimeListView notifier,
+  ) {
+    return notifier.build(
+      context,
+    );
+  }
+
+  @override
+  Override overrideWith(OvertimeListView Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: OvertimeListViewProvider._internal(
+        () => create()..context = context,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        context: context,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<OvertimeListView, List<Overtime>>
+      createElement() {
+    return _OvertimeListViewProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is OvertimeListViewProvider && other.context == context;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, context.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin OvertimeListViewRef
+    on AutoDisposeAsyncNotifierProviderRef<List<Overtime>> {
+  /// The parameter `context` of this provider.
+  BuildContext get context;
+}
+
+class _OvertimeListViewProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<OvertimeListView,
+        List<Overtime>> with OvertimeListViewRef {
+  _OvertimeListViewProviderElement(super.provider);
+
+  @override
+  BuildContext get context => (origin as OvertimeListViewProvider).context;
+}
+
+String _$overtimeTypeHash() => r'bb445bc4945ca4781a6e86284acfd82671071da7';
+
+abstract class _$OvertimeType
     extends BuildlessAutoDisposeAsyncNotifier<List<DropdownModel>> {
   late final BuildContext context;
   late final String value;
@@ -328,29 +329,29 @@ abstract class _$LeaveType
   );
 }
 
-/// See also [LeaveType].
-@ProviderFor(LeaveType)
-const leaveTypeProvider = LeaveTypeFamily();
+/// See also [OvertimeType].
+@ProviderFor(OvertimeType)
+const overtimeTypeProvider = OvertimeTypeFamily();
 
-/// See also [LeaveType].
-class LeaveTypeFamily extends Family<AsyncValue<List<DropdownModel>>> {
-  /// See also [LeaveType].
-  const LeaveTypeFamily();
+/// See also [OvertimeType].
+class OvertimeTypeFamily extends Family<AsyncValue<List<DropdownModel>>> {
+  /// See also [OvertimeType].
+  const OvertimeTypeFamily();
 
-  /// See also [LeaveType].
-  LeaveTypeProvider call(
+  /// See also [OvertimeType].
+  OvertimeTypeProvider call(
     BuildContext context,
     String value,
   ) {
-    return LeaveTypeProvider(
+    return OvertimeTypeProvider(
       context,
       value,
     );
   }
 
   @override
-  LeaveTypeProvider getProviderOverride(
-    covariant LeaveTypeProvider provider,
+  OvertimeTypeProvider getProviderOverride(
+    covariant OvertimeTypeProvider provider,
   ) {
     return call(
       provider.context,
@@ -370,33 +371,34 @@ class LeaveTypeFamily extends Family<AsyncValue<List<DropdownModel>>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'leaveTypeProvider';
+  String? get name => r'overtimeTypeProvider';
 }
 
-/// See also [LeaveType].
-class LeaveTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<LeaveType,
-    List<DropdownModel>> {
-  /// See also [LeaveType].
-  LeaveTypeProvider(
+/// See also [OvertimeType].
+class OvertimeTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<
+    OvertimeType, List<DropdownModel>> {
+  /// See also [OvertimeType].
+  OvertimeTypeProvider(
     BuildContext context,
     String value,
   ) : this._internal(
-          () => LeaveType()
+          () => OvertimeType()
             ..context = context
             ..value = value,
-          from: leaveTypeProvider,
-          name: r'leaveTypeProvider',
+          from: overtimeTypeProvider,
+          name: r'overtimeTypeProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$leaveTypeHash,
-          dependencies: LeaveTypeFamily._dependencies,
-          allTransitiveDependencies: LeaveTypeFamily._allTransitiveDependencies,
+                  : _$overtimeTypeHash,
+          dependencies: OvertimeTypeFamily._dependencies,
+          allTransitiveDependencies:
+              OvertimeTypeFamily._allTransitiveDependencies,
           context: context,
           value: value,
         );
 
-  LeaveTypeProvider._internal(
+  OvertimeTypeProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -412,7 +414,7 @@ class LeaveTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<LeaveType,
 
   @override
   FutureOr<List<DropdownModel>> runNotifierBuild(
-    covariant LeaveType notifier,
+    covariant OvertimeType notifier,
   ) {
     return notifier.build(
       context,
@@ -421,10 +423,10 @@ class LeaveTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<LeaveType,
   }
 
   @override
-  Override overrideWith(LeaveType Function() create) {
+  Override overrideWith(OvertimeType Function() create) {
     return ProviderOverride(
       origin: this,
-      override: LeaveTypeProvider._internal(
+      override: OvertimeTypeProvider._internal(
         () => create()
           ..context = context
           ..value = value,
@@ -440,14 +442,14 @@ class LeaveTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<LeaveType,
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<LeaveType, List<DropdownModel>>
+  AutoDisposeAsyncNotifierProviderElement<OvertimeType, List<DropdownModel>>
       createElement() {
-    return _LeaveTypeProviderElement(this);
+    return _OvertimeTypeProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LeaveTypeProvider &&
+    return other is OvertimeTypeProvider &&
         other.context == context &&
         other.value == value;
   }
@@ -462,7 +464,8 @@ class LeaveTypeProvider extends AutoDisposeAsyncNotifierProviderImpl<LeaveType,
   }
 }
 
-mixin LeaveTypeRef on AutoDisposeAsyncNotifierProviderRef<List<DropdownModel>> {
+mixin OvertimeTypeRef
+    on AutoDisposeAsyncNotifierProviderRef<List<DropdownModel>> {
   /// The parameter `context` of this provider.
   BuildContext get context;
 
@@ -470,19 +473,20 @@ mixin LeaveTypeRef on AutoDisposeAsyncNotifierProviderRef<List<DropdownModel>> {
   String get value;
 }
 
-class _LeaveTypeProviderElement extends AutoDisposeAsyncNotifierProviderElement<
-    LeaveType, List<DropdownModel>> with LeaveTypeRef {
-  _LeaveTypeProviderElement(super.provider);
+class _OvertimeTypeProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<OvertimeType,
+        List<DropdownModel>> with OvertimeTypeRef {
+  _OvertimeTypeProviderElement(super.provider);
 
   @override
-  BuildContext get context => (origin as LeaveTypeProvider).context;
+  BuildContext get context => (origin as OvertimeTypeProvider).context;
   @override
-  String get value => (origin as LeaveTypeProvider).value;
+  String get value => (origin as OvertimeTypeProvider).value;
 }
 
-String _$leaveSaveDataHash() => r'dad28f5495c916b6bc6b46ae11630bbf011d9439';
+String _$overtimeSaveDataHash() => r'8c8744a4891c9f87a091ffcef89b97b489095b8f';
 
-abstract class _$LeaveSaveData
+abstract class _$OvertimeSaveData
     extends BuildlessAutoDisposeAsyncNotifier<Response?> {
   late final BuildContext context;
 
@@ -491,27 +495,27 @@ abstract class _$LeaveSaveData
   );
 }
 
-/// See also [LeaveSaveData].
-@ProviderFor(LeaveSaveData)
-const leaveSaveDataProvider = LeaveSaveDataFamily();
+/// See also [OvertimeSaveData].
+@ProviderFor(OvertimeSaveData)
+const overtimeSaveDataProvider = OvertimeSaveDataFamily();
 
-/// See also [LeaveSaveData].
-class LeaveSaveDataFamily extends Family<AsyncValue<Response?>> {
-  /// See also [LeaveSaveData].
-  const LeaveSaveDataFamily();
+/// See also [OvertimeSaveData].
+class OvertimeSaveDataFamily extends Family<AsyncValue<Response?>> {
+  /// See also [OvertimeSaveData].
+  const OvertimeSaveDataFamily();
 
-  /// See also [LeaveSaveData].
-  LeaveSaveDataProvider call(
+  /// See also [OvertimeSaveData].
+  OvertimeSaveDataProvider call(
     BuildContext context,
   ) {
-    return LeaveSaveDataProvider(
+    return OvertimeSaveDataProvider(
       context,
     );
   }
 
   @override
-  LeaveSaveDataProvider getProviderOverride(
-    covariant LeaveSaveDataProvider provider,
+  OvertimeSaveDataProvider getProviderOverride(
+    covariant OvertimeSaveDataProvider provider,
   ) {
     return call(
       provider.context,
@@ -530,30 +534,30 @@ class LeaveSaveDataFamily extends Family<AsyncValue<Response?>> {
       _allTransitiveDependencies;
 
   @override
-  String? get name => r'leaveSaveDataProvider';
+  String? get name => r'overtimeSaveDataProvider';
 }
 
-/// See also [LeaveSaveData].
-class LeaveSaveDataProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<LeaveSaveData, Response?> {
-  /// See also [LeaveSaveData].
-  LeaveSaveDataProvider(
+/// See also [OvertimeSaveData].
+class OvertimeSaveDataProvider
+    extends AutoDisposeAsyncNotifierProviderImpl<OvertimeSaveData, Response?> {
+  /// See also [OvertimeSaveData].
+  OvertimeSaveDataProvider(
     BuildContext context,
   ) : this._internal(
-          () => LeaveSaveData()..context = context,
-          from: leaveSaveDataProvider,
-          name: r'leaveSaveDataProvider',
+          () => OvertimeSaveData()..context = context,
+          from: overtimeSaveDataProvider,
+          name: r'overtimeSaveDataProvider',
           debugGetCreateSourceHash:
               const bool.fromEnvironment('dart.vm.product')
                   ? null
-                  : _$leaveSaveDataHash,
-          dependencies: LeaveSaveDataFamily._dependencies,
+                  : _$overtimeSaveDataHash,
+          dependencies: OvertimeSaveDataFamily._dependencies,
           allTransitiveDependencies:
-              LeaveSaveDataFamily._allTransitiveDependencies,
+              OvertimeSaveDataFamily._allTransitiveDependencies,
           context: context,
         );
 
-  LeaveSaveDataProvider._internal(
+  OvertimeSaveDataProvider._internal(
     super._createNotifier, {
     required super.name,
     required super.dependencies,
@@ -567,7 +571,7 @@ class LeaveSaveDataProvider
 
   @override
   FutureOr<Response?> runNotifierBuild(
-    covariant LeaveSaveData notifier,
+    covariant OvertimeSaveData notifier,
   ) {
     return notifier.build(
       context,
@@ -575,10 +579,10 @@ class LeaveSaveDataProvider
   }
 
   @override
-  Override overrideWith(LeaveSaveData Function() create) {
+  Override overrideWith(OvertimeSaveData Function() create) {
     return ProviderOverride(
       origin: this,
-      override: LeaveSaveDataProvider._internal(
+      override: OvertimeSaveDataProvider._internal(
         () => create()..context = context,
         from: from,
         name: null,
@@ -591,14 +595,14 @@ class LeaveSaveDataProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<LeaveSaveData, Response?>
+  AutoDisposeAsyncNotifierProviderElement<OvertimeSaveData, Response?>
       createElement() {
-    return _LeaveSaveDataProviderElement(this);
+    return _OvertimeSaveDataProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is LeaveSaveDataProvider && other.context == context;
+    return other is OvertimeSaveDataProvider && other.context == context;
   }
 
   @override
@@ -610,18 +614,18 @@ class LeaveSaveDataProvider
   }
 }
 
-mixin LeaveSaveDataRef on AutoDisposeAsyncNotifierProviderRef<Response?> {
+mixin OvertimeSaveDataRef on AutoDisposeAsyncNotifierProviderRef<Response?> {
   /// The parameter `context` of this provider.
   BuildContext get context;
 }
 
-class _LeaveSaveDataProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<LeaveSaveData, Response?>
-    with LeaveSaveDataRef {
-  _LeaveSaveDataProviderElement(super.provider);
+class _OvertimeSaveDataProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<OvertimeSaveData, Response?>
+    with OvertimeSaveDataRef {
+  _OvertimeSaveDataProviderElement(super.provider);
 
   @override
-  BuildContext get context => (origin as LeaveSaveDataProvider).context;
+  BuildContext get context => (origin as OvertimeSaveDataProvider).context;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

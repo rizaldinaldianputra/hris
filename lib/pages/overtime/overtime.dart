@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/status_color.dart';
+import 'package:hris/riverpod/overtime.dart';
 
 import 'package:hris/utility/globalwidget.dart';
+import 'package:intl/intl.dart';
 
 class OvertimePage extends ConsumerStatefulWidget {
   const OvertimePage({super.key});
@@ -17,75 +19,97 @@ class OvertimePage extends ConsumerStatefulWidget {
 class _OvertimePageState extends ConsumerState<OvertimePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: appBarWidgetWithTralling(
-            'Overtime', Image.asset('assets/filter.png')),
-        body: ListView.builder(
-          itemBuilder: (context, index) {
-            return Container(
-              margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: HexColor('#EAEAEA')),
-                  borderRadius: const BorderRadius.all(Radius.circular(8))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final overtimeList = ref.watch(overtimeListViewProvider(context));
+
+    return overtimeList.when(
+        loading: () => Scaffold(
+              appBar: appBarWidgetWithTralling(
+                  'Overtime', Image.asset('assets/filter.png')),
+              body: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+        error: (error, stackTrace) => Scaffold(
+              body: Center(
+                child: Text(error.toString()),
+              ),
+            ),
+        data: (data) => Scaffold(
+            appBar: appBarWidgetWithTralling(
+                'Overtime', Image.asset('assets/filter.png')),
+            body: ListView.builder(
+              itemCount: data.length,
+              itemBuilder: (context, index) {
+                DateTime dateTime =
+                    DateTime.parse(data[index].startShiftTime.toString());
+
+                // Format tanggal menjadi "30 Aug 2024"
+                String formattedDate =
+                    DateFormat('dd MMM yyyy').format(dateTime);
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: HexColor('#EAEAEA')),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            data[index].overtimeShiftRequest!.name,
+                            style: GoogleFonts.inter(
+                                textStyle: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w600)),
+                          ),
+                          const Icon(
+                            Icons.arrow_forward_ios,
+                            size: 18,
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       Text(
-                        'Paid Overtime',
+                        formattedDate,
                         style: GoogleFonts.inter(
                             textStyle: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
+                                fontSize: 12, fontWeight: FontWeight.w500)),
                       ),
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        size: 18,
-                      )
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Container(
+                            padding: const EdgeInsets.all(5),
+                            color: statusColor('Rejected'),
+                            child: Text(
+                              'Rejected',
+                              style: GoogleFonts.inter(
+                                textStyle: TextStyle(
+                                    color: statusColorText('Rejected'),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14),
+                              ),
+                            )),
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    '03 Aug 2024 - 29 Aug 2024',
-                    style: GoogleFonts.inter(
-                        textStyle: const TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w500)),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10.0),
-                    child: Container(
-                        padding: const EdgeInsets.all(5),
-                        color: statusColor('Rejected'),
-                        child: Text(
-                          'Rejected',
-                          style: GoogleFonts.inter(
-                            textStyle: TextStyle(
-                                color: statusColorText('Rejected'),
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14),
-                          ),
-                        )),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-        bottomNavigationBar: bootomSubmit(
-            'Overtime Request',
-            const Icon(
-              Icons.add,
-              color: Colors.white,
+                );
+              },
             ),
-            () => context.goNamed('requestovertime')));
+            bottomNavigationBar: bootomSubmit(
+                'Overtime Request',
+                const Icon(
+                  Icons.add,
+                  color: Colors.white,
+                ),
+                () => context.goNamed('requestovertime'))));
   }
 }
 
