@@ -94,21 +94,27 @@ class LeaveType extends _$LeaveType {
 class LeaveSaveData extends _$LeaveSaveData {
   @override
   Future<Response?> build(BuildContext context) async {
-    // Inisialisasi state tanpa mengembalikan null
-    return Future.value(); // Mengembalikan Future kosong tanpa null
+    return Future.value(); // Kembalikan null saat inisialisasi
   }
 
   // Method untuk mengirim data ke API
   Future<Response> saveData({
     required BuildContext context,
-    required data,
+    required Map<String, dynamic> data,
   }) async {
-    final leaveService = LeaveService(context);
-    final response = await leaveService.saveLeave(data);
+    // Set state menjadi loading saat proses pengiriman
+    state = const AsyncValue.loading();
 
-    // Mengubah state berdasarkan hasil respons
-    state = AsyncValue.data(response);
+    try {
+      final leaveService = LeaveService(context);
+      final response = await leaveService.saveLeave(data);
 
-    return response;
+      // Mengubah state menjadi data jika sukses
+      state = AsyncValue.data(response);
+      return response;
+    } catch (error) {
+      // Menangani error dan mengubah state menjadi error
+      rethrow; // Melempar ulang error untuk penanganan lebih lanjut jika diperlukan
+    }
   }
 }

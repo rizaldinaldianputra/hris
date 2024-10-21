@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io'; // Tambahkan ini untuk menggunakan File
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/models/leave_model.dart';
-import 'package:hris/models/user_model.dart';
+
 import 'package:hris/statemanagament/leave.dart';
 import 'package:hris/statemanagament/user.dart';
 import 'package:hris/utility/globalwidget.dart';
@@ -14,7 +14,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mime_type/mime_type.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:scroll_wheel_date_picker/scroll_wheel_date_picker.dart';
 
 class RequestLeavePage extends ConsumerStatefulWidget {
   const RequestLeavePage({super.key});
@@ -26,242 +25,271 @@ class RequestLeavePage extends ConsumerStatefulWidget {
 
 class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
   String? selectedValue;
-  final List<String> items = [
-    'Item 1',
-    'Item 2',
-    'Item 3',
-    'Item 4',
-  ];
   PlatformFile? selectedFile;
+  String? base64String; // Untuk menyimpan hasil konversi Base64
+  bool isLoading = false; // Tambahkan variabel ini untuk mengontrol loading
 
-  DateTime? selectedDateTime; // Mengubah menjadi PlatformFile
+  TextEditingController startdateTimeController = TextEditingController();
+  TextEditingController enddateTimeController = TextEditingController();
+  TextEditingController reasonController = TextEditingController();
+  String? leavetypeid;
+
+  @override
+  Widget build(BuildContext context) {
+    final userData = ref.watch(userDataProvider(context));
+
+    return userData.when(
+      data: (data) {
+        final attedantProvider =
+            ref.watch(LeaveTypeProvider(context, data!.companyId!));
+
+        return isLoading
+            ? const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              )
+            : Scaffold(
+                appBar: appBarWidget('Leave Request Form'),
+                body: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      attedantProvider.when(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (error, stackTrace) => Text(error.toString()),
+                        data: (data) {
+                          List<String> value = [];
+                          Map<String, String> leaveTypeMap = {};
+
+                          for (var element in data) {
+                            value.add(element.value);
+                            leaveTypeMap[element.value] =
+                                element.key; // Menyimpan key untuk setiap value
+                          }
+
+                          return dropdownIcon(
+                            listiem: value,
+                            hinttitle: 'Choose Type',
+                            selectedValue: selectedValue,
+                            title: 'Leave Type',
+                            icons: Image.asset('assets/leave/leavetype.png'),
+                            onchange: (newValue) {
+                              setState(() {
+                                selectedValue =
+                                    newValue; // Memperbarui selectedValue
+                                leavetypeid = leaveTypeMap[
+                                    newValue!]; // Mengambil key berdasarkan value yang dipilih
+                              });
+                            },
+                          );
+                        },
+                      ),
+
+                      dateTimePicker(
+                        title: 'Leave Date',
+                        hinttitle: 'Start date',
+                        controller: startdateTimeController,
+                        icons: Image.asset('assets/leave/date.png'),
+                        context: context,
+                      ),
+                      dateTimePicker(
+                        title: 'Leave Date',
+                        hinttitle: 'End date',
+                        controller: enddateTimeController,
+                        icons: Image.asset('assets/leave/date.png'),
+                        context: context,
+                      ),
+                      const SizedBox(height: 10),
+                      buildReasonField(),
+                      const SizedBox(height: 5),
+                      buildUploadFileButton(),
+                      if (selectedFile != null && selectedFile!.path != null)
+                        buildSelectedFileImage(),
+                      // Indikator loading
+                    ],
+                  ),
+                ),
+                bottomNavigationBar: bootomSubmit(
+                  'Submit Request',
+                  Image.asset('assets/submit.png'),
+                  () => submitLeaveRequest(),
+                ),
+              );
+      },
+      error: (object, error) => Scaffold(
+        body: Center(child: Text(error.toString())),
+      ),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+    );
+  }
+
+  Widget buildReasonField() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Reason',
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: HexColor('#D9D9D9')),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: TextField(
+            maxLines: 3,
+            controller: reasonController,
+            decoration: InputDecoration(
+              hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
+              hintText: '(Optional)',
+              border: InputBorder.none,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildUploadFileButton() {
+    return GestureDetector(
+      onTap: _pickFile,
+      child: Container(
+        height: 40,
+        width: 124,
+        margin: const EdgeInsets.all(10.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: HexColor('#757575')),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.add, size: 18, color: HexColor('#757575')),
+            const SizedBox(width: 5),
+            Text(
+              'Upload File',
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: HexColor('#757575'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildSelectedFileImage() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Image.file(
+        File(selectedFile!.path!),
+        height: 150,
+        width: 150,
+        fit: BoxFit.cover,
+      ),
+    );
+  }
 
   Future<void> _pickFile() async {
-    // Meminta izin akses penyimpanan
     var status = await Permission.storage.request();
 
-    // Cek status izin
     if (status.isGranted) {
-      // Jika izin diberikan, pilih file
       FilePickerResult? result = await FilePicker.platform.pickFiles();
 
       if (result != null) {
-        selectedFile = result.files.single; // Ambil file yang dipilih
+        selectedFile = result.files.single;
 
-        // Periksa ukuran file
         if (selectedFile!.size <= 3 * 1024 * 1024) {
-          // Cek jika ukuran file <= 3MB
-          // Baca file dan konversi ke Base64
           final bytes = await File(selectedFile!.path!).readAsBytes();
           setState(() {
             base64String = base64Encode(bytes); // Mengonversi bytes ke Base64
           });
         } else {
-          // Tampilkan pesan jika ukuran file melebihi 3MB
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('File size exceeds 3 MB')),
           );
         }
       }
-    } else if (status.isDenied) {
-      // Jika izin ditolak
+    } else {
+      _handlePermissionDenied(status);
+    }
+  }
+
+  void _handlePermissionDenied(PermissionStatus status) {
+    if (status.isDenied) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Storage permission denied')),
       );
     } else if (status.isPermanentlyDenied) {
-      // Jika izin ditolak secara permanen
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
               'Storage permission permanently denied. Please enable it in settings.'),
         ),
       );
-      // Tampilkan dialog untuk mengarahkan pengguna ke pengaturan
       openAppSettings();
     }
   }
 
-  TextEditingController startdateTimeController = TextEditingController();
-  TextEditingController enddateTimeController = TextEditingController();
+  void submitLeaveRequest() {
+    setState(() {
+      isLoading = true; // Set loading menjadi true saat submit
+    });
 
-  String? leavetypeid;
+    Map<String, dynamic> buildData() {
+      if (base64String != null && selectedFile != null) {
+        final mimeType = getMimeType(selectedFile!.path);
+        return {
+          "startDate": startdateTimeController.text,
+          "endDate": enddateTimeController.text,
+          "leaveTypeId": leavetypeid,
+          "reason": reasonController.text,
+          "files": ["data:$mimeType;base64,$base64String"],
+        };
+      }
+      return {}; // Kembalikan map kosong jika tidak ada file yang diupload
+    }
 
-  TextEditingController reasonController = TextEditingController();
-
-  String? base64String; // Untuk menyimpan hasil konversi Base64
-
-  @override
-  Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider(context));
-    return userData.when(
-      data: (data) {
-        final attedantProvider =
-            ref.watch(LeaveTypeProvider(context, data!.companyId!));
-
-        return Scaffold(
-          appBar: appBarWidget('Leave Request Form'),
-          body: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                attedantProvider.when(
-                    loading: () => const CircularProgressIndicator(),
-                    error: (error, stackTrace) => Text(error.toString()),
-                    data: (data) {
-                      List<String> value = [];
-                      for (var element in data) {
-                        value.add(element.value);
-                        leavetypeid = element.key;
-                      }
-                      return dropdownIcon(
-                          listiem: value,
-                          hinttitle: 'Choose Type',
-                          selectedValue: selectedValue,
-                          title: 'Leave Type',
-                          icons: Image.asset('assets/leave/leavetype.png'));
-                    }),
-                dateTimePicker(
-                    'Leave Date',
-                    'Start date',
-                    startdateTimeController,
-                    Image.asset('assets/leave/date.png'),
-                    context),
-                dateTimePicker('Leave Date', 'End date', enddateTimeController,
-                    Image.asset('assets/leave/date.png'), context),
-                const SizedBox(
-                  height: 10,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Reason',
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: HexColor(
-                                '#D9D9D9')), // Mengatur border untuk keseluruhan
-                        borderRadius:
-                            BorderRadius.circular(10), // Mengatur sudut border
-                      ),
-                      child: TextField(
-                        maxLines: 3, // Membatasi maksimum 3 baris
-                        controller: reasonController,
-                        decoration: InputDecoration(
-                          hintStyle:
-                              GoogleFonts.inter(color: HexColor('#B3B3B3')),
-                          hintText: '(Optional)', // Placeholder text
-                          border:
-                              InputBorder.none, // Menghilangkan border default
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                              vertical: 8.0), // Padding di dalam TextField
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                GestureDetector(
-                  onTap: _pickFile,
-                  child: Container(
-                    height: 40,
-                    width: 124,
-                    margin: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: HexColor('#757575'))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          size: 18,
-                          color: HexColor('#757575'),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          'Upload File',
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: HexColor('#757575'),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                // Tampilkan gambar yang dipilih
-                if (selectedFile != null && selectedFile!.path != null)
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.file(
-                      File(selectedFile!.path!), // Menampilkan file gambar
-                      height: 150, // Atur tinggi gambar sesuai kebutuhan
-                      width: 150, // Atur lebar gambar sesuai kebutuhan
-                      fit:
-                          BoxFit.cover, // Mengatur cara gambar diubah ukurannya
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: bootomSubmit(
-            'Submit Request',
-            Image.asset('assets/submit.png'),
-            () {
-              Map<String, dynamic> buildData() {
-                if (base64String != null && selectedFile != null) {
-                  final mimeType = getMimeType(selectedFile!.path);
-                  return {
-                    "startDate": startdateTimeController.text,
-                    "endDate": enddateTimeController.text,
-                    "leaveTypeId": leavetypeid,
-                    "reason": reasonController.text,
-                    "files": [
-                      "data:$mimeType;base64,$base64String" // Tambahkan MIME type ke dalam string Base64
-                    ]
-                  };
-                }
-                return {}; // Kembalikan map kosong jika tidak ada file yang diupload
-              }
-
-              ref
-                  .watch(leaveSaveDataProvider(context).notifier)
-                  .saveData(context: context, data: data);
-            },
-          ),
+    final leaveSaveData = ref.read(leaveSaveDataProvider(context).notifier);
+    leaveSaveData
+        .saveData(context: context, data: buildData())
+        .then((Response response) {
+      setState(() {
+        isLoading = false; // Set loading menjadi false setelah respons diterima
+      });
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.data['status'])),
         );
-      },
-      error: (object, error) => Scaffold(
-        body: Center(
-          child: Text(error.toString()),
-        ),
-      ),
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
+        context.pushReplacementNamed('leave');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response.data['status'])),
+        );
+      }
+    }).catchError((error) {
+      setState(() {
+        isLoading = false; // Set loading menjadi false jika ada error
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $error')),
+      );
+    });
   }
 
   String? getMimeType(String? filePath) {
@@ -271,8 +299,29 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
     return null;
   }
 
-  Widget dateTimePicker(String title, String hinttitle,
-      TextEditingController controller, Widget icons, BuildContext context) {
+  Future<void> _selectDate(TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      initialDatePickerMode: DatePickerMode.day,
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate =
+          DateFormat('yyyy-MM-dd').format(pickedDate); // Format tanggal
+      controller.text = formattedDate; // Atur nilai controller
+    }
+  }
+
+  Widget dateTimePicker({
+    required String title,
+    required String hinttitle,
+    required TextEditingController controller,
+    required Widget icons,
+    required BuildContext context,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Column(
@@ -291,59 +340,35 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
           Container(
             height: 50,
             decoration: BoxDecoration(
-              border: Border.all(
-                  color: HexColor('#D9D9D9'), width: 1), // Border di semua sisi
-              borderRadius: BorderRadius.circular(8.0), // Sudut membulat
+              border: Border.all(color: HexColor('#D9D9D9'), width: 1),
+              borderRadius: BorderRadius.circular(8.0),
             ),
             child: Row(
               children: [
                 Container(
                   width: 50,
                   height: 50,
-                  padding: const EdgeInsets.all(12), // Sesuaikan tinggi ikon
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     border: Border(
-                      right: BorderSide(
-                          color: HexColor('#D9D9D9'),
-                          width: 1 // Border kanan pada ikon
-                          ),
-                    ),
-                    borderRadius: const BorderRadius.horizontal(
-                      left: Radius.circular(8.0),
+                      right: BorderSide(color: HexColor('#D9D9D9'), width: 1),
                     ),
                   ),
-                  child: SizedBox(height: 20, width: 20, child: icons),
+                  child: icons,
                 ),
                 Expanded(
                   child: TextField(
                     controller: controller,
-                    readOnly: true, // Membuat TextField hanya bisa dibaca
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 10, // Padding di dalam TextField
-                      ),
                       hintText: hinttitle,
-                      hintStyle: const TextStyle(color: Colors.grey),
-                      border: InputBorder
-                          .none, // Menghapus border default dari TextField
+                      hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
+                    readOnly: true, // Membuat field hanya bisa dibaca
                     onTap: () async {
-                      DateTime? pickedDate = await showDatePicker(
-                        context: context,
-                        initialDatePickerMode: DatePickerMode.day,
-                        initialDate: selectedDateTime ?? DateTime.now(),
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2101),
-                      );
-
-                      if (pickedDate != null) {
-                        selectedDateTime =
-                            pickedDate; // Update selectedDateTime
-                        String formattedDate =
-                            DateFormat('yyyy-MM-dd').format(pickedDate);
-                        controller.text =
-                            formattedDate; // Set output date to TextField value.
-                      }
+                      await _selectDate(
+                          controller); // Panggil fungsi untuk memilih tanggal
                     },
                   ),
                 ),
@@ -360,7 +385,8 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
       required selectedValue,
       required List listiem,
       required String hinttitle,
-      required Widget icons}) {
+      required Widget icons,
+      required Function onchange}) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -384,9 +410,10 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
             borderRadius: BorderRadius.circular(10), // Mengatur sudut border
           ),
           child: DropdownButtonFormField<String>(
-            isExpanded: true, // Membuat dropdown melebar sesuai lebar container
+            isExpanded: true,
+            // Membuat dropdown melebar sesuai lebar container
             hint: Padding(
-              padding: const EdgeInsets.only(left: 20.0),
+              padding: const EdgeInsets.only(left: 10.0),
               child: Text(
                 hinttitle,
                 maxLines: 2, // Membatasi teks maksimal 2 baris
@@ -431,7 +458,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
             }).toList(),
             onChanged: (value) {
               setState(() {
-                selectedValue = value;
+                onchange(value); // Panggil fungsi onchange dengan nilai baru
               });
             },
           ),

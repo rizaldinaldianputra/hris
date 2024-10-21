@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hris/config/constant.dart';
 import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/leave_model.dart';
@@ -42,14 +43,20 @@ class LeaveService {
     }
   }
 
-  Future<Response> saveLeave(LeaveModel leave) async {
-    final response = await api.postHTTP('$API_URL/leave-request', leave);
-    if (response.statusCode == 200) {
-      final data = response.data;
+  Future<Response> saveLeave(Map<String, dynamic> leave) async {
+    try {
+      final response = await api.postHTTP('$API_URL/leave-request', leave);
 
-      return data;
-    } else {
-      throw Exception('Failed to load leave types');
+      // Cek jika status code 200 atau sesuai dengan API success response
+      if (response.statusCode == 200) {
+        return response; // Return seluruh response jika dibutuhkan
+      } else {
+        throw Exception(
+            'Failed to submit leave request: ${response.statusMessage}');
+      }
+    } catch (e) {
+      // Tangani error lebih spesifik
+      throw Exception('Error submitting leave request: ${e.toString()}');
     }
   }
 }
