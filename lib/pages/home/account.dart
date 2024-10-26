@@ -16,209 +16,238 @@ class AccountPage extends ConsumerStatefulWidget {
 class _AccountPageState extends ConsumerState<AccountPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    height: 50,
-                    color: Colors.blue,
-                  ),
-                  Container(
-                    height: 50,
-                    color: Colors.white,
-                  )
-                ],
-              ),
-              Center(
-                child: Container(
-                  child: const Column(
+    final userData = ref.watch(userDataProvider(context));
+
+    return userData.when(
+        data: (data) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.blue,
+              elevation: 0,
+            ),
+            body: Column(
+              children: [
+                Stack(
+                  children: [
+                    Column(
+                      children: [
+                        Container(
+                          height: 50,
+                          color: Colors.blue,
+                        ),
+                        Container(
+                          height: 50,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                    Center(
+                      child: Container(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundImage: NetworkImage(data!.image
+                                  .toString()), // Ganti dengan path gambar Anda
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              '${data.firstName!} ${data.lastName!}',
+                              style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            ),
+                            Text(
+                              data.position!.name ?? '',
+                              style: const TextStyle(color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: AssetImage(
-                            'assets/profile.png'), // Ganti dengan path gambar Anda
+                      // Information section header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: Text(
+                          'Information',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                      SizedBox(height: 10),
-                      Text(
-                        'Jane Doe',
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
+
+                      // Menggunakan input function untuk setiap ListTile
+                      input(
+                        lead: SvgPicture.asset('assets/account/personal.svg'),
+                        title: 'Personal Info',
+                        onTap: () {
+                          context.goNamed('personalinfo');
+                        },
                       ),
-                      Text(
-                        'Supervisor',
-                        style: TextStyle(color: Colors.black),
+                      Divider(color: HexColor('#EAEAEA')),
+                      input(
+                        lead: SvgPicture.asset('assets/account/employe.svg'),
+                        title: 'Employment Info',
+                        onTap: () {
+                          context.goNamed('employeeinfo');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+                      input(
+                        lead: SvgPicture.asset('assets/account/emergency.svg'),
+                        title: 'Emergency Contact Info',
+                        onTap: () {
+                          context.goNamed('emergencylist');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/family.svg'),
+                        title: 'Family Info',
+                        onTap: () {
+                          context.goNamed('familylist');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/education.svg'),
+                        title: 'Education',
+                        onTap: () {
+                          context.goNamed('educationlist');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/education.svg'),
+                        title: 'Organization Experience',
+                        onTap: () {
+                          context.goNamed('organizationlist');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/payrol.svg'),
+                        title: 'Payroll Info',
+                        onTap: () {
+                          context.goNamed('payrollinfo');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      // Settings section header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: Text(
+                          'Settings',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/change.svg'),
+                        title: 'Change Password',
+                        onTap: () {
+                          context.goNamed('changepassword');
+                        },
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/langguage.svg'),
+                        title: 'Language',
+                        onTap: () {},
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/help.svg'),
+                        title: 'Help Center',
+                        onTap: () {},
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      // Other section header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        child: Text(
+                          'Other',
+                          style: GoogleFonts.inter(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/safety.svg'),
+                        title: 'Safety & Privacy',
+                        onTap: () {},
+                      ),
+                      Divider(color: HexColor('#EAEAEA')),
+
+                      input(
+                        lead: SvgPicture.asset('assets/account/signout.svg'),
+                        title: 'Sign Out',
+                        onTap: () {
+                          ref
+                              .watch(userLogoutProvider(context).notifier)
+                              .logout(context: context);
+                        },
+                      ),
+                      const SizedBox(
+                        height: 30,
                       ),
                     ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Information section header
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Text(
-                    'Information',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-
-                // Menggunakan input function untuk setiap ListTile
-                input(
-                  lead: SvgPicture.asset('assets/account/personal.svg'),
-                  title: 'Personal Info',
-                  onTap: () {
-                    context.goNamed('personalinfo');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-                input(
-                  lead: SvgPicture.asset('assets/account/employe.svg'),
-                  title: 'Employment Info',
-                  onTap: () {
-                    context.goNamed('employeeinfo');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-                input(
-                  lead: SvgPicture.asset('assets/account/emergency.svg'),
-                  title: 'Emergency Contact Info',
-                  onTap: () {
-                    context.goNamed('emergencylist');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/family.svg'),
-                  title: 'Family Info',
-                  onTap: () {
-                    context.goNamed('familylist');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/education.svg'),
-                  title: 'Education',
-                  onTap: () {
-                    context.goNamed('educationlist');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/education.svg'),
-                  title: 'Organization Experience',
-                  onTap: () {
-                    context.goNamed('organizationlist');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/payrol.svg'),
-                  title: 'Payroll Info',
-                  onTap: () {
-                    context.goNamed('payrollinfo');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                // Settings section header
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Text(
-                    'Settings',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/change.svg'),
-                  title: 'Change Password',
-                  onTap: () {
-                    context.goNamed('changepassword');
-                  },
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/langguage.svg'),
-                  title: 'Language',
-                  onTap: () {},
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/help.svg'),
-                  title: 'Help Center',
-                  onTap: () {},
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                // Other section header
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Text(
-                    'Other',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/safety.svg'),
-                  title: 'Safety & Privacy',
-                  onTap: () {},
-                ),
-                Divider(color: HexColor('#EAEAEA')),
-
-                input(
-                  lead: SvgPicture.asset('assets/account/signout.svg'),
-                  title: 'Sign Out',
-                  onTap: () {
-                    ref
-                        .watch(userLogoutProvider(context).notifier)
-                        .logout(context: context);
-                  },
+                  )),
                 ),
               ],
-            )),
-          ),
-        ],
-      ),
-    );
+            ),
+          );
+        },
+        error: (error, stacktrack) {
+          return Scaffold(
+              body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Terjadi error: $error'),
+              ElevatedButton(
+                onPressed: () {
+                  // Refresh data dengan memanggil provider lagi
+                  ref.refresh(userDataProvider(context));
+                },
+                child: const Text('Coba Lagi'),
+              ),
+            ],
+          ));
+        },
+        loading: () => const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ));
   }
 
   Widget input({

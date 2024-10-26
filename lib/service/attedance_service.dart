@@ -48,4 +48,25 @@ class AttedanceService {
       throw Exception('Failed to load attendance logs');
     }
   }
+
+  Future<List<AttendanceListLogsModel>> listLogAttendancePaggination({
+    required int month,
+    required int years,
+    required int page,
+    required int perpage,
+  }) async {
+    final response = await api.getHTTP(
+        '$url/attendances?month=$month&year=$years&page=$page&perPage=$perpage');
+
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      List<AttendanceListLogsModel> attendanceLogs = (data as List).map((item) {
+        return AttendanceListLogsModel.fromJson(item);
+      }).toList();
+
+      return attendanceLogs;
+    } else {
+      throw Exception('Failed to load attendance logs');
+    }
+  }
 }

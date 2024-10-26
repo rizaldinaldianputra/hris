@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +7,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/models/user_model.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -659,7 +657,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         ),
       );
     }, error: (error, stack) {
-      return Scaffold(body: Text(error.toString()));
+      return Scaffold(
+          body: Center(
+        child: IconButton(
+          icon: const Icon(
+            Icons.refresh,
+            color: Colors.blue,
+            size: 40,
+          ), // Ikon refresh
+          onPressed: () {
+            // Panggil fungsi refresh di sini
+            ref.refresh(userDataProvider(context));
+          },
+        ),
+      ));
     }, loading: () {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     });

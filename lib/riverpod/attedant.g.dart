@@ -317,5 +317,24 @@ class _AttedantListLogsProviderElement
   @override
   BuildContext get context => (origin as AttedantListLogsProvider).context;
 }
+
+String _$attendanceLogPaginationNotifierHash() =>
+    r'2a7a314ec502d606c20d5e159c8d03aeafa7cdb3';
+
+/// See also [AttendanceLogPaginationNotifier].
+@ProviderFor(AttendanceLogPaginationNotifier)
+final attendanceLogPaginationNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<AttendanceLogPaginationNotifier,
+        void>.internal(
+  AttendanceLogPaginationNotifier.new,
+  name: r'attendanceLogPaginationNotifierProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$attendanceLogPaginationNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$AttendanceLogPaginationNotifier = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

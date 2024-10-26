@@ -13,8 +13,7 @@ class AuthService {
     api = CommonService(context);
   }
 
-  Future<Response> authenticate(
-      url, String user, String password, context) async {
+  Future<int> authenticate(url, String user, String password, context) async {
     final data = {'username': user, 'password': password};
     Response response = await api.postHTTP(url, data);
     if (response.statusCode == 200) {
@@ -22,7 +21,7 @@ class AuthService {
           await SharedPreferences.getInstance();
       sharedPreferences.setString("token", response.data['data']['token']);
     }
-    return response;
+    return response.statusCode!;
   }
 
   Future<Response> logout(url, context) async {

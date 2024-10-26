@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hris/service/auth_services.dart';
 import 'package:hris/riverpod/auth.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -19,7 +19,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   bool _isPasswordObscure = false;
   @override
   void initState() {
-    checkToken(context);
     super.initState();
   }
 
@@ -166,9 +165,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   ),
 
                   GestureDetector(
-                    onTap: () {
-                      doLogin(_emailController.text, _passwordController.text,
-                          context);
+                    onTap: () async {
+                      await doLogin(
+                        context,
+                        _emailController.text,
+                        _passwordController.text,
+                      );
                     },
                     child: Container(
                       height: 50,

@@ -88,7 +88,8 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           ref.watch(masterDropdownListProvider(context, 'religion'));
       final dropdownMaritalStatus =
           ref.watch(masterDropdownListProvider(context, 'marital-status'));
-
+      final dropdownNational =
+          ref.watch(masterDropdownListProvider(context, 'nationality'));
       return Scaffold(
         appBar: appBarWidget('Personal Info'),
         body: Padding(
@@ -200,12 +201,17 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
                           listiem: data,
                           title: 'Martial Status',
                         )),
-                dropdownIcon(
-                  hinttitle: 'Nationality',
-                  selectedValue: selectedValueNationality,
-                  listiem: items,
-                  title: 'Nationality',
-                ),
+                dropdownNational.when(
+                    error: (error, stackTrace) {
+                      return Text(error.toString());
+                    },
+                    loading: () => const CircularProgressIndicator(),
+                    data: (data) => dropdownIcon(
+                          hinttitle: 'Nationality',
+                          selectedValue: selectedValueNationality,
+                          listiem: data,
+                          title: 'Nationality',
+                        )),
                 const SizedBox(height: 8),
                 Text(
                   'Upload ',

@@ -114,7 +114,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
 
   Widget requestReimbursment() {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16, top: 20),
       child: Column(
         children: [
           const SizedBox(
@@ -208,8 +208,8 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                   5, // Berikan itemCount agar ListView.builder dapat menampilkan beberapa item
               itemBuilder: (context, index) {
                 return Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                       border: Border.all(width: 1, color: HexColor('#EAEAEA')),
                       borderRadius: const BorderRadius.all(Radius.circular(8))),

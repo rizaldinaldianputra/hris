@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/pages/attedance_logs/attedant_logs.dart';
 import 'package:hris/pages/attedance_logs/logs.dart';
 import 'package:hris/utility/globalwidget.dart';
 
@@ -43,7 +44,6 @@ class _AttendantLogPageState extends State<AttedantLogPage>
               tabs: const [
                 Tab(text: 'Logs'),
                 Tab(text: 'Attendance'),
-                Tab(text: 'Shift'),
               ],
             ),
           ),
@@ -51,12 +51,7 @@ class _AttendantLogPageState extends State<AttedantLogPage>
             // Tambahkan Expanded agar TabBarView mengambil ruang yang tersisa
             child: TabBarView(
               controller: _tabController,
-              children: const [
-                LogsPage(),
-                Center(
-                    child: Text('Attendance', style: TextStyle(fontSize: 24))),
-                Center(child: Text('Shift', style: TextStyle(fontSize: 24))),
-              ],
+              children: const [LogsPage(), AttedantLogsPage()],
             ),
           ),
         ],

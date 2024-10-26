@@ -1,22 +1,15 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hris/config/constant.dart';
+
 import 'package:hris/service/auth_services.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:go_router/go_router.dart';
 
-@riverpod
-AuthService authService(context, user) {
-  return AuthService(context, user);
-}
-
-Future doLogin(String user, String password, context) async {
-  final authServices = authService(context, user);
-
+doLogin(BuildContext context, String user, String password) async {
+  final authService = AuthService(context, user, password);
   if (user == '') {
     Fluttertoast.showToast(
-        msg: 'Username tidak boleh kosong',
+        msg: 'Username Kosong',
         toastLength: Toast.LENGTH_SHORT,
         backgroundColor: Colors.red,
         textColor: Colors.white,
@@ -24,22 +17,24 @@ Future doLogin(String user, String password, context) async {
     return;
   } else if (password == '') {
     Fluttertoast.showToast(
-        msg: 'Password tidak boleh kosong',
+        msg: 'Password Kosong',
         toastLength: Toast.LENGTH_SHORT,
         backgroundColor: Colors.red,
         textColor: Colors.white,
         fontSize: 13);
     return;
   }
-  Response? response = await authServices.authenticate(
+  int? response = await authService.authenticate(
       '$API_URL/auth/login', user, password, context);
-
-  if (response.statusCode == 200) {
-    GoRouter.of(context).pushReplacementNamed('home');
+  print(response.toString());
+  if (response == 200) {
+    context.pushReplacementNamed('home');
   } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(response.data['message'])),
-    );
+    Fluttertoast.showToast(
+        msg: 'Not Found',
+        toastLength: Toast.LENGTH_SHORT,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 13);
   }
-  return user;
 }

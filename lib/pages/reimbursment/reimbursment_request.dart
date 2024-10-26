@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/models/expenses_model.dart';
 import 'package:hris/models/reimbursement%20_expense_model.dart';
 import 'package:hris/riverpod/reimbusment.dart';
 import 'package:hris/utility/globalwidget.dart';
@@ -34,6 +35,8 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
       TextEditingController();
   DateTime? selectedDateTime;
 
+  String? selectedValueType;
+
   @override
   Widget build(BuildContext context) {
     final expenses = ref.watch(reimbursementExpenseNotifierProvider);
@@ -57,7 +60,8 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                   title: 'Rebursement Type',
                   listiem: items,
                   hinttitle: 'Choose type',
-                  selectedValue: selectedValue,
+                  selectedValue: selectedValueType,
+                  onchange: (newValue) {},
                   icons: Image.asset('assets/reimbursment/choicetype.png')),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -113,12 +117,12 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                           child: Center(
                             child: ListTile(
                               title: Text(
-                                expense.name!,
+                                expense.expensesId,
                                 style: GoogleFonts.inter(
                                     fontSize: 16, fontWeight: FontWeight.w600),
                               ),
                               subtitle: Text(
-                                'Rp ${expense.value!}',
+                                'Rp ${expense.value}',
                                 style: GoogleFonts.inter(
                                     fontSize: 14, fontWeight: FontWeight.w500),
                               ),
@@ -251,135 +255,143 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return Padding(
-          padding: MediaQuery.of(context)
-              .viewInsets, // Mengatur agar bottom sheet tidak tertutup oleh keyboard
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Add Expense',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 18,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Expense Type',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.black,
-                        ),
+        return FutureBuilder(
+          future: ref
+              .watch(expenseListProvider(context).notifier)
+              .listType(context),
+          builder: (context, snapshot) {
+            final expenseTypes =
+                snapshot.data ?? []; // Ambil data dari snapshot
+            return Padding(
+              padding: MediaQuery.of(context)
+                  .viewInsets, // Mengatur agar bottom sheet tidak tertutup oleh keyboard
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Add Expense',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                        color: Colors.black,
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              color: HexColor(
-                                  '#D9D9D9')), // Mengatur border untuk keseluruhan
-                          borderRadius: BorderRadius.circular(
-                              10), // Mengatur sudut border
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          hint: Padding(
-                            padding: const EdgeInsets.only(left: 22.0),
-                            child: Text(
-                              'Choose expense',
-                              style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 16,
-                                  color: HexColor('#B3B3B3')),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Expense Type',
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black,
                             ),
                           ),
-                          value: selectedValue,
-                          decoration: const InputDecoration(
-                            border: InputBorder
-                                .none, // Menghilangkan border default
-                          ),
-                          items: items.map((item) {
-                            return DropdownMenuItem<String>(
-                              value: item,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 3, left: 20.0),
-                                child: Text(item),
+                          const SizedBox(height: 5),
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: HexColor(
+                                      '#D9D9D9')), // Mengatur border untuk keseluruhan
+                              borderRadius: BorderRadius.circular(
+                                  10), // Mengatur sudut border
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              hint: Padding(
+                                padding: const EdgeInsets.only(left: 22.0),
+                                child: Text(
+                                  'Choose expense',
+                                  style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 16,
+                                      color: HexColor('#B3B3B3')),
+                                ),
                               ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              selectedValue = value;
-                            });
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                textFieldIcon(
-                    hinttitle: 'Input Ammount',
-                    title: 'Ammount',
-                    icon: Text(
-                      textAlign: TextAlign.center,
-                      'Rp',
-                      style: GoogleFonts.inter(fontSize: 14),
+                              value: selectedValue,
+                              decoration: const InputDecoration(
+                                border: InputBorder
+                                    .none, // Menghilangkan border default
+                              ),
+                              items: expenseTypes.map((item) {
+                                return DropdownMenuItem<String>(
+                                  value: item
+                                      .value, // Gunakan expensesId sebagai value
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 3, left: 20.0),
+                                    child: Text(item
+                                        .value), // Tampilkan value dari item
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedValue =
+                                      value; // Set value yang dipilih
+                                });
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                    controller: _expenseAmountController),
-                ElevatedButton(
-                  onPressed: () {
-                    String expenseAmount = _expenseAmountController.text;
-                    final newExpense = ReimbursementExpenseModel(
-                      id: '2',
-                      companyId: 'company_1',
-                      employeeId: 'employee_1',
-                      reimbursementRequestId: 'request_1',
-                      reimbursementExpenseId: 'expense_2',
-                      name: selectedValue,
-                      value: double.parse(expenseAmount),
-                      createdAt: DateTime.now(),
-                      updatedAt: DateTime.now(),
-                    );
-                    ref
-                        .read(reimbursementExpenseNotifierProvider.notifier)
-                        .addExpense(newExpense);
+                    textFieldIcon(
+                      hinttitle: 'Input Amount',
+                      title: 'Amount',
+                      icon: Text(
+                        textAlign: TextAlign.center,
+                        'Rp',
+                        style: GoogleFonts.inter(fontSize: 14),
+                      ),
+                      controller: _expenseAmountController,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        final amount =
+                            double.tryParse(_expenseAmountController.text) ??
+                                0; // Ambil nilai dari controller
+                        final newExpense = ExpensesModel(
+                          expensesId: selectedValue ??
+                              '', // Ambil selectedValue dari dropdown
+                          value: amount, // Gunakan amount dari input
+                        );
 
-                    // Tutup bottom sheet setelah submit
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: HexColor('#01A2E9'),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                        ref
+                            .read(reimbursementExpenseNotifierProvider.notifier)
+                            .addExpense(newExpense);
+
+                        // Tutup bottom sheet setelah submit
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: HexColor('#01A2E9'),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: Text(
+                        'Submit',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: Text(
-                    'Submit',
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -490,155 +502,166 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
   Widget dropdownIcon(
       {required String title,
       required selectedValue,
-      required String hinttitle,
       required List listiem,
-      required Widget icons}) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
+      required String hinttitle,
+      required Widget icons,
+      required Function onchange}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
           ),
-          const SizedBox(
-            height: 5,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+                color:
+                    HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
+            borderRadius: BorderRadius.circular(10), // Mengatur sudut border
           ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color:
-                      HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
-              borderRadius: BorderRadius.circular(10), // Mengatur sudut border
-            ),
-            child: DropdownButtonFormField<String>(
-              hint: Padding(
-                padding: const EdgeInsets.only(left: 22.0),
-                child: Text(
-                  hinttitle,
-                  style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                      color: HexColor('#B3B3B3')),
-                ),
+          child: DropdownButtonFormField<String>(
+            isExpanded: true,
+            // Membuat dropdown melebar sesuai lebar container
+            hint: Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: Text(
+                hinttitle,
+                maxLines: 2, // Membatasi teks maksimal 2 baris
+                overflow:
+                    TextOverflow.ellipsis, // Memotong teks jika terlalu panjang
+                style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 16,
+                    color: HexColor('#B3B3B3')),
               ),
-              value: selectedValue,
-              decoration: InputDecoration(
-                border: InputBorder.none, // Menghilangkan border default
-                prefixIcon: Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(
-                          color: HexColor(
-                              '#D9D9D9')), // Border di sebelah kanan ikon
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: icons,
-                  ),
-                ),
-              ),
-              items: listiem.map((item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 3, left: 20.0),
-                    child: Text(item),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  selectedValue = value;
-                });
-              },
             ),
-          )
-        ],
-      ),
-    );
-  }
+            value: selectedValue,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.only(
+                  top: 12, left: 16.0, right: 12, bottom: 12),
 
-  Widget textFieldIcon({
-    required String title,
-    required TextEditingController controller,
-    required String hinttitle,
-    required Widget icon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                  color:
-                      HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
-              borderRadius: BorderRadius.circular(10), // Mengatur sudut border
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      right: BorderSide(
-                          color: HexColor(
-                              '#D9D9D9')), // Border di sebelah kanan ikon
-                    ),
-                  ),
-                  child: Center(child: icon),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: TextField(
-                      keyboardType: TextInputType
-                          .number, // Menetapkan keyboard untuk input angka
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter
-                            .digitsOnly, // Memastikan hanya input digit yang diterima
-                      ],
-                      controller: controller,
-                      decoration: InputDecoration(
-                        hintText: hinttitle,
-                        hintStyle: GoogleFonts.inter(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: HexColor('#B3B3B3'),
-                        ),
-                        border: InputBorder.none,
-                        // Menghilangkan border default
-                      ),
-                    ),
+              border: InputBorder.none, // Menghilangkan border default
+              prefixIcon: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                        color: HexColor(
+                            '#D9D9D9')), // Border di sebelah kanan ikon
                   ),
                 ),
-              ],
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: icons,
+                ),
+              ),
             ),
+            items: listiem.map((item) {
+              return DropdownMenuItem<String>(
+                value: item,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(
+                    item,
+                    maxLines: 2, // Membatasi teks maksimal 2 baris
+                    overflow: TextOverflow
+                        .ellipsis, // Memotong teks jika terlalu panjang
+                  ),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                onchange(value); // Panggil fungsi onchange dengan nilai baru
+              });
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
+}
+
+Widget textFieldIcon({
+  required String title,
+  required TextEditingController controller,
+  required String hinttitle,
+  required Widget icon,
+}) {
+  return Padding(
+    padding: const EdgeInsets.all(10.0),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+                color:
+                    HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
+            borderRadius: BorderRadius.circular(10), // Mengatur sudut border
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(
+                        color: HexColor(
+                            '#D9D9D9')), // Border di sebelah kanan ikon
+                  ),
+                ),
+                child: Center(child: icon),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: TextField(
+                    keyboardType: TextInputType
+                        .number, // Menetapkan keyboard untuk input angka
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter
+                          .digitsOnly, // Memastikan hanya input digit yang diterima
+                    ],
+                    controller: controller,
+                    decoration: InputDecoration(
+                      hintText: hinttitle,
+                      hintStyle: GoogleFonts.inter(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                        color: HexColor('#B3B3B3'),
+                      ),
+                      border: InputBorder.none,
+                      // Menghilangkan border default
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

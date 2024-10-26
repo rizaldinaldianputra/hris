@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart' as diopackage;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hris/config/constant.dart';
 import 'package:hris/pages/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,13 +25,13 @@ class CommonService {
     return InterceptorsWrapper(
       onError: (error, handler) async {
         if (error.response == null) {
-          // Fluttertoast.showToast(
-          //   msg: "Network Error",
-          //   toastLength: Toast.LENGTH_SHORT,
-          //   backgroundColor: Colors.red,
-          //   textColor: Colors.white,
-          //   fontSize: 13,
-          // );
+          Fluttertoast.showToast(
+            msg: "Network Error",
+            toastLength: Toast.LENGTH_SHORT,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 13,
+          );
           return handler.next(error);
         }
 
@@ -40,8 +41,13 @@ class CommonService {
         }
 
         if (error.response!.statusCode == 401) {
-          await _handleUnauthorized(context);
-          return handler.next(error);
+          Fluttertoast.showToast(
+              msg: error.response!.data['message'],
+              toastLength: Toast.LENGTH_SHORT,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 13);
+          return;
         }
 
         return handler.next(error);
