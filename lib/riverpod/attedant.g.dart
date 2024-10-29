@@ -172,13 +172,13 @@ class _AttedantSumamryProviderElement
   BuildContext get context => (origin as AttedantSumamryProvider).context;
 }
 
-String _$attedantListLogsHash() => r'28e88983df1cc93717e3e4194b5e6f56798c76bb';
+String _$attedantListLogsHash() => r'a5c0dbd3d4779baf5ddbd5ef9b3cd1b373b14bd9';
 
 abstract class _$AttedantListLogs
-    extends BuildlessAutoDisposeAsyncNotifier<List<AttendanceListLogsModel>> {
+    extends BuildlessAutoDisposeAsyncNotifier<List<AttendanceModel>> {
   late final BuildContext context;
 
-  FutureOr<List<AttendanceListLogsModel>> build(
+  FutureOr<List<AttendanceModel>> build(
     BuildContext context,
   );
 }
@@ -188,8 +188,7 @@ abstract class _$AttedantListLogs
 const attedantListLogsProvider = AttedantListLogsFamily();
 
 /// See also [AttedantListLogs].
-class AttedantListLogsFamily
-    extends Family<AsyncValue<List<AttendanceListLogsModel>>> {
+class AttedantListLogsFamily extends Family<AsyncValue<List<AttendanceModel>>> {
   /// See also [AttedantListLogs].
   const AttedantListLogsFamily();
 
@@ -228,7 +227,7 @@ class AttedantListLogsFamily
 
 /// See also [AttedantListLogs].
 class AttedantListLogsProvider extends AutoDisposeAsyncNotifierProviderImpl<
-    AttedantListLogs, List<AttendanceListLogsModel>> {
+    AttedantListLogs, List<AttendanceModel>> {
   /// See also [AttedantListLogs].
   AttedantListLogsProvider(
     BuildContext context,
@@ -259,7 +258,7 @@ class AttedantListLogsProvider extends AutoDisposeAsyncNotifierProviderImpl<
   final BuildContext context;
 
   @override
-  FutureOr<List<AttendanceListLogsModel>> runNotifierBuild(
+  FutureOr<List<AttendanceModel>> runNotifierBuild(
     covariant AttedantListLogs notifier,
   ) {
     return notifier.build(
@@ -285,7 +284,7 @@ class AttedantListLogsProvider extends AutoDisposeAsyncNotifierProviderImpl<
 
   @override
   AutoDisposeAsyncNotifierProviderElement<AttedantListLogs,
-      List<AttendanceListLogsModel>> createElement() {
+      List<AttendanceModel>> createElement() {
     return _AttedantListLogsProviderElement(this);
   }
 
@@ -304,14 +303,14 @@ class AttedantListLogsProvider extends AutoDisposeAsyncNotifierProviderImpl<
 }
 
 mixin AttedantListLogsRef
-    on AutoDisposeAsyncNotifierProviderRef<List<AttendanceListLogsModel>> {
+    on AutoDisposeAsyncNotifierProviderRef<List<AttendanceModel>> {
   /// The parameter `context` of this provider.
   BuildContext get context;
 }
 
 class _AttedantListLogsProviderElement
     extends AutoDisposeAsyncNotifierProviderElement<AttedantListLogs,
-        List<AttendanceListLogsModel>> with AttedantListLogsRef {
+        List<AttendanceModel>> with AttedantListLogsRef {
   _AttedantListLogsProviderElement(super.provider);
 
   @override
@@ -319,7 +318,7 @@ class _AttedantListLogsProviderElement
 }
 
 String _$attendanceLogPaginationNotifierHash() =>
-    r'3d85bf6382e315f68db152f8329db7f78d456a1e';
+    r'34ac29353a95e54f90a00f5dfd3305d190cca36f';
 
 /// See also [AttendanceLogPaginationNotifier].
 @ProviderFor(AttendanceLogPaginationNotifier)
@@ -479,6 +478,150 @@ class _AttedanceStatusProviderElement
 
   @override
   BuildContext get context => (origin as AttedanceStatusProvider).context;
+}
+
+String _$attedantSaveHash() => r'01dc7de7ac6d37ebbd7d3d637597c0d6355883cc';
+
+abstract class _$AttedantSave
+    extends BuildlessAutoDisposeAsyncNotifier<Response?> {
+  late final BuildContext context;
+
+  FutureOr<Response?> build(
+    BuildContext context,
+  );
+}
+
+/// See also [AttedantSave].
+@ProviderFor(AttedantSave)
+const attedantSaveProvider = AttedantSaveFamily();
+
+/// See also [AttedantSave].
+class AttedantSaveFamily extends Family<AsyncValue<Response?>> {
+  /// See also [AttedantSave].
+  const AttedantSaveFamily();
+
+  /// See also [AttedantSave].
+  AttedantSaveProvider call(
+    BuildContext context,
+  ) {
+    return AttedantSaveProvider(
+      context,
+    );
+  }
+
+  @override
+  AttedantSaveProvider getProviderOverride(
+    covariant AttedantSaveProvider provider,
+  ) {
+    return call(
+      provider.context,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'attedantSaveProvider';
+}
+
+/// See also [AttedantSave].
+class AttedantSaveProvider
+    extends AutoDisposeAsyncNotifierProviderImpl<AttedantSave, Response?> {
+  /// See also [AttedantSave].
+  AttedantSaveProvider(
+    BuildContext context,
+  ) : this._internal(
+          () => AttedantSave()..context = context,
+          from: attedantSaveProvider,
+          name: r'attedantSaveProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$attedantSaveHash,
+          dependencies: AttedantSaveFamily._dependencies,
+          allTransitiveDependencies:
+              AttedantSaveFamily._allTransitiveDependencies,
+          context: context,
+        );
+
+  AttedantSaveProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.context,
+  }) : super.internal();
+
+  final BuildContext context;
+
+  @override
+  FutureOr<Response?> runNotifierBuild(
+    covariant AttedantSave notifier,
+  ) {
+    return notifier.build(
+      context,
+    );
+  }
+
+  @override
+  Override overrideWith(AttedantSave Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: AttedantSaveProvider._internal(
+        () => create()..context = context,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        context: context,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<AttedantSave, Response?>
+      createElement() {
+    return _AttedantSaveProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AttedantSaveProvider && other.context == context;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, context.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin AttedantSaveRef on AutoDisposeAsyncNotifierProviderRef<Response?> {
+  /// The parameter `context` of this provider.
+  BuildContext get context;
+}
+
+class _AttedantSaveProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<AttedantSave, Response?>
+    with AttedantSaveRef {
+  _AttedantSaveProviderElement(super.provider);
+
+  @override
+  BuildContext get context => (origin as AttedantSaveProvider).context;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

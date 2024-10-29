@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hris/models/employee_shift.dart';
 
 class AttendanceModel {
   String? id;
@@ -18,6 +19,7 @@ class AttendanceModel {
   String? clockOutRangeStatus;
   DateTime? createdAt;
   DateTime? updatedAt;
+  EmployeeShift? employeeShift; // Tambahkan employeeShift
 
   AttendanceModel({
     this.id,
@@ -37,6 +39,7 @@ class AttendanceModel {
     this.clockOutRangeStatus,
     this.createdAt,
     this.updatedAt,
+    this.employeeShift, // Tambahkan employeeShift ke konstruktor
   });
 
   factory AttendanceModel.fromJson(Map<String, dynamic> json) {
@@ -45,18 +48,18 @@ class AttendanceModel {
       employeeId: json['employee_id'],
       employeeShiftId: json['employee_shift_id'],
       date: json['date'] != null ? DateTime.parse(json['date']) : null,
-      clockInTime: json['clockin_time'] != null
-          ? TimeOfDay.fromDateTime(DateTime.parse(json['clockin_time']))
+      clockInTime: json['clockinTime'] != null
+          ? TimeOfDay.fromDateTime(DateTime.parse(json['clockinTime']))
           : null,
-      clockInImage: json['clockin_image'],
-      clockInLat: json['clockin_lat'],
-      clockInLong: json['clockin_long'],
-      clockOutTime: json['clockout_time'] != null
-          ? TimeOfDay.fromDateTime(DateTime.parse(json['clockout_time']))
+      clockInImage: json['clockinImage'],
+      clockInLat: json['clockinLat'],
+      clockInLong: json['clockinLong'],
+      clockOutTime: json['clockoutTime'] != null
+          ? TimeOfDay.fromDateTime(DateTime.parse(json['clockoutTime']))
           : null,
-      clockOutImage: json['clockout_image'],
-      clockOutLat: json['clockout_lat'],
-      clockOutLong: json['clockout_long'],
+      clockOutImage: json['clockoutImage'],
+      clockOutLat: json['clockoutLat'],
+      clockOutLong: json['clockoutLong'],
       clockInPresentStatus: json['clockin_present_status'],
       clockInRangeStatus: json['clockin_range_status'],
       clockOutRangeStatus: json['clockout_range_status'],
@@ -65,6 +68,10 @@ class AttendanceModel {
           : null,
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
+          : null,
+      employeeShift: json['employeeShift'] != null
+          ? EmployeeShift.fromJson(
+              json['employeeShift']) // Tambahkan parsing employeeShift
           : null,
     );
   }
@@ -94,6 +101,7 @@ class AttendanceModel {
       'clockout_range_status': clockOutRangeStatus,
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'employeeShift': employeeShift, // Tambahkan toJson untuk employeeShift
     };
   }
 

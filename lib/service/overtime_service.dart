@@ -60,14 +60,14 @@ class OvertimeService {
     }
   }
 
-  Future<List<Overtime>> listOvertimePagintion({
-    required int month,
-    required int years,
-    required int page,
-    required int perpage,
-  }) async {
+  Future<List<Overtime>> listOvertimePagintion(
+      {required int month,
+      required int years,
+      required int page,
+      required int perpage,
+      required String status}) async {
     final response = await api.getHTTP(
-        '$API_URL/overtime-requests?month=$month&year=$years&page=$page&perPage=$perpage');
+        '$API_URL/overtime-requests?month=$month&year=$years&page=$page&perPage=$perpage&status=$status');
 
     if (response.statusCode == 200) {
       final data = response.data['data'];

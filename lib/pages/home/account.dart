@@ -45,11 +45,17 @@ class _AccountPageState extends ConsumerState<AccountPage> {
                       child: Container(
                         child: Column(
                           children: [
-                            CircleAvatar(
-                              radius: 40,
-                              backgroundImage: NetworkImage(data!.image
-                                  .toString()), // Ganti dengan path gambar Anda
-                            ),
+                            data!.image == null
+                                ? const CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage:
+                                        AssetImage('assets/profile.png'),
+                                  )
+                                : CircleAvatar(
+                                    radius: 40,
+                                    backgroundImage:
+                                        NetworkImage(data.image ?? ''),
+                                  ),
                             const SizedBox(height: 10),
                             Text(
                               '${data.firstName!} ${data.lastName!}',

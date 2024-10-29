@@ -6,23 +6,38 @@ part of 'overtime.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$overtimePaginationHash() =>
-    r'80aa22ba77050072070364e5c32d83c32c1c612a';
+String _$overtimePendingHash() => r'17f638af87e936add8646674d85e74dcb13cd71b';
 
-/// See also [OvertimePagination].
-@ProviderFor(OvertimePagination)
-final overtimePaginationProvider =
-    AutoDisposeAsyncNotifierProvider<OvertimePagination, void>.internal(
-  OvertimePagination.new,
-  name: r'overtimePaginationProvider',
+/// See also [OvertimePending].
+@ProviderFor(OvertimePending)
+final overtimePendingProvider =
+    AutoDisposeAsyncNotifierProvider<OvertimePending, void>.internal(
+  OvertimePending.new,
+  name: r'overtimePendingProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$overtimePaginationHash,
+      : _$overtimePendingHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$OvertimePagination = AutoDisposeAsyncNotifier<void>;
+typedef _$OvertimePending = AutoDisposeAsyncNotifier<void>;
+String _$overtimeApprovedHash() => r'6d4b380dd38ce4301bb867ace845edce9c9f2773';
+
+/// See also [OvertimeApproved].
+@ProviderFor(OvertimeApproved)
+final overtimeApprovedProvider =
+    AutoDisposeAsyncNotifierProvider<OvertimeApproved, void>.internal(
+  OvertimeApproved.new,
+  name: r'overtimeApprovedProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$overtimeApprovedHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$OvertimeApproved = AutoDisposeAsyncNotifier<void>;
 String _$overtimeListViewHash() => r'fdd52f3f171e5e56bd579f3b35d0ec05476fb134';
 
 /// Copied from Dart SDK

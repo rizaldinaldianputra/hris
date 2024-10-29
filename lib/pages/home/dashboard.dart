@@ -158,10 +158,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const CircleAvatar(
-                        radius: 20,
-                        backgroundImage: AssetImage('assets/profile.png'),
-                      ),
+                      data!.image == null
+                          ? const CircleAvatar(
+                              radius: 20,
+                              backgroundImage: AssetImage('assets/profile.png'),
+                            )
+                          : CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(data.image ?? ''),
+                            ),
                       Padding(
                         padding: const EdgeInsets.only(left: 10.0),
                         child: Column(
@@ -169,7 +174,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${'${data!.firstName!} '} ${data.lastName!}',
+                              '${'${data.firstName!} '} ${data.lastName!}',
                               style: GoogleFonts.inter(
                                 fontWeight: FontWeight.w700,
                                 textStyle: const TextStyle(
@@ -282,12 +287,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton.icon(
-                                  onPressed: (!isClockedIn ||
-                                          (isClockedIn && isClockedOut))
+                                  onPressed: (isClockedIn ==
+                                          false) // Aktifkan Clock In jika belum ada clockInTime
                                       ? () {
+                                          ref
+                                              .read(statusProvider.notifier)
+                                              .state = 'clockin';
                                           context.goNamed('camerapage');
                                         }
-                                      : null, // Nonaktifkan Clock In jika sudah ada clockInTime dan belum ada clockOutTime
+                                      : null,
                                   icon: const Icon(Icons.login,
                                       color: Colors.black),
                                   label: Text(
@@ -296,8 +304,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                                       fontWeight: FontWeight.w500,
                                       textStyle: TextStyle(
                                         fontSize: 14,
-                                        color: (!isClockedIn ||
-                                                (isClockedIn && isClockedOut))
+                                        color: (isClockedIn == false)
                                             ? Colors.black
                                             : Colors.grey,
                                       ),
@@ -306,11 +313,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                                 ),
                                 const Text('|', style: TextStyle(fontSize: 20)),
                                 TextButton.icon(
-                                  onPressed: (isClockedIn && !isClockedOut)
+                                  onPressed: (isClockedIn &&
+                                          !isClockedOut) // Aktifkan Clock Out jika sudah ada clockInTime dan belum ada clockOutTime
                                       ? () {
+                                          ref
+                                              .read(statusProvider.notifier)
+                                              .state = 'clockout';
                                           context.goNamed('camerapage');
                                         }
-                                      : null, // Aktifkan Clock Out jika sudah ada clockInTime dan belum ada clockOutTime
+                                      : null,
                                   icon: const Icon(Icons.logout,
                                       color: Colors.black),
                                   label: Text(

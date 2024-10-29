@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hris/riverpod/attedant.dart';
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
@@ -66,7 +67,11 @@ class _CameraPageState extends ConsumerState<CameraPage> {
       setState(() {
         locationMessage =
             "Latitude: ${position.latitude}, Longitude: ${position.longitude}";
+        ref.read(latProvider.notifier).state = position.latitude.toString();
+        ref.read(longProvider.notifier).state = position.longitude.toString();
       });
+
+      print(locationMessage);
     } catch (e) {
       setState(() {
         locationMessage = "Gagal mendapatkan lokasi: $e";

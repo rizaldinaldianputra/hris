@@ -45,13 +45,6 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
     },
   ),
   GoRoute(
-    path: '/dialogsucces',
-    name: 'dialogsucces',
-    builder: (BuildContext context, GoRouterState state) {
-      return const DialogSuccesPage();
-    },
-  ),
-  GoRoute(
     path: '/home',
     name: 'home',
     builder: (BuildContext context, GoRouterState state) {
@@ -222,14 +215,22 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
         },
         routes: <RouteBase>[
           GoRoute(
-            path: '/camerapreview',
-            name: 'camerapreview',
-            builder: (BuildContext context, GoRouterState state) {
-              final imageBytes = state.extra as XFile?;
+              path: '/camerapreview',
+              name: 'camerapreview',
+              builder: (BuildContext context, GoRouterState state) {
+                final imageBytes = state.extra as XFile?;
 
-              return CamerPreviewPage(imageByte: imageBytes);
-            },
-          ),
+                return CamerPreviewPage(imageByte: imageBytes);
+              },
+              routes: <RouteBase>[
+                GoRoute(
+                  path: '/dialogsucces',
+                  name: 'dialogsucces',
+                  builder: (BuildContext context, GoRouterState state) {
+                    return const DialogSuccesPage();
+                  },
+                ),
+              ]),
         ],
       ),
       GoRoute(

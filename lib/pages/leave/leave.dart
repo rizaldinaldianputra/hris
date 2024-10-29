@@ -22,7 +22,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
     with SingleTickerProviderStateMixin {
   int selectedMonth = 0;
   TabController? tabController;
-
+  String? statusLeave;
   @override
   void initState() {
     super.initState();
@@ -37,16 +37,12 @@ class _LeavePageState extends ConsumerState<LeavePage>
 
   @override
   Widget build(BuildContext context) {
-    final leaveProvider = ref.watch(leavePaginationProvider.notifier);
-
-    leaveProvider.setParameters(
-      monthParam: 10,
-      yearParam: 2024,
-      contextParam: context,
-    );
+    final leaveApproved = ref.watch(leaveApprovedProvider.notifier);
+    final leavePending = ref.watch(leavePendingProvider.notifier);
 
     int selectedIndex = DateTime.now().month - 1;
     TextEditingController choiceMonthController = TextEditingController();
+    TextEditingController choiceStatusMonthController = TextEditingController();
 
     List<String> months = [
       "January",
@@ -65,11 +61,16 @@ class _LeavePageState extends ConsumerState<LeavePage>
 
     String monthvalue = 'Choice Month';
     TextEditingController choiceYearController = TextEditingController();
+    TextEditingController choiceStatusYearController = TextEditingController();
 
     int selectedMonth = 0;
 
     int selectYears = DateTime.now().year;
-
+    leavePending.setParameters(
+        monthParam: DateTime.now().month,
+        yearParam: DateTime.now().year,
+        contextParam: context,
+        statusLeave: 'pending');
     return Scaffold(
         appBar: appBarWidgetWithTralling(
             'Leave Request', Image.asset('assets/filter.png')),
@@ -79,6 +80,29 @@ class _LeavePageState extends ConsumerState<LeavePage>
               controller: tabController,
               labelColor: HexColor('#01A2E9'),
               unselectedLabelColor: Colors.black,
+              onTap: (value) {
+                if (value == 0) {
+                  leavePending.setParameters(
+                      monthParam: (choiceMonthController.text.isNotEmpty)
+                          ? int.parse(choiceMonthController.text)
+                          : DateTime.now().month,
+                      yearParam: (choiceYearController.text.isNotEmpty)
+                          ? int.parse(choiceYearController.text)
+                          : DateTime.now().year,
+                      contextParam: context,
+                      statusLeave: 'pending');
+                } else {
+                  leaveApproved.setParameters(
+                      monthParam: (choiceStatusMonthController.text.isNotEmpty)
+                          ? int.parse(choiceStatusMonthController.text)
+                          : DateTime.now().month,
+                      yearParam: (choiceStatusYearController.text.isNotEmpty)
+                          ? int.parse(choiceStatusYearController.text)
+                          : DateTime.now().year,
+                      contextParam: context,
+                      statusLeave: 'pending');
+                }
+              },
               indicatorColor: HexColor('#01A2E9'),
               tabs: const [
                 SizedBox(
@@ -100,6 +124,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                 child: TabBarView(
                   controller: tabController,
                   children: [
+                    // leave pending
                     Column(
                       children: [
                         Row(
@@ -282,7 +307,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                     monthName;
                                                               });
 
-                                                              leaveProvider
+                                                              leavePending
                                                                   .updateDate(
                                                                 newYear:
                                                                     selectYears,
@@ -504,7 +529,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                   int.parse(
                                                                       choiceYearController
                                                                           .text);
-                                                              leaveProvider
+                                                              leavePending
                                                                   .updateDate(
                                                                 newYear:
                                                                     selectYears,
@@ -587,7 +612,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                         Expanded(
                           child: PagedListView<int, LeaveModel>(
                             shrinkWrap: true,
-                            pagingController: leaveProvider.pagingController,
+                            pagingController: leavePending.pagingController,
                             builderDelegate:
                                 PagedChildBuilderDelegate<LeaveModel>(
                               itemBuilder: (context, item, index) {
@@ -650,7 +675,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               style: GoogleFonts.inter(
                                                 textStyle: TextStyle(
                                                     color: statusColorText(
-                                                        'Rejected'),
+                                                        item.status!),
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: 14),
                                               ),
@@ -661,7 +686,585 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                 );
                               },
                               noItemsFoundIndicatorBuilder: (_) => const Center(
-                                child: Text('No attendance logs found'),
+                                  child: Text('No leave logs found')),
+                              firstPageErrorIndicatorBuilder: (_) =>
+                                  const Center(
+                                child: Text('Failed to load data'),
+                              ),
+                              newPageErrorIndicatorBuilder: (_) => const Center(
+                                child: Center(
+                                    child: Text('Failed to load more data')),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // approved
+
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: HexColor('#D9D9D9'), width: 1),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          right: BorderSide(
+                                              color: HexColor('#D9D9D9'),
+                                              width: 1),
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.calendar_today,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: choiceStatusMonthController,
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                              context: context,
+                                              backgroundColor: Colors.white,
+                                              isScrollControlled: true,
+                                              builder: (BuildContext context) {
+                                                return StatefulBuilder(builder:
+                                                    (context, setState) {
+                                                  return SizedBox(
+                                                    height: 350,
+                                                    width: double.infinity,
+                                                    child:
+                                                        SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          Container(
+                                                            height: 6,
+                                                            width: 40,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: HexColor(
+                                                                  '#EAEBEB'),
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                      .all(
+                                                                      Radius.circular(
+                                                                          200)),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 40),
+                                                          const Text(
+                                                            'Choose Month',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 196,
+                                                            height: 170,
+                                                            child:
+                                                                ListWheelScrollView(
+                                                              itemExtent: 50,
+                                                              onSelectedItemChanged:
+                                                                  (index) {
+                                                                setState(() {
+                                                                  selectedIndex =
+                                                                      index;
+                                                                });
+                                                              },
+                                                              children:
+                                                                  List.generate(
+                                                                      months
+                                                                          .length,
+                                                                      (index) {
+                                                                bool
+                                                                    isSelected =
+                                                                    index ==
+                                                                        selectedIndex;
+                                                                return Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: isSelected
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .transparent,
+                                                                  ),
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      // Garis bawah
+                                                                      Opacity(
+                                                                        opacity: isSelected
+                                                                            ? 1.0
+                                                                            : 0.5,
+                                                                        child:
+                                                                            Center(
+                                                                          child:
+                                                                              Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.all(16),
+                                                                            child:
+                                                                                Text(
+                                                                              months[index],
+                                                                              style: GoogleFonts.inter(
+                                                                                fontSize: 14,
+                                                                                fontWeight: FontWeight.w400,
+                                                                                color: isSelected ? HexColor('#333333') : Colors.grey,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            120,
+                                                                        child:
+                                                                            Divider(
+                                                                          color:
+                                                                              Colors.black,
+                                                                          height:
+                                                                              2,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                              }),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 10),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              // Ambil tanggal bulan sekarang
+                                                              selectedMonth =
+                                                                  selectedIndex +
+                                                                      1; // +1 karena bulan dimulai dari 0
+                                                              final int
+                                                                  currentYear =
+                                                                  DateTime.now()
+                                                                      .year;
+                                                              final DateTime
+                                                                  selectedDate =
+                                                                  DateTime(
+                                                                      currentYear,
+                                                                      selectedMonth,
+                                                                      1);
+
+                                                              String monthName =
+                                                                  months[selectedDate
+                                                                          .month -
+                                                                      1];
+                                                              // Ambil nama bulan
+
+                                                              setState(() {
+                                                                choiceStatusMonthController
+                                                                        .text =
+                                                                    monthName;
+                                                              });
+
+                                                              leaveApproved
+                                                                  .updateDate(
+                                                                newYear:
+                                                                    selectYears,
+                                                                newMonth:
+                                                                    selectedMonth,
+                                                              );
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Tutup modal
+                                                            },
+                                                            child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: HexColor(
+                                                                    '#01A2E9'),
+                                                                borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                        Radius.circular(
+                                                                            8)),
+                                                              ),
+                                                              width: double
+                                                                  .infinity,
+                                                              height: 48,
+                                                              child: Center(
+                                                                child: Text(
+                                                                  'View',
+                                                                  style:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                    fontSize:
+                                                                        16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                });
+                                              });
+                                        },
+                                        readOnly: true,
+                                        decoration: InputDecoration(
+                                          contentPadding: const EdgeInsets.only(
+                                              top: 12,
+                                              left: 16,
+                                              right: 16,
+                                              bottom: 12),
+                                          hintText: 'Choice Month',
+                                          suffixIcon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          hintStyle: GoogleFonts.inter(
+                                              color: HexColor('#B3B3B3')),
+                                          border: InputBorder.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 12,
+                            ),
+                            Expanded(
+                              child: Container(
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: HexColor('#D9D9D9'), width: 1),
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          right: BorderSide(
+                                              color: HexColor('#D9D9D9'),
+                                              width: 1),
+                                        ),
+                                      ),
+                                      child: const Icon(
+                                        Icons.calendar_today,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextField(
+                                        controller: choiceStatusYearController,
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            backgroundColor: Colors.white,
+                                            isScrollControlled: true,
+                                            builder: (BuildContext context) {
+                                              int selectedIndex =
+                                                  0; // Default ke tahun pertama
+                                              List<String> years =
+                                                  List.generate(100, (index) {
+                                                return (DateTime.now().year -
+                                                        index)
+                                                    .toString(); // Daftar tahun
+                                              });
+
+                                              return StatefulBuilder(
+                                                builder: (context, setState) {
+                                                  return SizedBox(
+                                                    height: 350,
+                                                    width: double.infinity,
+                                                    child:
+                                                        SingleChildScrollView(
+                                                      child: Column(
+                                                        children: [
+                                                          const SizedBox(
+                                                              height: 8),
+                                                          Container(
+                                                            height: 6,
+                                                            width: 40,
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color: HexColor(
+                                                                  '#EAEBEB'),
+                                                              borderRadius:
+                                                                  const BorderRadius
+                                                                      .all(
+                                                                      Radius.circular(
+                                                                          200)),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 40),
+                                                          const Text(
+                                                            'Choose Year',
+                                                            style: TextStyle(
+                                                              fontSize: 18,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            width: 196,
+                                                            height: 170,
+                                                            child:
+                                                                ListWheelScrollView(
+                                                              itemExtent: 50,
+                                                              onSelectedItemChanged:
+                                                                  (index) {
+                                                                // Mengupdate selectedIndex dengan setState
+                                                                setState(() {
+                                                                  selectedIndex =
+                                                                      index;
+                                                                });
+                                                              },
+                                                              children:
+                                                                  List.generate(
+                                                                      years
+                                                                          .length,
+                                                                      (index) {
+                                                                bool
+                                                                    isSelected =
+                                                                    index ==
+                                                                        selectedIndex;
+                                                                return Container(
+                                                                  decoration:
+                                                                      BoxDecoration(
+                                                                    color: isSelected
+                                                                        ? Colors
+                                                                            .white
+                                                                        : Colors
+                                                                            .transparent,
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      years[
+                                                                          index],
+                                                                      style: GoogleFonts
+                                                                          .inter(
+                                                                        fontSize:
+                                                                            14,
+                                                                        fontWeight:
+                                                                            FontWeight.w400,
+                                                                        color: isSelected
+                                                                            ? HexColor('#333333')
+                                                                            : Colors.grey,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              height: 10),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              // Ambil tahun yang dipilih
+                                                              String
+                                                                  selectedYear =
+                                                                  years[
+                                                                      selectedIndex];
+                                                              choiceStatusYearController
+                                                                      .text =
+                                                                  selectedYear; // Set ke controller
+
+                                                              selectYears =
+                                                                  int.parse(
+                                                                      choiceStatusYearController
+                                                                          .text);
+                                                              leaveApproved
+                                                                  .updateDate(
+                                                                newYear:
+                                                                    selectYears,
+                                                                newMonth:
+                                                                    selectedMonth,
+                                                              );
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(); // Tutup modal
+                                                            },
+                                                            child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: HexColor(
+                                                                    '#01A2E9'),
+                                                                borderRadius:
+                                                                    const BorderRadius
+                                                                        .all(
+                                                                        Radius.circular(
+                                                                            8)),
+                                                              ),
+                                                              width: double
+                                                                  .infinity,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(16),
+                                                              height: 48,
+                                                              child: Center(
+                                                                child: Text(
+                                                                  'Select',
+                                                                  style:
+                                                                      GoogleFonts
+                                                                          .inter(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                    fontSize:
+                                                                        16,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          );
+                                        },
+                                        readOnly: true,
+                                        decoration: InputDecoration(
+                                          contentPadding: const EdgeInsets.only(
+                                              top: 12,
+                                              left: 16,
+                                              right: 16,
+                                              bottom: 12),
+                                          hintText: 'Choice Year',
+                                          suffixIcon:
+                                              const Icon(Icons.arrow_drop_down),
+                                          hintStyle: GoogleFonts.inter(
+                                              color: HexColor('#B3B3B3')),
+                                          border: InputBorder.none,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Expanded(
+                          child: PagedListView<int, LeaveModel>(
+                            shrinkWrap: true,
+                            pagingController: leaveApproved.pagingController,
+                            builderDelegate:
+                                PagedChildBuilderDelegate<LeaveModel>(
+                              itemBuilder: (context, item, index) {
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: HexColor('#EAEAEA')),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(8))),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          SizedBox(
+                                            width: 300,
+                                            child: Text(
+                                              item.leaveType!.name ?? '',
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.inter(
+                                                  textStyle: const TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                            ),
+                                          ),
+                                          const Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 18,
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        formatDate(item.date!),
+                                        style: GoogleFonts.inter(
+                                            textStyle: const TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500)),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 10.0),
+                                        child: Container(
+                                            padding: const EdgeInsets.all(5),
+                                            color: statusColor(item.status!),
+                                            child: Text(
+                                              item.status!,
+                                              style: GoogleFonts.inter(
+                                                textStyle: TextStyle(
+                                                    color: statusColorText(
+                                                        item.status!),
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14),
+                                              ),
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                              noItemsFoundIndicatorBuilder: (_) => const Center(
+                                child: Text('No leave logs found'),
                               ),
                               firstPageErrorIndicatorBuilder: (_) =>
                                   const Center(

@@ -1,14 +1,8 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hris/config/constant.dart';
-import 'package:hris/models/attedance_list_logs_model.dart';
 import 'package:hris/models/attedance_model.dart';
 import 'package:hris/models/attedance_summary_model.dart';
-import 'package:hris/models/user_model.dart';
 import 'package:hris/service/common_services.dart';
-import 'package:hris/riverpod/attedant.dart';
 import 'package:intl/intl.dart';
 
 class AttedanceService {
@@ -34,15 +28,14 @@ class AttedanceService {
     }
   }
 
-  Future<List<AttendanceListLogsModel>> listLogAttendance() async {
+  Future<List<AttendanceModel>> listLogAttendance() async {
     final response = await api.getHTTP('$url/attendances');
 
     if (response.statusCode == 200) {
       final data = response.data['data'];
 
-      // Mengubah data menjadi List<AttendanceListLogsModel>
-      List<AttendanceListLogsModel> attendanceLogs = (data as List).map((item) {
-        return AttendanceListLogsModel.fromJson(item);
+      List<AttendanceModel> attendanceLogs = (data as List).map((item) {
+        return AttendanceModel.fromJson(item);
       }).toList();
 
       return attendanceLogs;
@@ -51,7 +44,7 @@ class AttedanceService {
     }
   }
 
-  Future<List<AttendanceListLogsModel>> listLogAttendancePaggination({
+  Future<List<AttendanceModel>> listLogAttendancePaggination({
     required int month,
     required int years,
     required int page,
@@ -62,10 +55,9 @@ class AttedanceService {
 
     if (response.statusCode == 200) {
       final data = response.data['data'];
-      List<AttendanceListLogsModel> attendanceLogs = (data as List).map((item) {
-        return AttendanceListLogsModel.fromJson(item);
+      List<AttendanceModel> attendanceLogs = (data as List).map((item) {
+        return AttendanceModel.fromJson(item);
       }).toList();
-
       return attendanceLogs;
     } else {
       throw Exception('Failed to load attendance logs');
@@ -83,6 +75,25 @@ class AttedanceService {
       return attedandeStatus;
     } else {
       throw Exception('Failed to load user');
+    }
+  }
+
+  Future<Response> saveAttedance(
+      Map<String, dynamic> attedance, String action) async {
+    try {
+      final response =
+          await api.putHTTP('$API_URL/attendance/$action', attedance);
+
+      // Cek jika status code 200 atau sesuai dengan API success response
+      if (response.statusCode == 200) {
+        return response; // Return seluruh response jika dibutuhkan
+      } else {
+        throw Exception(
+            'Failed to submit leave request: ${response.statusMessage}');
+      }
+    } catch (e) {
+      // Tangani error lebih spesifik
+      throw Exception('Error submitting leave request: ${e.toString()}');
     }
   }
 }

@@ -8,13 +8,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'leave.g.dart';
 
 @riverpod
-class LeavePagination extends _$LeavePagination {
+class LeaveApproved extends _$LeaveApproved {
   final int _initialPage = 1;
   final int _pageSize = 10;
   late final PagingController<int, LeaveModel> pagingController;
 
   late int month;
   late int year;
+  late String status;
   late BuildContext context;
 
   // Inisialisasi
@@ -29,11 +30,12 @@ class LeavePagination extends _$LeavePagination {
   }
 
   // Fungsi untuk mengatur parameter yang diterima dari view
-  void setParameters({
-    required int monthParam,
-    required int yearParam,
-    required BuildContext contextParam,
-  }) {
+  void setParameters(
+      {required int monthParam,
+      required int yearParam,
+      required BuildContext contextParam,
+      required String statusLeave}) {
+    status = statusLeave;
     month = monthParam;
     year = yearParam;
     context = contextParam;
@@ -50,11 +52,84 @@ class LeavePagination extends _$LeavePagination {
     try {
       final LeaveService leaveService = LeaveService(context);
       final List<LeaveModel> newItems = await leaveService.listLeavePagination(
-        month: month,
-        years: year,
-        page: pageKey,
-        perpage: _pageSize,
-      );
+          month: month,
+          years: year,
+          page: pageKey,
+          perpage: _pageSize,
+          status: 'approved');
+
+      // Jika item kurang dari pageSize, maka set akhir data (no more data)
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + 1;
+        pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      pagingController.error = error;
+    }
+  }
+
+  void updateDate({required int newMonth, required int newYear}) {
+    if (month != newMonth || year != newYear) {
+      month = newMonth;
+      year = newYear;
+      refreshPaging(); // Memuat ulang data dengan parameter baru
+    }
+  }
+}
+
+@riverpod
+class LeavePending extends _$LeavePending {
+  final int _initialPage = 1;
+  final int _pageSize = 10;
+  late final PagingController<int, LeaveModel> pagingController;
+
+  late int month;
+  late int year;
+  late String status;
+  late BuildContext context;
+
+  // Inisialisasi
+  @override
+  Future<void> build() async {
+    pagingController = PagingController<int, LeaveModel>(
+      firstPageKey: _initialPage,
+    );
+    pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  // Fungsi untuk mengatur parameter yang diterima dari view
+  void setParameters(
+      {required int monthParam,
+      required int yearParam,
+      required BuildContext contextParam,
+      required String statusLeave}) {
+    status = statusLeave;
+    month = monthParam;
+    year = yearParam;
+    context = contextParam;
+    refreshPaging();
+  }
+
+  // Fungsi untuk memuat ulang data ketika parameter berubah
+  void refreshPaging() {
+    pagingController.refresh();
+  }
+
+  // Mendapatkan data dengan pagination
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      final LeaveService leaveService = LeaveService(context);
+      final List<LeaveModel> newItems = await leaveService.listLeavePagination(
+          month: month,
+          years: year,
+          page: pageKey,
+          perpage: _pageSize,
+          status: 'pending');
 
       // Jika item kurang dari pageSize, maka set akhir data (no more data)
       final isLastPage = newItems.length < _pageSize;

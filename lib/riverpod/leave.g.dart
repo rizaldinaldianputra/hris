@@ -6,22 +6,37 @@ part of 'leave.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$leavePaginationHash() => r'644482454e9116d261d4ab39f817c292000aeb6d';
+String _$leaveApprovedHash() => r'4af918ab11453cc475914184ba686714ba9cc202';
 
-/// See also [LeavePagination].
-@ProviderFor(LeavePagination)
-final leavePaginationProvider =
-    AutoDisposeAsyncNotifierProvider<LeavePagination, void>.internal(
-  LeavePagination.new,
-  name: r'leavePaginationProvider',
+/// See also [LeaveApproved].
+@ProviderFor(LeaveApproved)
+final leaveApprovedProvider =
+    AutoDisposeAsyncNotifierProvider<LeaveApproved, void>.internal(
+  LeaveApproved.new,
+  name: r'leaveApprovedProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$leavePaginationHash,
+      : _$leaveApprovedHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$LeavePagination = AutoDisposeAsyncNotifier<void>;
+typedef _$LeaveApproved = AutoDisposeAsyncNotifier<void>;
+String _$leavePendingHash() => r'a65b8896726cbfc6d2f00cb4919394807ec2f833';
+
+/// See also [LeavePending].
+@ProviderFor(LeavePending)
+final leavePendingProvider =
+    AutoDisposeAsyncNotifierProvider<LeavePending, void>.internal(
+  LeavePending.new,
+  name: r'leavePendingProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$leavePendingHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LeavePending = AutoDisposeAsyncNotifier<void>;
 String _$leaveListViewHash() => r'267e225a052967b0370d8cc63cba60888a3b7034';
 
 /// Copied from Dart SDK

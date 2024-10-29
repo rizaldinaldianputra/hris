@@ -60,14 +60,14 @@ class LeaveService {
     }
   }
 
-  Future<List<LeaveModel>> listLeavePagination({
-    required int month,
-    required int years,
-    required int page,
-    required int perpage,
-  }) async {
+  Future<List<LeaveModel>> listLeavePagination(
+      {required int month,
+      required int years,
+      required int page,
+      required int perpage,
+      required String status}) async {
     final response = await api.getHTTP(
-        '$API_URL/leave-requests?month=$month&year=$years&page=$page&perPage=$perpage');
+        '$API_URL/leave-requests?month=$month&year=$years&page=$page&perPage=$perpage&status=$status');
 
     if (response.statusCode == 200) {
       final data = response.data['data'];

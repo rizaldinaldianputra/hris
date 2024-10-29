@@ -1,16 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hris/models/dropdown_model.dart';
-import 'package:hris/models/leave_model.dart';
 import 'package:hris/models/overtime_model.dart';
-import 'package:hris/service/leave_service.dart';
 import 'package:hris/service/overtime_service.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'overtime.g.dart';
 
 @riverpod
-class OvertimePagination extends _$OvertimePagination {
+class OvertimePending extends _$OvertimePending {
   final int _initialPage = 1;
   final int _pageSize = 10;
   late final PagingController<int, Overtime> pagingController;
@@ -18,6 +16,7 @@ class OvertimePagination extends _$OvertimePagination {
   late int month;
   late int year;
   late BuildContext context;
+  late String status;
 
   // Inisialisasi
   @override
@@ -31,11 +30,12 @@ class OvertimePagination extends _$OvertimePagination {
   }
 
   // Fungsi untuk mengatur parameter yang diterima dari view
-  void setParameters({
-    required int monthParam,
-    required int yearParam,
-    required BuildContext contextParam,
-  }) {
+  void setParameters(
+      {required int monthParam,
+      required int yearParam,
+      required BuildContext contextParam,
+      required String status}) {
+    status = status;
     month = monthParam;
     year = yearParam;
     context = contextParam;
@@ -53,6 +53,82 @@ class OvertimePagination extends _$OvertimePagination {
       final OvertimeService overtimeService = OvertimeService(context);
       final List<Overtime> newItems =
           await overtimeService.listOvertimePagintion(
+        status: 'pending',
+        month: month,
+        years: year,
+        page: pageKey,
+        perpage: _pageSize,
+      );
+
+      // Jika item kurang dari pageSize, maka set akhir data (no more data)
+      final isLastPage = newItems.length < _pageSize;
+      if (isLastPage) {
+        pagingController.appendLastPage(newItems);
+      } else {
+        final nextPageKey = pageKey + 1;
+        pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      pagingController.error = error;
+    }
+  }
+
+  void updateDate({required int newMonth, required int newYear}) {
+    if (month != newMonth || year != newYear) {
+      month = newMonth;
+      year = newYear;
+      refreshPaging(); // Memuat ulang data dengan parameter baru
+    }
+  }
+}
+
+@riverpod
+class OvertimeApproved extends _$OvertimeApproved {
+  final int _initialPage = 1;
+  final int _pageSize = 10;
+  late final PagingController<int, Overtime> pagingController;
+
+  late int month;
+  late int year;
+  late BuildContext context;
+  late String status;
+
+  // Inisialisasi
+  @override
+  Future<void> build() async {
+    pagingController = PagingController<int, Overtime>(
+      firstPageKey: _initialPage,
+    );
+    pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  // Fungsi untuk mengatur parameter yang diterima dari view
+  void setParameters(
+      {required int monthParam,
+      required int yearParam,
+      required BuildContext contextParam,
+      required String status}) {
+    status = status;
+    month = monthParam;
+    year = yearParam;
+    context = contextParam;
+    refreshPaging();
+  }
+
+  // Fungsi untuk memuat ulang data ketika parameter berubah
+  void refreshPaging() {
+    pagingController.refresh();
+  }
+
+  // Mendapatkan data dengan pagination
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      final OvertimeService overtimeService = OvertimeService(context);
+      final List<Overtime> newItems =
+          await overtimeService.listOvertimePagintion(
+        status: 'approved',
         month: month,
         years: year,
         page: pageKey,

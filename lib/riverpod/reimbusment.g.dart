@@ -520,22 +520,39 @@ class _ReimbusmentSaveDataProviderElement
   BuildContext get context => (origin as ReimbusmentSaveDataProvider).context;
 }
 
-String _$reimbusmentPaginationHash() =>
-    r'01bcd125ec9bd04a29e71e7108a83011fd186d1a';
+String _$reimbusmentPendingHash() =>
+    r'76460c3a0c1b974e4c28fe565077d01cde18cf55';
 
-/// See also [ReimbusmentPagination].
-@ProviderFor(ReimbusmentPagination)
-final reimbusmentPaginationProvider =
-    AutoDisposeAsyncNotifierProvider<ReimbusmentPagination, void>.internal(
-  ReimbusmentPagination.new,
-  name: r'reimbusmentPaginationProvider',
+/// See also [ReimbusmentPending].
+@ProviderFor(ReimbusmentPending)
+final reimbusmentPendingProvider =
+    AutoDisposeAsyncNotifierProvider<ReimbusmentPending, void>.internal(
+  ReimbusmentPending.new,
+  name: r'reimbusmentPendingProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$reimbusmentPaginationHash,
+      : _$reimbusmentPendingHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$ReimbusmentPagination = AutoDisposeAsyncNotifier<void>;
+typedef _$ReimbusmentPending = AutoDisposeAsyncNotifier<void>;
+String _$rembusmentApprovedHash() =>
+    r'8aa6558bc3a144e6fdf295e85aa5ab65489470bf';
+
+/// See also [RembusmentApproved].
+@ProviderFor(RembusmentApproved)
+final rembusmentApprovedProvider =
+    AutoDisposeAsyncNotifierProvider<RembusmentApproved, void>.internal(
+  RembusmentApproved.new,
+  name: r'rembusmentApprovedProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$rembusmentApprovedHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$RembusmentApproved = AutoDisposeAsyncNotifier<void>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

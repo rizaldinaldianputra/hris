@@ -1,5 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:hris/models/attedance_list_logs_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hris/models/attedance_model.dart';
 import 'package:hris/models/attedance_summary_model.dart';
 import 'package:hris/service/attedance_service.dart';
@@ -33,13 +34,13 @@ class AttedantSumamry extends _$AttedantSumamry {
 @riverpod
 class AttedantListLogs extends _$AttedantListLogs {
   @override
-  Future<List<AttendanceListLogsModel>> build(BuildContext context) async {
+  Future<List<AttendanceModel>> build(BuildContext context) async {
     // Inisialisasi state tanpa mengembalikan null
     return Future.value(); // Mengembalikan Future kosong tanpa null
   }
 
   // Method untuk mengirim data ke API
-  Future<List<AttendanceListLogsModel>> listdataLogs(
+  Future<List<AttendanceModel>> listdataLogs(
     BuildContext context,
   ) async {
     final attedanceService = AttedanceService(context);
@@ -57,7 +58,7 @@ class AttendanceLogPaginationNotifier
     extends _$AttendanceLogPaginationNotifier {
   final int _initialPage = 1;
   final int _pageSize = 10;
-  late final PagingController<int, AttendanceListLogsModel> pagingController;
+  late final PagingController<int, AttendanceModel> pagingController;
 
   late int month;
   late int year;
@@ -66,7 +67,7 @@ class AttendanceLogPaginationNotifier
   // Inisialisasi
   @override
   Future<void> build() async {
-    pagingController = PagingController<int, AttendanceListLogsModel>(
+    pagingController = PagingController<int, AttendanceModel>(
       firstPageKey: _initialPage,
     );
     pagingController.addPageRequestListener((pageKey) {
@@ -95,7 +96,7 @@ class AttendanceLogPaginationNotifier
   Future<void> _fetchPage(int pageKey) async {
     try {
       final AttedanceService attendanceService = AttedanceService(context);
-      final List<AttendanceListLogsModel> newItems =
+      final List<AttendanceModel> newItems =
           await attendanceService.listLogAttendancePaggination(
         month: month,
         years: year,
@@ -139,5 +140,38 @@ class AttedanceStatus extends _$AttedanceStatus {
     final response = await attedanceService.attedanceStatus();
     state = AsyncValue.data(response);
     return response;
+  }
+}
+
+final latProvider = StateProvider<String>((ref) => "");
+final longProvider = StateProvider<String>((ref) => "");
+final statusProvider = StateProvider<String>((ref) => "");
+
+@riverpod
+class AttedantSave extends _$AttedantSave {
+  @override
+  Future<Response?> build(BuildContext context) async {
+    return Future.value(); // Kembalikan null saat inisialisasi
+  }
+
+  // Method untuk mengirim data ke API
+  Future<Response> saveData(
+      {required BuildContext context,
+      required Map<String, dynamic> data,
+      required String url}) async {
+    // Set state menjadi loading saat proses pengiriman
+    state = const AsyncValue.loading();
+
+    try {
+      final attedantService = AttedanceService(context);
+      final response = await attedantService.saveAttedance(data, url);
+
+      // Mengubah state menjadi data jika sukses
+      state = AsyncValue.data(response);
+      return response;
+    } catch (error) {
+      // Menangani error dan mengubah state menjadi error
+      rethrow; // Melempar ulang error untuk penanganan lebih lanjut jika diperlukan
+    }
   }
 }
