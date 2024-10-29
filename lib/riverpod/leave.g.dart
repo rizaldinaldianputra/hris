@@ -6,7 +6,23 @@ part of 'leave.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$leaveListHash() => r'527bca7d6edc5574a7866cbe5bca02f68e076280';
+String _$leavePaginationHash() => r'644482454e9116d261d4ab39f817c292000aeb6d';
+
+/// See also [LeavePagination].
+@ProviderFor(LeavePagination)
+final leavePaginationProvider =
+    AutoDisposeAsyncNotifierProvider<LeavePagination, void>.internal(
+  LeavePagination.new,
+  name: r'leavePaginationProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$leavePaginationHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$LeavePagination = AutoDisposeAsyncNotifier<void>;
+String _$leaveListViewHash() => r'267e225a052967b0370d8cc63cba60888a3b7034';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -28,149 +44,6 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
-
-abstract class _$LeaveList
-    extends BuildlessAutoDisposeNotifier<PagingController<int, LeaveModel>> {
-  late final BuildContext context;
-
-  PagingController<int, LeaveModel> build(
-    BuildContext context,
-  );
-}
-
-/// See also [LeaveList].
-@ProviderFor(LeaveList)
-const leaveListProvider = LeaveListFamily();
-
-/// See also [LeaveList].
-class LeaveListFamily extends Family<PagingController<int, LeaveModel>> {
-  /// See also [LeaveList].
-  const LeaveListFamily();
-
-  /// See also [LeaveList].
-  LeaveListProvider call(
-    BuildContext context,
-  ) {
-    return LeaveListProvider(
-      context,
-    );
-  }
-
-  @override
-  LeaveListProvider getProviderOverride(
-    covariant LeaveListProvider provider,
-  ) {
-    return call(
-      provider.context,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'leaveListProvider';
-}
-
-/// See also [LeaveList].
-class LeaveListProvider extends AutoDisposeNotifierProviderImpl<LeaveList,
-    PagingController<int, LeaveModel>> {
-  /// See also [LeaveList].
-  LeaveListProvider(
-    BuildContext context,
-  ) : this._internal(
-          () => LeaveList()..context = context,
-          from: leaveListProvider,
-          name: r'leaveListProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$leaveListHash,
-          dependencies: LeaveListFamily._dependencies,
-          allTransitiveDependencies: LeaveListFamily._allTransitiveDependencies,
-          context: context,
-        );
-
-  LeaveListProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.context,
-  }) : super.internal();
-
-  final BuildContext context;
-
-  @override
-  PagingController<int, LeaveModel> runNotifierBuild(
-    covariant LeaveList notifier,
-  ) {
-    return notifier.build(
-      context,
-    );
-  }
-
-  @override
-  Override overrideWith(LeaveList Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: LeaveListProvider._internal(
-        () => create()..context = context,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        context: context,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<LeaveList,
-      PagingController<int, LeaveModel>> createElement() {
-    return _LeaveListProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is LeaveListProvider && other.context == context;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, context.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin LeaveListRef
-    on AutoDisposeNotifierProviderRef<PagingController<int, LeaveModel>> {
-  /// The parameter `context` of this provider.
-  BuildContext get context;
-}
-
-class _LeaveListProviderElement extends AutoDisposeNotifierProviderElement<
-    LeaveList, PagingController<int, LeaveModel>> with LeaveListRef {
-  _LeaveListProviderElement(super.provider);
-
-  @override
-  BuildContext get context => (origin as LeaveListProvider).context;
-}
-
-String _$leaveListViewHash() => r'267e225a052967b0370d8cc63cba60888a3b7034';
 
 abstract class _$LeaveListView
     extends BuildlessAutoDisposeAsyncNotifier<List<LeaveModel>> {

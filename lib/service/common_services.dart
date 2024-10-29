@@ -3,6 +3,7 @@ import 'package:dio/dio.dart' as diopackage;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hris/config/constant.dart';
 import 'package:hris/pages/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,6 +51,11 @@ class CommonService {
           return;
         }
 
+        if (error.response!.statusCode == 500) {
+          context.pushReplacementNamed('login');
+          return;
+        }
+
         return handler.next(error);
       },
       onRequest: (options, handler) async {
@@ -57,6 +63,8 @@ class CommonService {
         if (token != null) {
           options.headers.addAll({"Authorization": "Bearer $token"});
         }
+        // Tambahkan header Accept
+        options.headers.addAll({"Accept": "application/json"});
         return handler.next(options);
       },
       onResponse: (response, handler) async {

@@ -59,4 +59,25 @@ class LeaveService {
       throw Exception('Error submitting leave request: ${e.toString()}');
     }
   }
+
+  Future<List<LeaveModel>> listLeavePagination({
+    required int month,
+    required int years,
+    required int page,
+    required int perpage,
+  }) async {
+    final response = await api.getHTTP(
+        '$API_URL/leave-requests?month=$month&year=$years&page=$page&perPage=$perpage');
+
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      List<LeaveModel> attendanceLogs = (data as List).map((item) {
+        return LeaveModel.fromJson(item);
+      }).toList();
+
+      return attendanceLogs;
+    } else {
+      throw Exception('Failed to load attendance logs');
+    }
+  }
 }

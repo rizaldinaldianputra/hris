@@ -319,7 +319,7 @@ class _AttedantListLogsProviderElement
 }
 
 String _$attendanceLogPaginationNotifierHash() =>
-    r'2a7a314ec502d606c20d5e159c8d03aeafa7cdb3';
+    r'3d85bf6382e315f68db152f8329db7f78d456a1e';
 
 /// See also [AttendanceLogPaginationNotifier].
 @ProviderFor(AttendanceLogPaginationNotifier)
@@ -336,5 +336,149 @@ final attendanceLogPaginationNotifierProvider =
 );
 
 typedef _$AttendanceLogPaginationNotifier = AutoDisposeAsyncNotifier<void>;
+String _$attedanceStatusHash() => r'519f9927ec5dc70d247c70798da63e5fb4dbba27';
+
+abstract class _$AttedanceStatus
+    extends BuildlessAutoDisposeAsyncNotifier<AttendanceModel?> {
+  late final BuildContext context;
+
+  FutureOr<AttendanceModel?> build(
+    BuildContext context,
+  );
+}
+
+/// See also [AttedanceStatus].
+@ProviderFor(AttedanceStatus)
+const attedanceStatusProvider = AttedanceStatusFamily();
+
+/// See also [AttedanceStatus].
+class AttedanceStatusFamily extends Family<AsyncValue<AttendanceModel?>> {
+  /// See also [AttedanceStatus].
+  const AttedanceStatusFamily();
+
+  /// See also [AttedanceStatus].
+  AttedanceStatusProvider call(
+    BuildContext context,
+  ) {
+    return AttedanceStatusProvider(
+      context,
+    );
+  }
+
+  @override
+  AttedanceStatusProvider getProviderOverride(
+    covariant AttedanceStatusProvider provider,
+  ) {
+    return call(
+      provider.context,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'attedanceStatusProvider';
+}
+
+/// See also [AttedanceStatus].
+class AttedanceStatusProvider extends AutoDisposeAsyncNotifierProviderImpl<
+    AttedanceStatus, AttendanceModel?> {
+  /// See also [AttedanceStatus].
+  AttedanceStatusProvider(
+    BuildContext context,
+  ) : this._internal(
+          () => AttedanceStatus()..context = context,
+          from: attedanceStatusProvider,
+          name: r'attedanceStatusProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$attedanceStatusHash,
+          dependencies: AttedanceStatusFamily._dependencies,
+          allTransitiveDependencies:
+              AttedanceStatusFamily._allTransitiveDependencies,
+          context: context,
+        );
+
+  AttedanceStatusProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.context,
+  }) : super.internal();
+
+  final BuildContext context;
+
+  @override
+  FutureOr<AttendanceModel?> runNotifierBuild(
+    covariant AttedanceStatus notifier,
+  ) {
+    return notifier.build(
+      context,
+    );
+  }
+
+  @override
+  Override overrideWith(AttedanceStatus Function() create) {
+    return ProviderOverride(
+      origin: this,
+      override: AttedanceStatusProvider._internal(
+        () => create()..context = context,
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        context: context,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeAsyncNotifierProviderElement<AttedanceStatus, AttendanceModel?>
+      createElement() {
+    return _AttedanceStatusProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is AttedanceStatusProvider && other.context == context;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, context.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin AttedanceStatusRef
+    on AutoDisposeAsyncNotifierProviderRef<AttendanceModel?> {
+  /// The parameter `context` of this provider.
+  BuildContext get context;
+}
+
+class _AttedanceStatusProviderElement
+    extends AutoDisposeAsyncNotifierProviderElement<AttedanceStatus,
+        AttendanceModel?> with AttedanceStatusRef {
+  _AttedanceStatusProviderElement(super.provider);
+
+  @override
+  BuildContext get context => (origin as AttedanceStatusProvider).context;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

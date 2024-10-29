@@ -17,27 +17,6 @@ class LogsPage extends ConsumerStatefulWidget {
 }
 
 class _LogsPageState extends ConsumerState<LogsPage> {
-  final ScrollController _scrollController = ScrollController();
-
-  int selectedIndex = DateTime.now().month - 1;
-  List<String> months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
-
-  String monthvalue = 'Choice Month';
-
-  TextEditingController choiceMonthController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -269,13 +248,13 @@ class _LogsPageState extends ConsumerState<LogsPage> {
                     );
                   },
                   noItemsFoundIndicatorBuilder: (_) => const Center(
-                    child: Text('No attendance logs found'),
+                    child: Center(child: Text('No attendance logs found')),
                   ),
                   firstPageErrorIndicatorBuilder: (_) => const Center(
-                    child: Text('Failed to load data'),
+                    child: Center(child: Text('Failed to load data')),
                   ),
                   newPageErrorIndicatorBuilder: (_) => const Center(
-                    child: Text('Failed to load more data'),
+                    child: Center(child: Text('Failed to load more data')),
                   ),
                 ),
               ),

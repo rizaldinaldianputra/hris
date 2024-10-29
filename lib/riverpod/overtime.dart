@@ -9,35 +9,58 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'overtime.g.dart';
 
-@Riverpod(keepAlive: false)
-class OvertimeList extends _$OvertimeList {
-  late PagingController<int, Overtime> pagingController;
+@riverpod
+class OvertimePagination extends _$OvertimePagination {
+  final int _initialPage = 1;
+  final int _pageSize = 10;
+  late final PagingController<int, Overtime> pagingController;
 
-  @override
+  late int month;
+  late int year;
   late BuildContext context;
-  String searchQuery = ''; // Add searchQuery state
 
+  // Inisialisasi
   @override
-  PagingController<int, Overtime> build(BuildContext context) {
-    this.context = context; // Store the context
-    pagingController = PagingController<int, Overtime>(firstPageKey: 0);
+  Future<void> build() async {
+    pagingController = PagingController<int, Overtime>(
+      firstPageKey: _initialPage,
+    );
     pagingController.addPageRequestListener((pageKey) {
-      fetchPage(pageKey: pageKey, pageSize: 10);
+      _fetchPage(pageKey);
     });
-
-    return pagingController;
   }
 
-  Future<void> fetchPage({
-    required int pageKey,
-    required int pageSize,
-  }) async {
+  // Fungsi untuk mengatur parameter yang diterima dari view
+  void setParameters({
+    required int monthParam,
+    required int yearParam,
+    required BuildContext contextParam,
+  }) {
+    month = monthParam;
+    year = yearParam;
+    context = contextParam;
+    refreshPaging();
+  }
+
+  // Fungsi untuk memuat ulang data ketika parameter berubah
+  void refreshPaging() {
+    pagingController.refresh();
+  }
+
+  // Mendapatkan data dengan pagination
+  Future<void> _fetchPage(int pageKey) async {
     try {
-      final overtimeService = OvertimeService(context);
-      final newItems = await overtimeService.findAllData();
+      final OvertimeService overtimeService = OvertimeService(context);
+      final List<Overtime> newItems =
+          await overtimeService.listOvertimePagintion(
+        month: month,
+        years: year,
+        page: pageKey,
+        perpage: _pageSize,
+      );
 
-      final isLastPage = newItems.length < pageSize;
-
+      // Jika item kurang dari pageSize, maka set akhir data (no more data)
+      final isLastPage = newItems.length < _pageSize;
       if (isLastPage) {
         pagingController.appendLastPage(newItems);
       } else {
@@ -45,9 +68,15 @@ class OvertimeList extends _$OvertimeList {
         pagingController.appendPage(newItems, nextPageKey);
       }
     } catch (error) {
-      pagingController.error = error; // Make sure to handle errors here
-      // You can log the error for debugging purposes
-      print('Error fetching page: $error');
+      pagingController.error = error;
+    }
+  }
+
+  void updateDate({required int newMonth, required int newYear}) {
+    if (month != newMonth || year != newYear) {
+      month = newMonth;
+      year = newYear;
+      refreshPaging(); // Memuat ulang data dengan parameter baru
     }
   }
 }

@@ -19,7 +19,7 @@ class _AttendantLogPageState extends State<AttedantLogPage>
   void initState() {
     super.initState();
     _tabController =
-        TabController(length: 3, vsync: this); // Perbaiki panjang tab
+        TabController(length: 2, vsync: this); // Perbaiki panjang tab
   }
 
   @override

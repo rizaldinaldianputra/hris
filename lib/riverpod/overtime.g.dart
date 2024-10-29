@@ -6,7 +6,24 @@ part of 'overtime.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$overtimeListHash() => r'0f7ce0df242b90b3fc38c3ea528ca85b60526e8c';
+String _$overtimePaginationHash() =>
+    r'80aa22ba77050072070364e5c32d83c32c1c612a';
+
+/// See also [OvertimePagination].
+@ProviderFor(OvertimePagination)
+final overtimePaginationProvider =
+    AutoDisposeAsyncNotifierProvider<OvertimePagination, void>.internal(
+  OvertimePagination.new,
+  name: r'overtimePaginationProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$overtimePaginationHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$OvertimePagination = AutoDisposeAsyncNotifier<void>;
+String _$overtimeListViewHash() => r'fdd52f3f171e5e56bd579f3b35d0ec05476fb134';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -28,150 +45,6 @@ class _SystemHash {
     return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
   }
 }
-
-abstract class _$OvertimeList
-    extends BuildlessAutoDisposeNotifier<PagingController<int, Overtime>> {
-  late final BuildContext context;
-
-  PagingController<int, Overtime> build(
-    BuildContext context,
-  );
-}
-
-/// See also [OvertimeList].
-@ProviderFor(OvertimeList)
-const overtimeListProvider = OvertimeListFamily();
-
-/// See also [OvertimeList].
-class OvertimeListFamily extends Family<PagingController<int, Overtime>> {
-  /// See also [OvertimeList].
-  const OvertimeListFamily();
-
-  /// See also [OvertimeList].
-  OvertimeListProvider call(
-    BuildContext context,
-  ) {
-    return OvertimeListProvider(
-      context,
-    );
-  }
-
-  @override
-  OvertimeListProvider getProviderOverride(
-    covariant OvertimeListProvider provider,
-  ) {
-    return call(
-      provider.context,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'overtimeListProvider';
-}
-
-/// See also [OvertimeList].
-class OvertimeListProvider extends AutoDisposeNotifierProviderImpl<OvertimeList,
-    PagingController<int, Overtime>> {
-  /// See also [OvertimeList].
-  OvertimeListProvider(
-    BuildContext context,
-  ) : this._internal(
-          () => OvertimeList()..context = context,
-          from: overtimeListProvider,
-          name: r'overtimeListProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$overtimeListHash,
-          dependencies: OvertimeListFamily._dependencies,
-          allTransitiveDependencies:
-              OvertimeListFamily._allTransitiveDependencies,
-          context: context,
-        );
-
-  OvertimeListProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.context,
-  }) : super.internal();
-
-  final BuildContext context;
-
-  @override
-  PagingController<int, Overtime> runNotifierBuild(
-    covariant OvertimeList notifier,
-  ) {
-    return notifier.build(
-      context,
-    );
-  }
-
-  @override
-  Override overrideWith(OvertimeList Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: OvertimeListProvider._internal(
-        () => create()..context = context,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        context: context,
-      ),
-    );
-  }
-
-  @override
-  AutoDisposeNotifierProviderElement<OvertimeList,
-      PagingController<int, Overtime>> createElement() {
-    return _OvertimeListProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is OvertimeListProvider && other.context == context;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, context.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
-}
-
-mixin OvertimeListRef
-    on AutoDisposeNotifierProviderRef<PagingController<int, Overtime>> {
-  /// The parameter `context` of this provider.
-  BuildContext get context;
-}
-
-class _OvertimeListProviderElement extends AutoDisposeNotifierProviderElement<
-    OvertimeList, PagingController<int, Overtime>> with OvertimeListRef {
-  _OvertimeListProviderElement(super.provider);
-
-  @override
-  BuildContext get context => (origin as OvertimeListProvider).context;
-}
-
-String _$overtimeListViewHash() => r'fdd52f3f171e5e56bd579f3b35d0ec05476fb134';
 
 abstract class _$OvertimeListView
     extends BuildlessAutoDisposeAsyncNotifier<List<Overtime>> {

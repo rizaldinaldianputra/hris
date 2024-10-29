@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/riverpod/attedant.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -137,7 +138,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
         DateFormat('dd MMMM yyyy HH:mm:ss').format(DateTime.now());
     String currentMonth = DateFormat('MMM').format(DateTime.now());
     final userData = ref.watch(userDataProvider(context));
-
+    final attedandeStatus = ref.watch(attedanceStatusProvider(context));
     return userData.when(data: (data) {
       return Scaffold(
         appBar: AppBar(
@@ -255,49 +256,81 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                           ),
                         ],
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(20),
-                        height: 40,
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(8)),
-                            color: Colors.white),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton.icon(
-                              onPressed: () {
-                                context.goNamed('camerapage');
-                              },
-                              icon:
-                                  const Icon(Icons.login, color: Colors.black),
-                              label: Text(
-                                'Clock In',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  textStyle: const TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                ),
-                              ),
-                            ),
-                            const Text('|', style: TextStyle(fontSize: 20)),
-                            TextButton.icon(
-                              onPressed: () {
-                                context.goNamed('camerapage');
-                              },
-                              icon:
-                                  const Icon(Icons.logout, color: Colors.black),
-                              label: Text(
-                                'Clock Out',
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  textStyle: const TextStyle(
-                                      fontSize: 14, color: Colors.black),
-                                ),
-                              ),
-                            ),
-                          ],
+                      attedandeStatus.when(
+                        loading: () => const Center(
+                          child: CircularProgressIndicator(),
                         ),
-                      ),
+                        error: (error, stackTrace) => IconButton(
+                          onPressed: () {
+                            ref.refresh(attedanceStatusProvider(context));
+                          },
+                          icon: const Icon(Icons.refresh),
+                        ),
+                        data: (data) {
+                          final bool isClockedIn = data?.clockInTime != null;
+                          final bool isClockedOut = data?.clockOutTime != null;
+
+                          return Container(
+                            margin: const EdgeInsets.all(20),
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
+                              color: Colors.white,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: (!isClockedIn ||
+                                          (isClockedIn && isClockedOut))
+                                      ? () {
+                                          context.goNamed('camerapage');
+                                        }
+                                      : null, // Nonaktifkan Clock In jika sudah ada clockInTime dan belum ada clockOutTime
+                                  icon: const Icon(Icons.login,
+                                      color: Colors.black),
+                                  label: Text(
+                                    'Clock In',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w500,
+                                      textStyle: TextStyle(
+                                        fontSize: 14,
+                                        color: (!isClockedIn ||
+                                                (isClockedIn && isClockedOut))
+                                            ? Colors.black
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const Text('|', style: TextStyle(fontSize: 20)),
+                                TextButton.icon(
+                                  onPressed: (isClockedIn && !isClockedOut)
+                                      ? () {
+                                          context.goNamed('camerapage');
+                                        }
+                                      : null, // Aktifkan Clock Out jika sudah ada clockInTime dan belum ada clockOutTime
+                                  icon: const Icon(Icons.logout,
+                                      color: Colors.black),
+                                  label: Text(
+                                    'Clock Out',
+                                    style: GoogleFonts.inter(
+                                      fontWeight: FontWeight.w500,
+                                      textStyle: TextStyle(
+                                        fontSize: 14,
+                                        color: (isClockedIn && !isClockedOut)
+                                            ? Colors.black
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      )
                     ],
                   ),
                 ),

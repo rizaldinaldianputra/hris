@@ -4,10 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hris/config/constant.dart';
 import 'package:hris/models/attedance_list_logs_model.dart';
+import 'package:hris/models/attedance_model.dart';
 import 'package:hris/models/attedance_summary_model.dart';
 import 'package:hris/models/user_model.dart';
 import 'package:hris/service/common_services.dart';
 import 'package:hris/riverpod/attedant.dart';
+import 'package:intl/intl.dart';
 
 class AttedanceService {
   late CommonService api;
@@ -67,6 +69,20 @@ class AttedanceService {
       return attendanceLogs;
     } else {
       throw Exception('Failed to load attendance logs');
+    }
+  }
+
+  Future<AttendanceModel> attedanceStatus() async {
+    final String formattedDate =
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final response = await api.getHTTP('$url/attendance?date=$formattedDate');
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      AttendanceModel attedandeStatus = AttendanceModel.fromJson(data);
+
+      return attedandeStatus;
+    } else {
+      throw Exception('Failed to load user');
     }
   }
 }

@@ -72,9 +72,9 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
                           Map<String, String> leaveTypeMap = {};
 
                           for (var element in data) {
-                            value.add(element.value);
-                            leaveTypeMap[element.value] =
-                                element.key; // Menyimpan key untuk setiap value
+                            value.add(element.value ?? '');
+                            leaveTypeMap[element.value ?? ''] = element.key ??
+                                ''; // Menyimpan key untuk setiap value
                           }
 
                           return dropdownIcon(

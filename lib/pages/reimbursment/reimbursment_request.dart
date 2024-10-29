@@ -1,14 +1,23 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/helper/global_function.dart';
+import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/expenses_model.dart';
 import 'package:hris/models/reimbursement%20_expense_model.dart';
 import 'package:hris/riverpod/reimbusment.dart';
+import 'package:hris/riverpod/user.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:hris/utility/notifikasiwidget.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class RequestRebursement extends ConsumerStatefulWidget {
@@ -20,7 +29,7 @@ class RequestRebursement extends ConsumerStatefulWidget {
 }
 
 class _RequestRebursementState extends ConsumerState<RequestRebursement> {
-  String? selectedValue;
+  DropdownModel? selectedValue;
   final List<String> items = [
     'Item 1',
     'Item 2',
@@ -34,217 +43,257 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
   final TextEditingController _expenseAmountController =
       TextEditingController();
   DateTime? selectedDateTime;
-
+  bool isLoading = false;
   String? selectedValueType;
+
+  String base64String = '';
+
+  Notifikasi? notifikasi;
+  List<ExpensesModel> selectExpense = [];
+
+  String keyexpnse = '';
+
+  String? reimbusmenttypeid;
+  @override
+  void initState() {
+    notifikasi = Notifikasi(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final expenses = ref.watch(reimbursementExpenseNotifierProvider);
+    final expensesList = ref.watch(reimbursementExpenseNotifierProvider);
     final imageList = ref.watch(reimbursementImageProvider);
-
-    return Scaffold(
-      appBar: appBarWidget('Rebursement Request Form'),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              dateTimePicker(
-                  'Reimburse Date',
-                  'Choose Duration',
-                  rebursementController,
-                  Image.asset('assets/reimbursment/date.png')),
-              dropdownIcon(
-                  title: 'Rebursement Type',
-                  listiem: items,
-                  hinttitle: 'Choose type',
-                  selectedValue: selectedValueType,
-                  onchange: (newValue) {},
-                  icons: Image.asset('assets/reimbursment/choicetype.png')),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  'Remaining balance: Rp 8.888.000',
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final userData = ref.watch(userDataProvider(context));
+    return userData.when(
+        loading: () => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+        error: (error, stackTrace) {
+          return Scaffold(
+            body: Center(
+              child: IconButton(
+                  onPressed: () {
+                    ref.refresh(userDataProvider(context));
+                  },
+                  icon: const Icon(Icons.refresh)),
+            ),
+          );
+        },
+        data: (data) {
+          final reimbusmentProvider =
+              ref.watch(reimbusmentTypeProvider(context, data!.companyId!));
+          return Scaffold(
+            appBar: appBarWidget('Rebursement Request Form'),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Expenses',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                      ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: dateTimePicker(
+                          title: 'Reimburse Date',
+                          hinttitle: 'Choose Duration',
+                          controller: rebursementController,
+                          context: context,
+                          icons: Image.asset('assets/reimbursment/date.png')),
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        _showAddExpenseBottomSheet(context);
-                      },
-                      child: Text(
-                        'Add Expense',
-                        style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.blue),
+                    reimbusmentProvider.when(
+                      loading: () => const Scaffold(
+                        body: Center(child: CircularProgressIndicator()),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              expenses.isEmpty
-                  ? const Center(child: Text('No Data'))
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: expenses.length,
-                      itemBuilder: (context, index) {
-                        final expense = expenses[index];
-                        return Container(
-                          height: 74,
-                          padding: const EdgeInsets.all(10),
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              border: Border.all(color: HexColor('#EAEAEA'))),
-                          child: Center(
-                            child: ListTile(
-                              title: Text(
-                                expense.expensesId,
-                                style: GoogleFonts.inter(
-                                    fontSize: 16, fontWeight: FontWeight.w600),
-                              ),
-                              subtitle: Text(
-                                'Rp ${expense.value}',
-                                style: GoogleFonts.inter(
-                                    fontSize: 14, fontWeight: FontWeight.w500),
-                              ),
-                              trailing: IconButton(
+                      error: (error, stackTrace) {
+                        return Scaffold(
+                          body: Center(
+                            child: IconButton(
                                 onPressed: () {
-                                  ref
-                                      .read(reimbursementExpenseNotifierProvider
-                                          .notifier)
-                                      .removeExpense(index);
+                                  ref.refresh(userDataProvider(context));
                                 },
-                                icon: const Icon(
-                                  Icons.close,
-                                  size: 18,
-                                ),
-                              ),
-                            ),
+                                icon: const Icon(Icons.refresh)),
                           ),
                         );
                       },
-                    ),
+                      data: (data) {
+                        List<String> value = [];
+                        Map<String, String> reimbusmentType = {};
 
-              const SizedBox(
-                height: 5,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Upload File'),
-              ),
-              Wrap(
-                children: [
-                  ...imageList.asMap().entries.map((entry) {
-                    int index = entry.key; // Mendapatkan indeks
-                    return GestureDetector(
-                      onTap: () {
-                        ref
-                            .read(reimbursementImageProvider.notifier)
-                            .removeImage(index);
-                      },
-                      child: Container(
-                        height: 56,
-                        width: 56,
-                        margin: const EdgeInsets.all(10.0),
-                        child: Image.asset(
-                          'assets/reimbursment/upload.png', // Menampilkan file gambar
-                          height: 50, // Atur tinggi gambar sesuai kebutuhan
-                          width: 50, // Atur lebar gambar sesuai kebutuhan
-                          fit: BoxFit
-                              .cover, // Mengatur cara gambar diubah ukurannya
-                        ),
-                      ),
-                    );
-                  }),
-                  GestureDetector(
-                    onTap: () async {
-                      var status = await Permission.storage.request();
-
-                      // Cek status izin
-                      if (status.isGranted) {
-                        // Jika izin diberikan, pilih file
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles();
-
-                        if (result != null) {
-                          setState(() {
-                            selectedFile =
-                                result.files.single; // Ambil file yang dipilih
-                          });
-                          ref
-                              .read(reimbursementImageProvider.notifier)
-                              .addImage(selectedFile!);
+                        for (var element in data) {
+                          value.add(element.value ?? '');
+                          reimbusmentType[element.value ?? ''] = element.key ??
+                              ''; // Menyimpan key untuk setiap value
                         }
-                      } else if (status.isDenied) {
-                        // Jika izin ditolak
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Storage permission denied')),
-                        );
-                      } else if (status.isPermanentlyDenied) {
-                        // Jika izin ditolak secara permanen, minta pengguna untuk mengatur izin di pengaturan
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text(
-                                  'Storage permission permanently denied. Please enable it in settings.')),
-                        );
-                        // Tampilkan dialog untuk mengarahkan pengguna ke pengaturan
-                        openAppSettings();
-                      }
-                    },
-                    child: Container(
-                      height: 56,
-                      width: 56,
-                      margin: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: HexColor('#B3B3B3'))),
-                      child: Center(
-                        child: Icon(
-                          Icons.add,
-                          size: 18,
-                          color: HexColor('#B3B3B3'),
+                        return dropdownIcon(
+                            title: 'Rebursement Type',
+                            listiem: value,
+                            hinttitle: 'Choose type',
+                            selectedValue: selectedValueType,
+                            onchange: (newValue) {
+                              setState(() {
+                                reimbusmenttypeid = reimbusmentType[newValue!]!;
+                              });
+                            },
+                            icons: Image.asset(
+                                'assets/reimbursment/choicetype.png'));
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(
+                        'Remaining balance: Rp. ${data.reimbursementLimit}' ??
+                            '0',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text('Max 20 MB'),
-              ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Expenses',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 14,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              _showAddExpenseBottomSheet(context);
+                            },
+                            child: Text(
+                              'Add Expense',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                  color: Colors.blue),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    expensesList.isEmpty
+                        ? const Center(child: Text('No Data'))
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: expensesList.length,
+                            itemBuilder: (context, index) {
+                              final expense = expensesList[index];
+                              return Container(
+                                height: 74,
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: HexColor('#EAEAEA'))),
+                                child: Center(
+                                  child: ListTile(
+                                    title: Text(
+                                      expense.expensesId,
+                                      style: GoogleFonts.inter(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                    subtitle: Text(
+                                      'Rp ${expense.value}',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    trailing: IconButton(
+                                      onPressed: () {
+                                        ref
+                                            .read(
+                                                reimbursementExpenseNotifierProvider
+                                                    .notifier)
+                                            .removeExpense(index);
+                                      },
+                                      icon: const Icon(
+                                        Icons.close,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
 
-              // Tampilkan gambar yang dipilih
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: bootomSubmit(
-        'Submit Request',
-        Image.asset('assets/submit.png'),
-        () => context.goNamed('home'),
-      ),
-    );
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text('Upload File'),
+                    ),
+                    Wrap(
+                      children: [
+                        ...imageList.asMap().entries.map((entry) {
+                          int index = entry.key; // Mendapatkan indeks
+                          return GestureDetector(
+                            onTap: () {
+                              ref
+                                  .read(reimbursementImageProvider.notifier)
+                                  .removeImage(index);
+                            },
+                            child: Container(
+                              height: 56,
+                              width: 56,
+                              margin: const EdgeInsets.all(10.0),
+                              child: Image.asset(
+                                'assets/reimbursment/upload.png', // Menampilkan file gambar
+                                height:
+                                    50, // Atur tinggi gambar sesuai kebutuhan
+                                width: 50, // Atur lebar gambar sesuai kebutuhan
+                                fit: BoxFit
+                                    .cover, // Mengatur cara gambar diubah ukurannya
+                              ),
+                            ),
+                          );
+                        }),
+                        GestureDetector(
+                          onTap: _pickFile,
+                          child: Container(
+                            height: 56,
+                            width: 56,
+                            margin: const EdgeInsets.all(10.0),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: HexColor('#B3B3B3'))),
+                            child: Center(
+                              child: Icon(
+                                Icons.add,
+                                size: 18,
+                                color: HexColor('#B3B3B3'),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text('Max 20 MB'),
+                    ),
+
+                    // Tampilkan gambar yang dipilih
+                  ],
+                ),
+              ),
+            ),
+            bottomNavigationBar: bootomSubmit(
+              'Submit Request',
+              Image.asset('assets/submit.png'),
+              () => submitLeaveRequest(selectExpense),
+            ),
+          );
+        });
   }
 
   void _showAddExpenseBottomSheet(BuildContext context) {
@@ -255,16 +304,16 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return FutureBuilder(
+        return FutureBuilder<List<DropdownModel>>(
           future: ref
               .watch(expenseListProvider(context).notifier)
               .listType(context),
           builder: (context, snapshot) {
-            final expenseTypes =
-                snapshot.data ?? []; // Ambil data dari snapshot
+            final expenseTypes = snapshot.data ?? [];
+            DropdownModel? selectedValue;
+
             return Padding(
-              padding: MediaQuery.of(context)
-                  .viewInsets, // Mengatur agar bottom sheet tidak tertutup oleh keyboard
+              padding: MediaQuery.of(context).viewInsets,
               child: Container(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -298,48 +347,49 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                           const SizedBox(height: 5),
                           Container(
                             decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: HexColor(
-                                      '#D9D9D9')), // Mengatur border untuk keseluruhan
-                              borderRadius: BorderRadius.circular(
-                                  10), // Mengatur sudut border
+                              border: Border.all(color: HexColor('#D9D9D9')),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: DropdownButtonFormField<String>(
+                            child: DropdownButtonFormField<DropdownModel>(
                               hint: Padding(
                                 padding: const EdgeInsets.only(left: 22.0),
                                 child: Text(
                                   'Choose expense',
                                   style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16,
-                                      color: HexColor('#B3B3B3')),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 16,
+                                    color: HexColor('#B3B3B3'),
+                                  ),
                                 ),
                               ),
                               value: selectedValue,
                               decoration: const InputDecoration(
-                                border: InputBorder
-                                    .none, // Menghilangkan border default
+                                border: InputBorder.none,
                               ),
-                              items: expenseTypes.map((item) {
-                                return DropdownMenuItem<String>(
-                                  value: item
-                                      .value, // Gunakan expensesId sebagai value
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 3, left: 20.0),
-                                    child: Text(item
-                                        .value), // Tampilkan value dari item
-                                  ),
-                                );
-                              }).toList(),
+                              items: expenseTypes.isNotEmpty
+                                  ? expenseTypes.map((item) {
+                                      return DropdownMenuItem<DropdownModel>(
+                                        value: item,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 3, left: 20.0),
+                                          child: Text(item.value ?? ''),
+                                        ),
+                                      );
+                                    }).toList()
+                                  : [
+                                      const DropdownMenuItem(
+                                        value: null,
+                                        child: Text('No items available'),
+                                      ),
+                                    ],
                               onChanged: (value) {
                                 setState(() {
-                                  selectedValue =
-                                      value; // Set value yang dipilih
+                                  selectedValue = value;
                                 });
                               },
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -356,19 +406,23 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                     ElevatedButton(
                       onPressed: () {
                         final amount =
-                            double.tryParse(_expenseAmountController.text) ??
-                                0; // Ambil nilai dari controller
+                            double.tryParse(_expenseAmountController.text) ?? 0;
                         final newExpense = ExpensesModel(
-                          expensesId: selectedValue ??
-                              '', // Ambil selectedValue dari dropdown
-                          value: amount, // Gunakan amount dari input
+                          expensesId: selectedValue?.value ?? '',
+                          value: amount,
                         );
+                        final nexIdType = ExpensesModel(
+                          expensesId: selectedValue?.key ?? '',
+                          value: amount,
+                        );
+                        final notifier = ref.read(
+                            reimbursementExpenseNotifierProvider.notifier);
 
-                        ref
-                            .read(reimbursementExpenseNotifierProvider.notifier)
-                            .addExpense(newExpense);
+                        if (!notifier.state.contains(newExpense)) {
+                          notifier.addExpense(newExpense);
+                        }
+                        selectExpense.add(nexIdType);
 
-                        // Tutup bottom sheet setelah submit
                         Navigator.pop(context);
                       },
                       style: ElevatedButton.styleFrom(
@@ -397,8 +451,75 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
     );
   }
 
-  Widget dateTimePicker(String title, String hinttitle,
-      TextEditingController controller, Widget icons) {
+  Widget dateTimePicker({
+    required String title,
+    required String hinttitle,
+    required TextEditingController controller,
+    required Widget icons,
+    required BuildContext context,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 5),
+        Container(
+          height: 50,
+          decoration: BoxDecoration(
+            border: Border.all(color: HexColor('#D9D9D9'), width: 1),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: HexColor('#D9D9D9'), width: 1),
+                  ),
+                ),
+                child: icons,
+              ),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 16),
+                    hintText: hinttitle,
+                    hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                    border: InputBorder.none,
+                  ),
+                  readOnly: true, // Membuat field hanya bisa dibaca
+                  onTap: () async {
+                    await _selectDate(
+                        controller); // Panggil fungsi untuk memilih tanggal
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget dropdownIcon(
+      {required String title,
+      required selectedValue,
+      required List listiem,
+      required String hinttitle,
+      required Widget icons,
+      required Function onchange}) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
@@ -413,85 +534,71 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
               color: Colors.black,
             ),
           ),
-          const SizedBox(height: 5),
-          GestureDetector(
-            onTap: () async {
-              // Menampilkan pemilih tanggal
-              DateTime? pickedDate = await showDatePicker(
-                context: context,
-                initialDate: selectedDateTime ?? DateTime.now(),
-                firstDate: DateTime(2000),
-                lastDate: DateTime(2101),
-              );
-
-              if (pickedDate != null) {
-                // Menampilkan pemilih waktu
-                TimeOfDay? pickedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.fromDateTime(
-                      selectedDateTime ?? DateTime.now()),
-                );
-
-                if (pickedTime != null) {
-                  // Menggabungkan tanggal dan waktu yang dipilih
-                  DateTime newDateTime = DateTime(
-                    pickedDate.year,
-                    pickedDate.month,
-                    pickedDate.day,
-                    pickedTime.hour,
-                    pickedTime.minute,
-                  );
-                  setState(() {
-                    selectedDateTime =
-                        newDateTime; // Simpan tanggal/waktu yang dipilih
-                    controller.text =
-                        newDateTime.toString(); // Simpan ke controller
-                  });
-                }
-              }
-            },
-            child: Container(
-              height: 50,
-              decoration: BoxDecoration(
-                border: Border.all(color: HexColor('#D9D9D9')),
-                borderRadius: BorderRadius.circular(10),
+          const SizedBox(
+            height: 5,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color:
+                      HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
+              borderRadius: BorderRadius.circular(10), // Mengatur sudut border
+            ),
+            child: DropdownButtonFormField<String>(
+              isExpanded: true,
+              icon: const Padding(
+                padding: EdgeInsets.all(8.0), // Berikan padding di sini
+                child: Icon(Icons.arrow_drop_down), // Ikon dropdown
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      border: Border(
-                        right: BorderSide(
-                            color: HexColor(
-                                '#D9D9D9')), // Border di sebelah kanan ikon
-                      ),
+              hint: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Text(
+                  hinttitle,
+                  maxLines: 2, // Membatasi teks maksimal 2 baris
+                  overflow: TextOverflow
+                      .ellipsis, // Memotong teks jika terlalu panjang
+                  style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 16,
+                      color: HexColor('#B3B3B3')),
+                ),
+              ),
+              value: selectedValue,
+              decoration: InputDecoration(
+                border: InputBorder.none, // Menghilangkan border default
+                prefixIcon: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(
+                          color: HexColor(
+                              '#D9D9D9')), // Border di sebelah kanan ikon
                     ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: icons,
                   ),
-                  Text(
-                    selectedDateTime != null
-                        ? "${selectedDateTime!.day}/${selectedDateTime!.month}/${selectedDateTime!.year} ${selectedDateTime!.hour}:${selectedDateTime!.minute}"
-                        : hinttitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w400,
-                      color: selectedDateTime != null
-                          ? Colors.black
-                          : HexColor('#B3B3B3'),
+                ),
+              ),
+              items: listiem.map((item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 3, left: 16.0),
+                    child: Text(
+                      item,
+                      maxLines: 2, // Membatasi teks maksimal 2 baris
+                      overflow: TextOverflow
+                          .ellipsis, // Memotong teks jika terlalu panjang
                     ),
                   ),
-                  const SizedBox(
-                    width: 100,
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: HexColor('#757575'),
-                  ),
-                ],
-              ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  onchange(value); // Panggil fungsi onchange dengan nilai baru
+                });
+              },
             ),
           ),
         ],
@@ -499,169 +606,186 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
     );
   }
 
-  Widget dropdownIcon(
-      {required String title,
-      required selectedValue,
-      required List listiem,
-      required String hinttitle,
-      required Widget icons,
-      required Function onchange}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-                color:
-                    HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
-            borderRadius: BorderRadius.circular(10), // Mengatur sudut border
-          ),
-          child: DropdownButtonFormField<String>(
-            isExpanded: true,
-            // Membuat dropdown melebar sesuai lebar container
-            hint: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text(
-                hinttitle,
-                maxLines: 2, // Membatasi teks maksimal 2 baris
-                overflow:
-                    TextOverflow.ellipsis, // Memotong teks jika terlalu panjang
-                style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    color: HexColor('#B3B3B3')),
-              ),
+  Widget textFieldIcon({
+    required String title,
+    required TextEditingController controller,
+    required String hinttitle,
+    required Widget icon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
             ),
-            value: selectedValue,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(
-                  top: 12, left: 16.0, right: 12, bottom: 12),
-
-              border: InputBorder.none, // Menghilangkan border default
-              prefixIcon: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                        color: HexColor(
-                            '#D9D9D9')), // Border di sebelah kanan ikon
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: icons,
-                ),
-              ),
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                  color:
+                      HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
+              borderRadius: BorderRadius.circular(10), // Mengatur sudut border
             ),
-            items: listiem.map((item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    item,
-                    maxLines: 2, // Membatasi teks maksimal 2 baris
-                    overflow: TextOverflow
-                        .ellipsis, // Memotong teks jika terlalu panjang
+            child: Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    border: Border(
+                      right: BorderSide(
+                          color: HexColor(
+                              '#D9D9D9')), // Border di sebelah kanan ikon
+                    ),
                   ),
+                  child: Center(child: icon),
                 ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                onchange(value); // Panggil fungsi onchange dengan nilai baru
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-Widget textFieldIcon({
-  required String title,
-  required TextEditingController controller,
-  required String hinttitle,
-  required Widget icon,
-}) {
-  return Padding(
-    padding: const EdgeInsets.all(10.0),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: GoogleFonts.inter(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-                color:
-                    HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
-            borderRadius: BorderRadius.circular(10), // Mengatur sudut border
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                        color: HexColor(
-                            '#D9D9D9')), // Border di sebelah kanan ikon
-                  ),
-                ),
-                child: Center(child: icon),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
-                  child: TextField(
-                    keyboardType: TextInputType
-                        .number, // Menetapkan keyboard untuk input angka
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter
-                          .digitsOnly, // Memastikan hanya input digit yang diterima
-                    ],
-                    controller: controller,
-                    decoration: InputDecoration(
-                      hintText: hinttitle,
-                      hintStyle: GoogleFonts.inter(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16,
-                        color: HexColor('#B3B3B3'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: TextField(
+                      keyboardType: TextInputType
+                          .number, // Menetapkan keyboard untuk input angka
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Memastikan hanya input digit yang diterima
+                      ],
+                      controller: controller,
+                      decoration: InputDecoration(
+                        hintText: hinttitle,
+                        hintStyle: GoogleFonts.inter(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                          color: HexColor('#B3B3B3'),
+                        ),
+                        border: InputBorder.none,
+                        // Menghilangkan border default
                       ),
-                      border: InputBorder.none,
-                      // Menghilangkan border default
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void submitLeaveRequest(expensesList) {
+    setState(() {
+      isLoading = true; // Set loading menjadi true saat submit
+    });
+
+    Map<String, dynamic> buildData() {
+      if (selectedFile != null) {
+        final mimeType = getMimeType(selectedFile!.path);
+        return {
+          "date": rebursementController.text,
+          "reimbursementTypeId": reimbusmenttypeid,
+          "expenses": expensesList
+          // "files": ["data:$mimeType;base64,$base64String"],
+        };
+      }
+      return {}; // Kembalikan map kosong jika tidak ada file yang diupload
+    }
+
+    Map<String, dynamic> dataSubmit = {
+      "date": rebursementController.text,
+      "reimbursementTypeId": reimbusmenttypeid,
+      "expenses": expensesList
+      // "files": ["data:$mimeType;base64,$base64String"],
+    };
+
+    final reimbusmentSave =
+        ref.read(reimbusmentSaveDataProvider(context).notifier);
+    reimbusmentSave
+        .saveData(context: context, data: dataSubmit)
+        .then((Response response) {
+      setState(() {
+        isLoading = false; // Set loading menjadi false setelah respons diterima
+      });
+      final message = response.data['message'];
+
+      if (response.statusCode == 200) {
+        notifikasi!.showSuccessToast(message);
+        context.pushReplacementNamed('reimbursment');
+      } else {
+        notifikasi!.showErrorToast(
+            message); // Menggunakan showErrorToast untuk kesalahan
+      }
+    }).catchError((error) {
+      setState(() {
+        isLoading = false; // Set loading menjadi false jika ada error
+      });
+      notifikasi!.showErrorToast('Error: $error'); // Menampilkan kesalahan
+    });
+  }
+
+  Future<void> _pickFile() async {
+    var status = await Permission.storage.request();
+
+    if (status.isGranted) {
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        selectedFile = result.files.single;
+
+        if (selectedFile!.size <= 3 * 1024 * 1024) {
+          final bytes = await File(selectedFile!.path!).readAsBytes();
+          setState(() {
+            base64String = base64Encode(bytes); // Mengonversi bytes ke Base64
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('File size exceeds 3 MB')),
+          );
+        }
+      }
+    } else {
+      _handlePermissionDenied(status);
+    }
+  }
+
+  void _handlePermissionDenied(PermissionStatus status) {
+    if (status.isDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Storage permission denied')),
+      );
+    } else if (status.isPermanentlyDenied) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              'Storage permission permanently denied. Please enable it in settings.'),
         ),
-      ],
-    ),
-  );
+      );
+      openAppSettings();
+    }
+  }
+
+  Future<void> _selectDate(TextEditingController controller) async {
+    DateTime? pickedDate = await showDatePicker(
+      initialDatePickerMode: DatePickerMode.day,
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      String formattedDate =
+          DateFormat('yyyy-MM-dd').format(pickedDate); // Format tanggal
+      controller.text = formattedDate; // Atur nilai controller
+    }
+  }
 }

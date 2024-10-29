@@ -124,3 +124,20 @@ class AttendanceLogPaginationNotifier
     }
   }
 }
+
+@riverpod
+class AttedanceStatus extends _$AttedanceStatus {
+  @override
+  Future<AttendanceModel?> build(BuildContext context) async {
+    // Inisialisasi UserService dengan context
+    return dataUser(context: context);
+  }
+
+  // Fetch dari API menggunakan service dan parsing JSON
+  Future<AttendanceModel> dataUser({required context}) async {
+    final attedanceService = AttedanceService(context);
+    final response = await attedanceService.attedanceStatus();
+    state = AsyncValue.data(response);
+    return response;
+  }
+}

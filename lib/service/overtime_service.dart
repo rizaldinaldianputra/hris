@@ -59,4 +59,25 @@ class OvertimeService {
       throw Exception('Error submitting leave request: ${e.toString()}');
     }
   }
+
+  Future<List<Overtime>> listOvertimePagintion({
+    required int month,
+    required int years,
+    required int page,
+    required int perpage,
+  }) async {
+    final response = await api.getHTTP(
+        '$API_URL/overtime-requests?month=$month&year=$years&page=$page&perPage=$perpage');
+
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      List<Overtime> attendanceLogs = (data as List).map((item) {
+        return Overtime.fromJson(item);
+      }).toList();
+
+      return attendanceLogs;
+    } else {
+      throw Exception('Failed to load attendance logs');
+    }
+  }
 }

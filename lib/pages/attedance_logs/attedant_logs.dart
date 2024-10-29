@@ -494,122 +494,122 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
               const SizedBox(
                 height: 16,
               ),
-              FutureBuilder(
-                future: ref
-                    .watch(attedantSumamryProvider(context).notifier)
-                    .dataSummary(context),
-                builder: (context, snapshot) {
-                  // Menangani kondisi loading
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child:
-                          CircularProgressIndicator(), // Menampilkan indikator loading
-                    );
-                  }
+              // FutureBuilder(
+              //   future: ref
+              //       .watch(attedantSumamryProvider(context).notifier)
+              //       .dataSummary(context),
+              //   builder: (context, snapshot) {
+              //     // Menangani kondisi loading
+              //     if (snapshot.connectionState == ConnectionState.waiting) {
+              //       return const Center(
+              //         child:
+              //             CircularProgressIndicator(), // Menampilkan indikator loading
+              //       );
+              //     }
 
-                  // Menangani kondisi error
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Error: ${snapshot.error}', // Menampilkan pesan error
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    );
-                  }
+              //     // Menangani kondisi error
+              //     if (snapshot.hasError) {
+              //       return Center(
+              //         child: Text(
+              //           'Error: ${snapshot.error}', // Menampilkan pesan error
+              //           style: const TextStyle(color: Colors.red),
+              //         ),
+              //       );
+              //     }
 
-                  // Menangani kondisi data null
-                  if (snapshot.data == null) {
-                    return const Center(
-                      child: Text(
-                        'No data available', // Pesan ketika data null
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    );
-                  }
+              //     // Menangani kondisi data null
+              //     if (snapshot.data == null) {
+              //       return const Center(
+              //         child: Text(
+              //           'No data available', // Pesan ketika data null
+              //           style: TextStyle(color: Colors.grey),
+              //         ),
+              //       );
+              //     }
 
-                  // Jika data ada, tampilkan konten
-                  return Container(
-                    padding: const EdgeInsets.only(
-                        top: 20, bottom: 20, right: 12, left: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 0.3, color: Colors.grey),
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            itemCardGrid(
-                                snapshot.data!.absent.toString(), 'Absent'),
-                            const SizedBox(width: 4),
-                            const SizedBox(height: 20),
-                            itemCardGrid(snapshot.data!.noClockin.toString(),
-                                'No Clock-in'),
-                            const SizedBox(width: 4),
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            itemCardGrid(snapshot.data!.lateClockin.toString(),
-                                'Late Clock-in'),
-                            const SizedBox(width: 4),
-                            const SizedBox(height: 20),
-                            itemCardGrid(snapshot.data!.noClockout.toString(),
-                                'No Clock-out'),
-                            const SizedBox(width: 4),
-                          ],
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            itemCardGrid(snapshot.data!.earlyClockin.toString(),
-                                'Early Clock-in'),
-                            const SizedBox(width: 4),
-                            const SizedBox(height: 20),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 40,
-                                  width: 40,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      '',
-                                      style: GoogleFonts.inter(
-                                        textStyle: const TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  '',
-                                  style: GoogleFonts.inter(
-                                    textStyle: const TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(width: 4),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+              //     // Jika data ada, tampilkan konten
+              //     return Container(
+              //       padding: const EdgeInsets.only(
+              //           top: 20, bottom: 20, right: 12, left: 12),
+              //       decoration: BoxDecoration(
+              //         border: Border.all(width: 0.3, color: Colors.grey),
+              //         borderRadius: const BorderRadius.all(Radius.circular(8)),
+              //       ),
+              //       child: Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //         children: <Widget>[
+              //           Column(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               itemCardGrid(
+              //                   snapshot.data!.absent.toString(), 'Absent'),
+              //               const SizedBox(width: 4),
+              //               const SizedBox(height: 20),
+              //               itemCardGrid(snapshot.data!.noClockin.toString(),
+              //                   'No Clock-in'),
+              //               const SizedBox(width: 4),
+              //             ],
+              //           ),
+              //           Column(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               itemCardGrid(snapshot.data!.lateClockin.toString(),
+              //                   'Late Clock-in'),
+              //               const SizedBox(width: 4),
+              //               const SizedBox(height: 20),
+              //               itemCardGrid(snapshot.data!.noClockout.toString(),
+              //                   'No Clock-out'),
+              //               const SizedBox(width: 4),
+              //             ],
+              //           ),
+              //           Column(
+              //             mainAxisAlignment: MainAxisAlignment.center,
+              //             children: [
+              //               itemCardGrid(snapshot.data!.earlyClockin.toString(),
+              //                   'Early Clock-in'),
+              //               const SizedBox(width: 4),
+              //               const SizedBox(height: 20),
+              //               Column(
+              //                 children: [
+              //                   Container(
+              //                     height: 40,
+              //                     width: 40,
+              //                     decoration: const BoxDecoration(
+              //                       color: Colors.white,
+              //                       shape: BoxShape.circle,
+              //                     ),
+              //                     child: Center(
+              //                       child: Text(
+              //                         '',
+              //                         style: GoogleFonts.inter(
+              //                           textStyle: const TextStyle(
+              //                             fontWeight: FontWeight.w500,
+              //                             fontSize: 16,
+              //                           ),
+              //                         ),
+              //                       ),
+              //                     ),
+              //                   ),
+              //                   const SizedBox(height: 10),
+              //                   Text(
+              //                     '',
+              //                     style: GoogleFonts.inter(
+              //                       textStyle: const TextStyle(
+              //                         fontWeight: FontWeight.w400,
+              //                         fontSize: 12,
+              //                       ),
+              //                     ),
+              //                   )
+              //                 ],
+              //               ),
+              //               const SizedBox(width: 4),
+              //             ],
+              //           ),
+              //         ],
+              //       ),
+              //     );
+              //   },
+              // ),
               const SizedBox(
                 height: 16,
               ),

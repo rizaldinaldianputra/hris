@@ -1,6 +1,6 @@
 class DropdownModel {
-  final String key;
-  final String value;
+  String? key;
+  String? value;
 
   DropdownModel({required this.key, required this.value});
 
@@ -19,4 +19,6 @@ class DropdownModel {
       'value': value,
     };
   }
+
+  DropdownModel.blank();
 }
