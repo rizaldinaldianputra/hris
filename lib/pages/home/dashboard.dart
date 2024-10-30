@@ -116,27 +116,59 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     return now.day;
   }
 
+  String getCurrentMonth() {
+    final now = DateTime.now();
+    DateTime displayMonth;
+
+    // Jika tanggal sekarang sudah lewat tanggal 25, set displayMonth ke bulan berikutnya
+    if (now.day > 25) {
+      displayMonth = DateTime(now.year, now.month + 1);
+    } else {
+      displayMonth = now;
+    }
+
+    // Format bulan ke dalam singkatan (contoh: 'Jan', 'Feb', dll.)
+    return DateFormat('MMM').format(displayMonth);
+  }
+
   int getDaysUntil25() {
     final now = DateTime.now();
-    final gajianDate = DateTime(now.year, now.month, 25);
+    DateTime gajianDate;
 
-    if (now.isBefore(gajianDate)) {
-      return gajianDate.difference(now).inDays;
+    // Jika tanggal sekarang sudah lewat tanggal 25, set gajianDate ke bulan berikutnya
+    if (now.day > 25) {
+      if (now.month == 12) {
+        gajianDate = DateTime(now.year + 1, 1,
+            25); // Jika Desember, loncat ke Januari tahun depan
+      } else {
+        gajianDate = DateTime(now.year, now.month + 1, 25);
+      }
     } else {
-      return 0;
+      gajianDate = DateTime(now.year, now.month, 25);
     }
+
+    // Menambahkan 1 hari untuk memastikan hitungan tepat
+    return gajianDate.difference(now).inDays + 1;
+  }
+
+  double calculateProgress(int currentDay, int maxDays) {
+    // Jika currentDay melebihi maxDays, hitung ulang progress dengan modulo
+    int dayInCycle = currentDay % maxDays;
+
+    // Jika dayInCycle adalah 0, set ke maxDays untuk menyelesaikan siklus dengan nilai 1.0
+    dayInCycle = dayInCycle == 0 ? maxDays : dayInCycle;
+
+    return dayInCycle / maxDays;
   }
 
   @override
   Widget build(BuildContext context) {
     int currentDay = getCurrentDay();
     int daysUntil25 = getDaysUntil25();
-    double progress = currentDay <= maxDays
-        ? currentDay / maxDays
-        : (2 * maxDays - currentDay) / maxDays;
+    String currentMonth = getCurrentMonth();
+    double progress = calculateProgress(currentDay, maxDays);
     String formattedDate =
         DateFormat('dd MMMM yyyy HH:mm:ss').format(DateTime.now());
-    String currentMonth = DateFormat('MMM').format(DateTime.now());
     final userData = ref.watch(userDataProvider(context));
     final attedandeStatus = ref.watch(attedanceStatusProvider(context));
     return userData.when(data: (data) {
