@@ -36,6 +36,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
   TextEditingController enddateTimeController = TextEditingController();
   TextEditingController reasonController = TextEditingController();
   String? leavetypeid;
+
   @override
   void initState() {
     notifikasi = Notifikasi(context);
@@ -45,6 +46,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
   @override
   Widget build(BuildContext context) {
     final userData = ref.watch(userDataProvider(context));
+    final leavePending = ref.watch(leavePendingProvider.notifier);
 
     return userData.when(
       data: (data) {
@@ -287,7 +289,7 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
 
       if (response.statusCode == 200) {
         notifikasi!.showSuccessToast(message);
-        context.pushReplacementNamed('leave');
+        context.goNamed('home');
       } else {
         notifikasi!.showErrorToast(
             message); // Menggunakan showErrorToast untuk kesalahan

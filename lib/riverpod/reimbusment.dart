@@ -21,10 +21,11 @@ class ReimbursementExpenseNotifier extends _$ReimbursementExpenseNotifier {
   // Method to add a new expense
   void addExpense(ExpensesModel expense) {
     // Cek apakah expense sudah ada dalam state berdasarkan ID atau atribut unik lainnya
-    if (!state.any((e) => e.expensesId == expense.expensesId)) {
+    if (!state.any((e) =>
+        e.expensesId == expense.expensesId && e.value == expense.value)) {
       state = [
         ...state,
-        expense
+        expense,
       ]; // Update the state with the new expense if it's unique
     }
   }

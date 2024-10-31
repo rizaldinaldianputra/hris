@@ -14,6 +14,7 @@ import 'package:hris/models/expenses_model.dart';
 import 'package:hris/models/reimbursement%20_expense_model.dart';
 import 'package:hris/riverpod/reimbusment.dart';
 import 'package:hris/riverpod/user.dart';
+import 'package:hris/service/reimburstment_service.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:hris/utility/notifikasiwidget.dart';
@@ -45,6 +46,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
   DateTime? selectedDateTime;
   bool isLoading = false;
   String? selectedValueType;
+  List<DropdownModel> listDropdown = [];
 
   String base64String = '';
 
@@ -54,10 +56,27 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
   String keyexpnse = '';
 
   String? reimbusmenttypeid;
+
+  late ReimburstmentService reimburstmentService;
+
+  DropdownModel selectDropdown = DropdownModel.blank();
   @override
   void initState() {
     notifikasi = Notifikasi(context);
+    reimburstmentService = ReimburstmentService(context);
+    getAllDropdownTypeExpense();
     super.initState();
+  }
+
+  void getAllDropdownTypeExpense() async {
+    final listresponse = await reimburstmentService.expenseType();
+
+    setState(() {
+      if (listresponse.isNotEmpty) {
+        selectDropdown = listresponse.first;
+      }
+      listDropdown.addAll(listresponse);
+    });
   }
 
   @override
@@ -187,7 +206,6 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                               final expense = expensesList[index];
                               return Container(
                                 height: 74,
-                                padding: const EdgeInsets.all(10),
                                 margin: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
                                     border:
@@ -213,6 +231,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                                                 reimbursementExpenseNotifierProvider
                                                     .notifier)
                                             .removeExpense(index);
+                                        selectExpense.removeAt(index);
                                       },
                                       icon: const Icon(
                                         Icons.close,
@@ -304,149 +323,176 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
       ),
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return FutureBuilder<List<DropdownModel>>(
-          future: ref
-              .watch(expenseListProvider(context).notifier)
-              .listType(context),
-          builder: (context, snapshot) {
-            final expenseTypes = snapshot.data ?? [];
-            DropdownModel? selectedValue;
+        final TextEditingController expenseAmountController =
+            TextEditingController();
 
-            return Padding(
-              padding: MediaQuery.of(context).viewInsets,
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Add Expense',
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
+        return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Add Expense',
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                      color: Colors.black,
                     ),
-                    const SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Expense Type',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black,
-                            ),
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Expense Type',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
                           ),
-                          const SizedBox(height: 5),
-                          Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: HexColor('#D9D9D9')),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: DropdownButtonFormField<DropdownModel>(
-                              hint: Padding(
-                                padding: const EdgeInsets.only(left: 22.0),
-                                child: Text(
-                                  'Choose expense',
-                                  style: GoogleFonts.inter(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 16,
-                                    color: HexColor('#B3B3B3'),
-                                  ),
+                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: HexColor('#D9D9D9')),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: DropdownButtonFormField<DropdownModel>(
+                            hint: Padding(
+                              padding: const EdgeInsets.only(left: 22.0),
+                              child: Text(
+                                'Choose expense',
+                                style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 16,
+                                  color: HexColor('#B3B3B3'),
                                 ),
                               ),
-                              value: selectedValue,
-                              decoration: const InputDecoration(
-                                border: InputBorder.none,
-                              ),
-                              items: expenseTypes.isNotEmpty
-                                  ? expenseTypes.map((item) {
-                                      return DropdownMenuItem<DropdownModel>(
-                                        value: item,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 3, left: 20.0),
-                                          child: Text(item.value ?? ''),
-                                        ),
-                                      );
-                                    }).toList()
-                                  : [
-                                      const DropdownMenuItem(
-                                        value: null,
-                                        child: Text('No items available'),
-                                      ),
-                                    ],
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedValue = value;
-                                });
-                              },
                             ),
+                            value: selectDropdown,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                            ),
+                            items: listDropdown.map((item) {
+                              return DropdownMenuItem<DropdownModel>(
+                                value: item,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 3, left: 20.0),
+                                  child: Text(item.value ?? ''),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectDropdown =
+                                    value!; // Memperbarui selectDropdown
+                              });
+                            },
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    textFieldIcon(
-                      hinttitle: 'Input Amount',
-                      title: 'Amount',
-                      icon: Text(
-                        textAlign: TextAlign.center,
-                        'Rp',
-                        style: GoogleFonts.inter(fontSize: 14),
-                      ),
-                      controller: _expenseAmountController,
+                  ),
+                  textFieldIcon(
+                    hinttitle: 'Input Amount',
+                    title: 'Amount',
+                    icon: Text(
+                      textAlign: TextAlign.center,
+                      'Rp',
+                      style: GoogleFonts.inter(fontSize: 14),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        final amount =
-                            double.tryParse(_expenseAmountController.text) ?? 0;
+                    controller: expenseAmountController,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final amount =
+                          double.tryParse(expenseAmountController.text) ?? 0;
+
+                      // Pastikan selectDropdown dan amount valid
+                      if (selectDropdown.value != null &&
+                          selectDropdown.key != null &&
+                          amount > 0) {
                         final newExpense = ExpensesModel(
-                          expensesId: selectedValue?.value ?? '',
+                          expensesId: selectDropdown.value!,
                           value: amount,
                         );
                         final nexIdType = ExpensesModel(
-                          expensesId: selectedValue?.key ?? '',
+                          expensesId: selectDropdown.key!,
                           value: amount,
                         );
+
                         final notifier = ref.read(
                             reimbursementExpenseNotifierProvider.notifier);
 
-                        if (!notifier.state.contains(newExpense)) {
-                          notifier.addExpense(newExpense);
-                        }
-                        selectExpense.add(nexIdType);
+                        // Cek apakah newExpense sudah ada di state
+                        if (!notifier.state.any((e) =>
+                            e.expensesId == newExpense.expensesId &&
+                            e.value == newExpense.value)) {
+                          notifier.addExpense(newExpense); // Tambah ke state
 
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: HexColor('#01A2E9'),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        minimumSize: const Size(double.infinity, 50),
+                          // Cek apakah nexIdType sudah ada di selectExpense
+                          if (!selectExpense.any((e) =>
+                              e.expensesId == nexIdType.expensesId &&
+                              e.value == nexIdType.value)) {
+                            selectExpense
+                                .add(nexIdType); // Menambahkan ke selectExpense
+                          } else {
+                            // Jika nexIdType sudah ada, tampilkan pesan kesalahan
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Pengeluaran dengan ID ini sudah ada.'),
+                              ),
+                            );
+                            return; // Keluar dari fungsi jika sudah ada
+                          }
+
+                          Navigator.pop(context); // Menutup bottom sheet
+                        } else {
+                          // Tampilkan pesan kesalahan jika newExpense sudah ada
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Pengeluaran ini sudah ada.'),
+                            ),
+                          );
+                        }
+                      } else {
+                        // Tampilkan pesan kesalahan jika salah satu kondisi tidak terpenuhi
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                'Silakan pilih jenis pengeluaran dan masukkan jumlah yang valid.'),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: HexColor('#01A2E9'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(
-                        'Submit',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                          color: Colors.white,
-                        ),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: Text(
+                      'Submit',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: Colors.white,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        );
+            ));
       },
     );
   }
@@ -744,7 +790,10 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
         if (selectedFile!.size <= 3 * 1024 * 1024) {
           final bytes = await File(selectedFile!.path!).readAsBytes();
           setState(() {
-            base64String = base64Encode(bytes); // Mengonversi bytes ke Base64
+            base64String = base64Encode(bytes);
+            ref
+                .read(reimbursementImageProvider.notifier)
+                .addImage(selectedFile!);
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

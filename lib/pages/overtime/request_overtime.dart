@@ -615,7 +615,7 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
 
       if (response.statusCode == 200) {
         notifikasi!.showSuccessToast(message);
-        context.pushReplacementNamed('overtime');
+        context.goNamed('home');
       } else {
         notifikasi!.showErrorToast(
             message); // Menggunakan showErrorToast untuk kesalahan

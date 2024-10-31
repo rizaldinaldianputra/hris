@@ -766,7 +766,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                   },
                                   noItemsFoundIndicatorBuilder: (_) =>
                                       const Center(
-                                    child: Text('No attendance logs found'),
+                                    child: Text('No reimbusment logs found'),
                                   ),
                                   firstPageErrorIndicatorBuilder: (_) =>
                                       const Center(
