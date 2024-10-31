@@ -50,46 +50,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     formattedDate = _getFormattedDate();
     _startTimer();
     _initializeCamera();
-    _getCurrentLocation();
-  }
-
-  Future<LatLng> _getCurrentLocation() async {
-    // Meminta izin lokasi
-    await _requestLocationPermission();
-
-    try {
-      // Memeriksa izin lokasi
-      if (await Permission.location.isGranted) {
-        // Mendapatkan lokasi saat ini
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-
-        setState(() {
-          currentLocation = LatLng(position.latitude, position.longitude);
-        });
-      } else if (await Permission.location.isDenied) {
-        // Tampilkan pesan bahwa izin ditolak
-        print(
-            "Location permission denied. Please enable location permission in settings.");
-      } else if (await Permission.location.isPermanentlyDenied) {
-        // Arahkan pengguna ke pengaturan aplikasi
-        print(
-            "Location permission permanently denied. Please enable it in app settings.");
-        openAppSettings();
-      }
-    } catch (e) {
-      print("Error getting location: $e");
-    }
-
-    return currentLocation!;
-  }
-
-  Future<void> _requestLocationPermission() async {
-    var status = await Permission.location.status;
-    if (status.isDenied) {
-      // Jika izin belum diberikan, minta izin
-      await Permission.location.request();
-    }
   }
 
   @override
@@ -319,52 +279,42 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 TextButton.icon(
-                                  onPressed: (isClockedIn ==
-                                          false) // Aktifkan Clock In jika belum ada clockInTime
-                                      ? () {
-                                          ref
-                                              .read(statusProvider.notifier)
-                                              .state = 'clockin';
-                                          context.goNamed('camerapage');
-                                        }
-                                      : null,
+                                  onPressed: () {
+                                    ref.read(statusProvider.notifier).state =
+                                        'clockin';
+                                    context.goNamed('camerapage');
+                                  }, // Selalu aktif
                                   icon: const Icon(Icons.login,
                                       color: Colors.black),
                                   label: Text(
                                     'Clock In',
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w500,
-                                      textStyle: TextStyle(
+                                      textStyle: const TextStyle(
                                         fontSize: 14,
-                                        color: (isClockedIn == false)
-                                            ? Colors.black
-                                            : Colors.grey,
+                                        color: Colors
+                                            .black, // Tetap hitam terlepas dari status
                                       ),
                                     ),
                                   ),
                                 ),
                                 const Text('|', style: TextStyle(fontSize: 20)),
                                 TextButton.icon(
-                                  onPressed: (isClockedIn &&
-                                          !isClockedOut) // Aktifkan Clock Out jika sudah ada clockInTime dan belum ada clockOutTime
-                                      ? () {
-                                          ref
-                                              .read(statusProvider.notifier)
-                                              .state = 'clockout';
-                                          context.goNamed('camerapage');
-                                        }
-                                      : null,
+                                  onPressed: () {
+                                    ref.read(statusProvider.notifier).state =
+                                        'clockout';
+                                    context.goNamed('camerapage');
+                                  }, // Selalu aktif
                                   icon: const Icon(Icons.logout,
                                       color: Colors.black),
                                   label: Text(
                                     'Clock Out',
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.w500,
-                                      textStyle: TextStyle(
+                                      textStyle: const TextStyle(
                                         fontSize: 14,
-                                        color: (isClockedIn && !isClockedOut)
-                                            ? Colors.black
-                                            : Colors.grey,
+                                        color: Colors
+                                            .black, // Tetap hitam terlepas dari status
                                       ),
                                     ),
                                   ),

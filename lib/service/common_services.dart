@@ -52,7 +52,7 @@ class CommonService {
         }
 
         if (error.response!.statusCode == 500) {
-          context.pushReplacementNamed('login');
+          // context.pushReplacementNamed('login');
           return;
         }
 

@@ -1,12 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hris/pages/attedance_logs/dialog_succes.dart';
+import 'package:hris/pages/attedance_logs/maps_location.dart';
 import 'package:hris/riverpod/attedant.dart';
-import 'package:hris/riverpod/user.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +16,7 @@ import '../../helper/global_function.dart';
 
 class CamerPreviewPage extends ConsumerStatefulWidget {
   final XFile? imageByte;
+
   const CamerPreviewPage({super.key, required this.imageByte});
 
   @override
@@ -27,7 +27,8 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
   Uint8List? fileImage;
   Notifikasi? notifikasi;
 
-  String? base64String; // Untuk menyimpan hasil konversi Base64
+  bool isSubmitting = false; // Status untuk mencegah pengiriman ganda
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -49,6 +50,7 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
   @override
   Widget build(BuildContext context) {
     final dataUser = ref.watch(attedanceStatusProvider(context));
+
     return dataUser.when(
       loading: () {
         return Scaffold(
@@ -61,10 +63,11 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
           appBar: appBarWidget('Attendance Log'),
           body: Center(
             child: IconButton(
-                onPressed: () {
-                  ref.refresh(attedanceStatusProvider(context));
-                },
-                icon: const Icon(Icons.refresh)),
+              onPressed: () {
+                ref.refresh(attedanceStatusProvider(context));
+              },
+              icon: const Icon(Icons.refresh),
+            ),
           ),
         );
       },
@@ -73,6 +76,7 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
         String formattedDate = DateFormat('dd MMM yyyy').format(now);
         String startTime = data!.employeeShift?.startTime ?? '';
         String endTime = data.employeeShift?.endTime ?? '';
+
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
           appBar: appBarWidget('Attendance Log'),
@@ -120,8 +124,6 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
                   ],
                 ),
               ),
-
-              // Floating Submit and Location button on top of image
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -134,6 +136,11 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
                   child: Column(
                     children: [
                       ListTile(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => const MapsLocations());
+                        },
                         leading: SizedBox(
                           height: 18,
                           width: 18,
@@ -150,31 +157,72 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
                         ),
                         trailing: const Icon(Icons.navigate_next_outlined),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          submitAttedant();
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.all(20),
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: HexColor('#01A2E9'),
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                topRight: Radius.circular(8)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Submit',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
+                      (isLoading)
+                          ? Container(
+                              margin: const EdgeInsets.all(20),
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: isSubmitting
+                                    ? Colors
+                                        .grey // Mengubah warna saat sedang menunggu respons
+                                    : HexColor('#01A2E9'),
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(8),
+                                  topRight: Radius.circular(8),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'Submit',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : GestureDetector(
+                              onTap: () {
+                                if (!isSubmitting) {
+                                  submitAttedant();
+                                }
+                              },
+                              child: AbsorbPointer(
+                                absorbing:
+                                    isSubmitting, // Menonaktifkan interaksi
+                                child: Container(
+                                  margin: const EdgeInsets.all(20),
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: isSubmitting
+                                        ? Colors
+                                            .grey // Mengubah warna saat sedang menunggu respons
+                                        : HexColor('#01A2E9'),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(8),
+                                      topRight: Radius.circular(8),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: isSubmitting
+                                        ? const CircularProgressIndicator(
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                    Colors.white),
+                                          )
+                                        : Text(
+                                            'Submit',
+                                            style: GoogleFonts.inter(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -187,60 +235,69 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
   }
 
   Future<void> submitAttedant() async {
-    Future<Map<String, dynamic>> checkIn() async {
+    if (isSubmitting) return; // Mencegah panggilan ganda
+    isSubmitting = true; // Menandai bahwa pengiriman sedang berlangsung
+    setState(() {
+      isLoading = true;
+    });
+    try {
       DateTime now = DateTime.now();
       final base64String = await convertXFileToBase64(widget.imageByte!);
       String formattedTime = DateFormat('HH:mm:ss').format(now);
-      if (base64String != null && widget.imageByte != null) {
-        final mimeType = getMimeType(widget.imageByte!.path);
-        return {
+      String? mimeType = getMimeType(widget.imageByte!.path);
+
+      Map<String, dynamic> data;
+
+      String status = ref.read(statusProvider);
+      if (status == 'clockin') {
+        data = {
           "clockinTime": formattedTime,
-          "clockinLat": ref.watch(latProvider),
-          "clockinLong": ref.watch(longProvider),
+          "clockinLat": ref.read(latProvider),
+          "clockinLong": ref.read(longProvider),
           "clockinImage": "data:$mimeType;base64,$base64String",
         };
-      }
-      return {}; // Kembalikan map kosong jika tidak ada file yang diupload
-    }
-
-    Future<Map<String, dynamic>> checkOut() async {
-      DateTime now = DateTime.now();
-      final base64String = await convertXFileToBase64(widget.imageByte!);
-      String formattedTime = DateFormat('HH:mm:ss').format(now);
-      if (base64String != null && widget.imageByte != null) {
-        final mimeType = getMimeType(widget.imageByte!.path);
-        return {
+      } else {
+        data = {
           "clockoutTime": formattedTime,
-          "clockoutLat": ref.watch(latProvider),
-          "clockoutLong": ref.watch(longProvider),
+          "clockoutLat": ref.read(latProvider),
+          "clockoutLong": ref.read(longProvider),
           "clockoutImage": "data:$mimeType;base64,$base64String",
         };
       }
-      return {}; // Kembalikan map kosong jika tidak ada file yang diupload
-    }
 
-    final attedantProvider = ref.read(attedantSaveProvider(context).notifier);
-    String status = ref.watch(statusProvider);
+      final attedantProvider = ref.read(attedantSaveProvider(context).notifier);
 
-    // Tunggu hasil dari checkIn() atau checkOut() sesuai dengan status
-    final data = (status == 'clockin') ? await checkIn() : await checkOut();
+      // Mengirim data setelah proses async selesai
+      final response = await attedantProvider.saveData(
+        context: context,
+        data: data,
+        url: ref.read(statusProvider),
+      );
 
-    // Mengirim data setelah proses async selesai
-    attedantProvider
-        .saveData(context: context, data: data, url: ref.watch(statusProvider))
-        .then((Response response) {
       final message = response.data['message'];
 
       if (response.statusCode == 200) {
+        isLoading = false;
+
         notifikasi?.showSuccessToast(message);
-        context.pushReplacementNamed('dialogsucces');
+        context.goNamed('dialogsucces');
       } else {
-        notifikasi?.showErrorToast(
-            message); // Menggunakan showErrorToast untuk kesalahan
+        setState(() {
+          isLoading = false;
+        });
+        notifikasi?.showErrorToast(message);
       }
-    }).catchError((error) {
-      notifikasi?.showErrorToast('Error: $error'); // Menampilkan kesalahan
-    });
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      notifikasi?.showErrorToast('Error: $error');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+      isSubmitting = false; // Reset status setelah proses selesai
+    }
   }
 }
 

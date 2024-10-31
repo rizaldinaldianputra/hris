@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/pages/home/account.dart';
-import 'package:hris/pages/home/attedant_log.dart';
+import 'package:hris/pages/attedance_logs/attedant.dart';
+import 'package:hris/pages/home/attedant_view.dart';
 import 'package:hris/pages/home/dashboard.dart';
 import 'package:hris/pages/home/inbox.dart';
 
@@ -36,7 +37,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   final List<Widget> widgetOptions = <Widget>[
     const DashboardPage(),
-    const AttedantLogPage(),
+    const AttedantView(),
     const Center(child: Text('', style: TextStyle(fontSize: 24))),
     const InboxPage(),
     const AccountPage()

@@ -21,11 +21,11 @@ import 'package:hris/pages/account/organization/organization_edit.dart';
 import 'package:hris/pages/account/organization/organization_info_list.dart';
 import 'package:hris/pages/account/payroll_info.dart';
 import 'package:hris/pages/account/personal_info.dart';
+import 'package:hris/pages/attedance_logs/attedant.dart';
 import 'package:hris/pages/attedance_logs/camera_attedant.dart';
 import 'package:hris/pages/attedance_logs/camera_preview.dart';
 import 'package:hris/pages/attedance_logs/dialog_succes.dart';
 import 'package:hris/pages/auth/login.dart';
-import 'package:hris/pages/home/attedant_log.dart';
 import 'package:hris/pages/home/home.dart';
 import 'package:hris/pages/leave/leave.dart';
 import 'package:hris/pages/leave/request_leave.dart';
@@ -42,6 +42,13 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
     name: 'login',
     builder: (BuildContext context, GoRouterState state) {
       return const LoginPage();
+    },
+  ),
+  GoRoute(
+    path: '/dialogsucces',
+    name: 'dialogsucces',
+    builder: (BuildContext context, GoRouterState state) {
+      return const DialogSuccesPage();
     },
   ),
   GoRoute(
@@ -215,22 +222,14 @@ final GoRouter router = GoRouter(initialLocation: '/', routes: <RouteBase>[
         },
         routes: <RouteBase>[
           GoRoute(
-              path: '/camerapreview',
-              name: 'camerapreview',
-              builder: (BuildContext context, GoRouterState state) {
-                final imageBytes = state.extra as XFile?;
+            path: '/camerapreview',
+            name: 'camerapreview',
+            builder: (BuildContext context, GoRouterState state) {
+              final imageBytes = state.extra as XFile?;
 
-                return CamerPreviewPage(imageByte: imageBytes);
-              },
-              routes: <RouteBase>[
-                GoRoute(
-                  path: '/dialogsucces',
-                  name: 'dialogsucces',
-                  builder: (BuildContext context, GoRouterState state) {
-                    return const DialogSuccesPage();
-                  },
-                ),
-              ]),
+              return CamerPreviewPage(imageByte: imageBytes);
+            },
+          ),
         ],
       ),
       GoRoute(

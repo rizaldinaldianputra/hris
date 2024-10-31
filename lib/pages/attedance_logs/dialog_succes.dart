@@ -34,13 +34,13 @@ class _DialogSuccesPageState extends ConsumerState<DialogSuccesPage> {
         ),
       );
     }, data: (data) {
-      String clockInString = convertTimeOfDayToString(data!.clockInTime!);
-      String clockOutString = convertTimeOfDayToString(data.clockOutTime!);
+      String clockInString = convertTimeOfDayToString(data?.clockInTime);
+      String clockOutString = convertTimeOfDayToString(data?.clockOutTime);
       String status = ref.watch(statusProvider);
       DateTime now = DateTime.now();
       String formattedDate = DateFormat('dd MMMM yyyy', 'id_ID').format(now);
-      String startTime = data.employeeShift?.startTime ?? '';
-      String endTime = data.employeeShift?.endTime ?? '';
+      String startTime = data?.employeeShift?.startTime ?? '';
+      String endTime = data?.employeeShift?.endTime ?? '';
       return WillPopScope(
         onWillPop: () async {
           // Set state disable sebelum kembali
@@ -82,7 +82,7 @@ class _DialogSuccesPageState extends ConsumerState<DialogSuccesPage> {
                   height: 24,
                 ),
                 Text(
-                  'Schedule:$formattedDate',
+                  'Schedule: $formattedDate',
                   style: GoogleFonts.inter(
                       fontWeight: FontWeight.w500,
                       fontSize: 16,

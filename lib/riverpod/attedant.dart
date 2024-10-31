@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -175,3 +178,31 @@ class AttedantSave extends _$AttedantSave {
     }
   }
 }
+
+class XFileNotifier extends StateNotifier<XFile?> {
+  XFileNotifier() : super(null);
+
+  // Set XFile ke dalam state
+  void setXFile(XFile? file) {
+    state = file;
+  }
+
+  // Mengembalikan data Uint8List dari XFile
+  Future<Uint8List?> loadImageFromXFile() async {
+    if (state != null) {
+      return await state!.readAsBytes();
+    }
+    return null; // Mengembalikan null jika state belum diatur
+  }
+}
+
+// StateNotifierProvider untuk XFile
+final xFileProvider = StateNotifierProvider<XFileNotifier, XFile?>((ref) {
+  return XFileNotifier();
+});
+
+// FutureProvider untuk Uint8List (data gambar) dari XFile
+final imageBytesProvider = FutureProvider<Uint8List?>((ref) async {
+  final xFileNotifier = ref.watch(xFileProvider.notifier);
+  return await xFileNotifier.loadImageFromXFile();
+});

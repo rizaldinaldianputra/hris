@@ -56,7 +56,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(10))),
               margin: const EdgeInsets.all(16),
-              height: 400,
+              height: 450,
               width: double.infinity,
               child: Column(
                 children: [
@@ -64,9 +64,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     height: 20,
                   ),
                   Image.asset(
-                    'assets/logo.png',
-                    width: 56,
-                    height: 56,
+                    'assets/newlogo.png',
+                    width: 100,
+                    height: 100,
                   ),
                   const SizedBox(
                     height: 10,
@@ -96,7 +96,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                             color: HexColor('#A5A5A5'),
                           ),
                         ),
-                        hintText: 'Email',
+                        hintText: 'Username',
                         border: OutlineInputBorder(
                           // Mengatur border
                           borderRadius: BorderRadius.circular(10.0),
