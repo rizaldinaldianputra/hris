@@ -1,55 +1,41 @@
+// lib/service/auth_service.dart
+import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:hris/service/common_services.dart';
+import 'package:hris/config/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  late CommonService api;
-  String url = '/auth';
-  String connErr = 'Please check your internet connection and try again';
+  final Dio _dio = Dio();
 
-  AuthService(context, user, [password]) {
-    api = CommonService(context);
-  }
+  Future<Map<String, dynamic>> login(String username, String password) async {
+    const String url = '$API_URL/auth/login';
 
-  Future<int> authenticate(url, String user, String password, context) async {
-    final data = {'username': user, 'password': password};
-    Response response = await api.postHTTP(url, data);
-    if (response.statusCode == 200) {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString("token", response.data['data']['token']);
-    }
-    return response.statusCode!;
-  }
+    try {
+      final response = await _dio.post(url,
+          data: jsonEncode({
+            'username': username,
+            'password': password,
+          }));
 
-  Future<Response> logout(url, context) async {
-    Response response = await api.postLogout(url);
-    return response;
-  }
-}
+      // Jika respons sukses, simpan token ke SharedPreferences
+      final token = response.data['data']['token'];
+      print(token);
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      print('token'); // Ganti sesuai dengan struktur respons Anda
 
-Future<void> checkToken(BuildContext context) async {
-  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  String? token = sharedPreferences.getString("token");
-  int? tokenDate = sharedPreferences.getInt("tokendate");
-
-  if (token != null && tokenDate != null) {
-    DateTime tokenTime = DateTime.fromMillisecondsSinceEpoch(tokenDate);
-    DateTime now = DateTime.now();
-
-    // Cek apakah token sudah kadaluarsa (misalnya, 1 jam)
-    if (now.isAfter(tokenTime.add(const Duration(hours: 1)))) {
-      // Token sudah kadaluarsa, arahkan ke halaman login
-      sharedPreferences.remove("token"); // Hapus token yang sudah kadaluarsa
-      sharedPreferences.remove("tokendate");
-      context.pushReplacementNamed(
-          '/login'); // Ganti dengan route login yang sesuai
-    } else {
-      // Token masih valid, arahkan ke halaman home
-      context
-          .pushReplacementNamed('/home'); // Ganti dengan route home yang sesuai
+      return {
+        'success': true,
+        'data': response.data,
+        'statusCode': response.statusCode,
+      };
+    } on DioException catch (e) {
+      // Jika terjadi error, kembalikan pesan kesalahan
+      return {
+        'success': false,
+        'message': e.response?.data['message'] ?? 'Terjadi kesalahan',
+        'statusCode': e.response?.statusCode,
+      };
     }
   }
 }

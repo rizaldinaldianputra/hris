@@ -33,6 +33,7 @@ dependencies:
   latlong2: ^0.9.1
   linear_progress_bar: ^1.1.2
   mime_type: ^1.0.1
+  path_provider: ^2.1.5
   pdf: ^3.11.1
   permission_handler: ^11.3.1
   printing: ^5.13.3
@@ -40,6 +41,7 @@ dependencies:
   riverpod_annotation: ^2.3.5
   scroll_wheel_date_picker: ^0.0.2+1
   shared_preferences: ^2.2.3
+  shimmer: ^3.0.0
   uuid: ^4.5.0
 
 dev_dependencies:

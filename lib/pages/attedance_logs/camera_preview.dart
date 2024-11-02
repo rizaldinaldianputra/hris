@@ -112,8 +112,9 @@ class _CamerPreviewPageState extends ConsumerState<CamerPreviewPage> {
                         child: fileImage != null
                             ? Image.memory(
                                 fileImage!,
-                                fit: BoxFit.cover,
-                                height: MediaQuery.of(context).size.height * 1,
+                                fit: BoxFit.fill,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.75,
                                 width: double.infinity,
                               )
                             : const Center(

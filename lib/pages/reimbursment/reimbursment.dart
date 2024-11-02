@@ -147,6 +147,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                   ),
                   // TabBar di bawah balance
                   TabBar(
+                    physics: const NeverScrollableScrollPhysics(),
                     controller: _tabController,
                     tabs: const [
                       Tab(text: 'Request'),
@@ -190,6 +191,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                   ),
                   Expanded(
                     child: TabBarView(
+                      physics: const NeverScrollableScrollPhysics(),
                       controller: _tabController,
                       children: [
                         Column(

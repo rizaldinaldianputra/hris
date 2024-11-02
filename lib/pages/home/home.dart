@@ -49,6 +49,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
     return Scaffold(
         body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           onPageChanged: (index) {
             setState(() {

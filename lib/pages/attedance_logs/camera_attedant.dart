@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_svg/svg.dart';
@@ -5,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hris/riverpod/attedant.dart';
+import 'package:image/image.dart' as img;
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
@@ -132,15 +136,10 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                     onTap: () async {
                       if (_cameraController != null &&
                           _cameraController!.value.isInitialized) {
-                        try {
-                          imageData = await _cameraController!.takePicture();
-                          setState(() {});
-                          if (imageData != null) {
-                            _getLocation;
-                            context.goNamed('camerapreview', extra: imageData);
-                          }
-                        } catch (e) {
-                          print("Gagal mengambil gambar: $e");
+                        final imageData = await _captureAndCropImage();
+                        if (imageData != null) {
+                          // Navigasi ke halaman pratinjau dengan data gambar yang sudah dipotong
+                          context.goNamed('camerapreview', extra: imageData);
                         }
                       }
                     },
@@ -149,5 +148,44 @@ class _CameraPageState extends ConsumerState<CameraPage> {
             ),
           ],
         ));
+  }
+
+  Future<XFile?> _captureAndCropImage() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized)
+      return null;
+
+    try {
+      final imageFile = await _cameraController!.takePicture();
+      final imageBytes = await imageFile.readAsBytes();
+      final img.Image originalImage =
+          img.decodeImage(Uint8List.fromList(imageBytes))!;
+
+      // Menghitung ukuran crop
+      final cropSize = (originalImage.width < originalImage.height)
+          ? originalImage.width
+          : originalImage.height;
+      final offsetX = (originalImage.width - cropSize) ~/ 2;
+      final offsetY = (originalImage.height - cropSize) ~/ 2;
+
+      // Memotong gambar
+      final img.Image croppedImage = img.copyCrop(
+        originalImage,
+        x: offsetX,
+        y: offsetY,
+        width: cropSize,
+        height: cropSize,
+      );
+
+      // Mengonversi cropped image menjadi bytes
+      final croppedImageBytes = img.encodeJpg(croppedImage);
+
+      // Mengembalikan gambar cropped sebagai XFile
+      final tempFile = File('${Directory.systemTemp.path}/cropped_image.jpg');
+      await tempFile.writeAsBytes(croppedImageBytes);
+      return XFile(tempFile.path);
+    } catch (e) {
+      print("Error capturing and cropping image: $e");
+      return null;
+    }
   }
 }

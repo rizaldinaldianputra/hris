@@ -8,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/global_function.dart';
+import 'package:hris/models/user_model.dart';
 
 import 'package:hris/riverpod/leave.dart';
+import 'package:hris/riverpod/session.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
@@ -37,107 +39,104 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
   TextEditingController reasonController = TextEditingController();
   String? leavetypeid;
 
+  UserModel? _user; // Variabel untuk menyimpan data user
+
   @override
   void initState() {
     notifikasi = Notifikasi(context);
+    _loadUserData();
     super.initState();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await UserPreferences.getUser();
+    setState(() {
+      _user = user; // Update state dengan data user
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider(context));
-    final leavePending = ref.watch(leavePendingProvider.notifier);
+    final leaveProvider =
+        ref.watch(leaveTypeProvider(context, _user?.companyId ?? ''));
 
-    return userData.when(
-      data: (data) {
-        final leaveProvider =
-            ref.watch(leaveTypeProvider(context, data!.companyId!));
+    return isLoading
+        ? const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          )
+        : Scaffold(
+            appBar: appBarWidget('Leave Request Form'),
+            body: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  leaveProvider.when(
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    error: (error, stackTrace) => Text(error.toString()),
+                    data: (data) {
+                      List<String> value = [];
+                      Map<String, String> leaveTypeMap = {};
 
-        return isLoading
-            ? const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              )
-            : Scaffold(
-                appBar: appBarWidget('Leave Request Form'),
-                body: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      leaveProvider.when(
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                        error: (error, stackTrace) => Text(error.toString()),
-                        data: (data) {
-                          List<String> value = [];
-                          Map<String, String> leaveTypeMap = {};
+                      for (var element in data) {
+                        value.add(element.value ?? '');
+                        leaveTypeMap[element.value ?? ''] = element.key ??
+                            ''; // Menyimpan key untuk setiap value
+                      }
 
-                          for (var element in data) {
-                            value.add(element.value ?? '');
-                            leaveTypeMap[element.value ?? ''] = element.key ??
-                                ''; // Menyimpan key untuk setiap value
-                          }
-
-                          return dropdownIcon(
-                            listiem: value,
-                            hinttitle: 'Choose Type',
-                            selectedValue: selectedValue,
-                            title: 'Leave Type',
-                            icons: Image.asset('assets/leave/leavetype.png'),
-                            onchange: (newValue) {
-                              setState(() {
-                                selectedValue =
-                                    newValue; // Memperbarui selectedValue
-                                leavetypeid = leaveTypeMap[
-                                    newValue!]; // Mengambil key berdasarkan value yang dipilih
-                              });
-                            },
-                          );
+                      return dropdownIcon(
+                        listiem: value,
+                        hinttitle: 'Choose Type',
+                        selectedValue: selectedValue,
+                        title: 'Leave Type',
+                        icons: Image.asset('assets/leave/leavetype.png'),
+                        onchange: (newValue) {
+                          setState(() {
+                            selectedValue =
+                                newValue; // Memperbarui selectedValue
+                            leavetypeid = leaveTypeMap[
+                                newValue!]; // Mengambil key berdasarkan value yang dipilih
+                          });
                         },
-                      ),
-                      const SizedBox(
-                        height: 8,
-                      ),
-                      dateTimePicker(
-                        title: 'Leave Date',
-                        hinttitle: 'Start date',
-                        controller: startdateTimeController,
-                        icons: Image.asset('assets/leave/date.png'),
-                        context: context,
-                      ),
-
-                      dateTimePicker(
-                        title: '',
-                        hinttitle: 'End date',
-                        controller: enddateTimeController,
-                        icons: Image.asset('assets/leave/date.png'),
-                        context: context,
-                      ),
-                      const SizedBox(height: 10),
-                      buildReasonField(),
-                      const SizedBox(height: 5),
-                      buildUploadFileButton(),
-                      if (selectedFile != null && selectedFile!.path != null)
-                        buildSelectedFileImage(),
-                      // Indikator loading
-                    ],
+                      );
+                    },
                   ),
-                ),
-                bottomNavigationBar: bootomSubmit(
-                  'Submit Request',
-                  Image.asset('assets/submit.png'),
-                  () => submitLeaveRequest(),
-                ),
-              );
-      },
-      error: (object, error) => Scaffold(
-        body: Center(child: Text(error.toString())),
-      ),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-    );
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  dateTimePicker(
+                    title: 'Leave Date',
+                    hinttitle: 'Start date',
+                    controller: startdateTimeController,
+                    icons: Image.asset('assets/leave/date.png'),
+                    context: context,
+                  ),
+
+                  dateTimePicker(
+                    title: '',
+                    hinttitle: 'End date',
+                    controller: enddateTimeController,
+                    icons: Image.asset('assets/leave/date.png'),
+                    context: context,
+                  ),
+                  const SizedBox(height: 10),
+                  buildReasonField(),
+                  const SizedBox(height: 5),
+                  buildUploadFileButton(),
+                  if (selectedFile != null && selectedFile!.path != null)
+                    buildSelectedFileImage(),
+                  // Indikator loading
+                ],
+              ),
+            ),
+            bottomNavigationBar: bootomSubmit(
+              'Submit Request',
+              Image.asset('assets/submit.png'),
+              () => submitLeaveRequest(),
+            ),
+          );
   }
 
   Widget buildReasonField() {

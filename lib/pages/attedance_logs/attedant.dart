@@ -38,6 +38,7 @@ class _AttendantLogPageState extends State<AttedantLogPage>
           SizedBox(
             height: 57, // Atur tinggi menjadi 57
             child: TabBar(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _tabController,
               indicatorColor: HexColor('#01A2E9'),
               labelColor: HexColor('#01A2E9'),
@@ -50,6 +51,7 @@ class _AttendantLogPageState extends State<AttedantLogPage>
           Expanded(
             // Tambahkan Expanded agar TabBarView mengambil ruang yang tersisa
             child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: const [LogsPage(), AttedantLogsPage()],
             ),

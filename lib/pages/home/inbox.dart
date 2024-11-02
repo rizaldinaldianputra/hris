@@ -47,6 +47,7 @@ class _InboxPageState extends State<InboxPage>
             height: 12,
           ),
           TabBar(
+            physics: const NeverScrollableScrollPhysics(),
             dividerColor: Colors.transparent,
             controller: _tabController,
             onTap: (value) {
@@ -86,6 +87,7 @@ class _InboxPageState extends State<InboxPage>
           Expanded(
             // Tambahkan Expanded agar TabBarView mengambil ruang yang tersisa
             child: TabBarView(
+              physics: const NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: [
                 ListView.builder(

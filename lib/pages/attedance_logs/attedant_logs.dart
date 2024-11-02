@@ -70,9 +70,9 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
     attendanceLogProvider.pagingController;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(left: 16, right: 16),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(left: 16, right: 16),
           child: Column(
             children: [
               const SizedBox(
@@ -497,6 +497,7 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
               ),
               PagedListView<int, AttendanceModel>(
                 shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
                 pagingController: attendanceLogProvider.pagingController,
                 builderDelegate: PagedChildBuilderDelegate<AttendanceModel>(
                   itemBuilder: (context, item, index) {

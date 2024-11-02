@@ -15,6 +15,8 @@ class MapsLocations extends ConsumerStatefulWidget {
 }
 
 class _MapsLocationsState extends ConsumerState<MapsLocations> {
+  final MapController _mapController = MapController();
+
   @override
   Widget build(BuildContext context) {
     LatLng currentLocation = const LatLng(0.0, 0.0);
@@ -32,6 +34,8 @@ class _MapsLocationsState extends ConsumerState<MapsLocations> {
           children: [
             Expanded(
               child: FlutterMap(
+                mapController: _mapController, // Tambahkan controller ke peta
+
                 options: MapOptions(
                   initialCenter: currentLocation,
                   initialZoom: 10.0,
@@ -68,6 +72,8 @@ class _MapsLocationsState extends ConsumerState<MapsLocations> {
                       newLocation.latitude.toString();
                   ref.read(longProvider.notifier).state =
                       newLocation.longitude.toString();
+                  _mapController.move(
+                      newLocation, 17.0); // Ubah zoom sesuai kebutuhan
                 }),
                 TextButton(
                   onPressed: () {

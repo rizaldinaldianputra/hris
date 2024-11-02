@@ -7,7 +7,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/models/user_model.dart';
 import 'package:hris/riverpod/attedant.dart';
+import 'package:hris/riverpod/session.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
@@ -43,13 +45,23 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     return DateFormat('dd MMMM yyyy HH:mm:ss').format(DateTime.now());
   }
 
+  UserModel? _user; // Variabel untuk menyimpan data user
+
   @override
   void initState() {
     super.initState();
+    _loadUserData();
 
     formattedDate = _getFormattedDate();
     _startTimer();
     _initializeCamera();
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await UserPreferences.getUser();
+    setState(() {
+      _user = user; // Update state dengan data user
+    });
   }
 
   @override
@@ -129,211 +141,219 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
     double progress = calculateProgress(currentDay, maxDays);
     String formattedDate =
         DateFormat('dd MMMM yyyy HH:mm:ss').format(DateTime.now());
-    final userData = ref.watch(userDataProvider(context));
     final attedandeStatus = ref.watch(attedanceStatusProvider(context));
-    return userData.when(data: (data) {
-      return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: MediaQuery.of(context).size.height * 0.32,
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [HexColor('#01A2E9'), HexColor('#274896')])),
-            child: Column(
-              children: [
-                const SizedBox(height: 35),
-                Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16),
-                  width: double.infinity,
-                  height: 100,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      data!.image == null
-                          ? const CircleAvatar(
-                              radius: 20,
-                              backgroundImage: AssetImage('assets/profile.png'),
-                            )
-                          : CircleAvatar(
-                              radius: 20,
-                              backgroundImage: NetworkImage(data.image ?? ''),
-                            ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${'${data.firstName!} '} ${data.lastName!}',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w700,
-                                textStyle: const TextStyle(
-                                    fontSize: 24, color: Colors.white),
-                              ),
-                            ),
-                            Text(
-                              data.position!.name ?? '',
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.w400,
-                                textStyle: const TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        height: 36,
-                        width: 36,
-                        padding: const EdgeInsets.all(10),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: SvgPicture.asset(
-                            'assets/bell.svg',
-                            width: 16,
-                            height: 16,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(left: 18, right: 18),
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(left: 10, right: 10),
-                  decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.4),
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(10))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'Don’t miss your attendance today!',
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w300,
-                          textStyle: const TextStyle(
-                              fontSize: 12, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
+
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height * 0.32,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [HexColor('#01A2E9'), HexColor('#274896')])),
+          child: Column(
+            children: [
+              const SizedBox(height: 35),
+              Container(
+                margin: const EdgeInsets.only(left: 16, right: 16),
+                width: double.infinity,
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 20,
+                      backgroundImage:
+                          _user?.image != null && _user!.image!.isNotEmpty
+                              ? NetworkImage(_user!.image!)
+                              : const AssetImage('assets/profile.png')
+                                  as ImageProvider,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10.0),
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
-                            Icons.calendar_today_outlined,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 10),
                           Text(
-                            formattedDate,
+                            _user?.firstName ?? '',
                             style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.w700,
                               textStyle: const TextStyle(
-                                  fontSize: 14, color: Colors.white),
+                                  fontSize: 24, color: Colors.white),
+                            ),
+                          ),
+                          Text(
+                            _user?.position?.name ?? '',
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w400,
+                              textStyle: const TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white),
                             ),
                           ),
                         ],
                       ),
-                      attedandeStatus.when(
-                        loading: () => const Center(
-                          child: CircularProgressIndicator(),
+                    ),
+                    const Spacer(),
+                    Container(
+                      height: 36,
+                      width: 36,
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: SvgPicture.asset(
+                          'assets/bell.svg',
+                          width: 16,
+                          height: 16,
                         ),
-                        error: (error, stackTrace) => IconButton(
-                          onPressed: () {
-                            ref.refresh(attedanceStatusProvider(context));
-                          },
-                          icon: const Icon(Icons.refresh),
-                        ),
-                        data: (data) {
-                          final bool isClockedIn = data?.clockInTime != null;
-                          final bool isClockedOut = data?.clockOutTime != null;
-
-                          return Container(
-                            margin: const EdgeInsets.all(20),
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8)),
-                              color: Colors.white,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                TextButton.icon(
-                                  onPressed: () {
-                                    ref.read(statusProvider.notifier).state =
-                                        'clockin';
-                                    context.goNamed('camerapage');
-                                  }, // Selalu aktif
-                                  icon: const Icon(Icons.login,
-                                      color: Colors.black),
-                                  label: Text(
-                                    'Clock In',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w500,
-                                      textStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors
-                                            .black, // Tetap hitam terlepas dari status
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Text('|', style: TextStyle(fontSize: 20)),
-                                TextButton.icon(
-                                  onPressed: () {
-                                    ref.read(statusProvider.notifier).state =
-                                        'clockout';
-                                    context.goNamed('camerapage');
-                                  }, // Selalu aktif
-                                  icon: const Icon(Icons.logout,
-                                      color: Colors.black),
-                                  label: Text(
-                                    'Clock Out',
-                                    style: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w500,
-                                      textStyle: const TextStyle(
-                                        fontSize: 14,
-                                        color: Colors
-                                            .black, // Tetap hitam terlepas dari status
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 18, right: 18),
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.4),
+                    borderRadius: const BorderRadius.all(Radius.circular(10))),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      'Don’t miss your attendance today!',
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w300,
+                        textStyle:
+                            const TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.calendar_today_outlined,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          formattedDate,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w500,
+                            textStyle: const TextStyle(
+                                fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                    attedandeStatus.when(
+                      loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      error: (error, stackTrace) => IconButton(
+                        onPressed: () {
+                          ref.refresh(attedanceStatusProvider(context));
+                        },
+                        icon: const Icon(Icons.refresh),
+                      ),
+                      data: (data) {
+                        final bool isClockedIn = data?.clockInTime != null;
+                        final bool isClockedOut = data?.clockOutTime != null;
+
+                        return Container(
+                          margin: const EdgeInsets.all(20),
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton.icon(
+                                onPressed: isClockedIn
+                                    ? null
+                                    : () {
+                                        ref
+                                            .read(statusProvider.notifier)
+                                            .state = 'clockin';
+                                        context.goNamed('camerapage');
+                                      },
+                                icon: const Icon(Icons.login,
+                                    color: Colors.black),
+                                label: Text(
+                                  'Clock In',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w500,
+                                    textStyle: TextStyle(
+                                      fontSize: 14,
+                                      color: isClockedIn
+                                          ? Colors.grey
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const Text('|', style: TextStyle(fontSize: 20)),
+                              TextButton.icon(
+                                onPressed: data?.clockInTime == null
+                                    ? null
+                                    : () {
+                                        ref
+                                            .read(statusProvider.notifier)
+                                            .state = 'clockout';
+                                        context.goNamed('camerapage');
+                                      },
+                                icon: const Icon(Icons.logout,
+                                    color: Colors.black),
+                                label: Text(
+                                  'Clock Out',
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w500,
+                                    textStyle: TextStyle(
+                                      fontSize: 14,
+                                      color: data?.clockInTime == null
+                                          ? Colors.grey
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        body: ListView(
+      ),
+      body: RefreshIndicator(
+        onRefresh: () {
+          return UserPreferences.loadAndSaveUser(context);
+        },
+        child: ListView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            const SizedBox(height: 10),
             Container(
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.only(
@@ -681,24 +701,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             )
           ],
         ),
-      );
-    }, error: (error, stack) {
-      return Scaffold(
-          body: Center(
-        child: IconButton(
-          icon: const Icon(
-            Icons.refresh,
-            color: Colors.blue,
-            size: 40,
-          ), // Ikon refresh
-          onPressed: () {
-            // Panggil fungsi refresh di sini
-            ref.refresh(userDataProvider(context));
-          },
-        ),
-      ));
-    }, loading: () {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    });
+      ),
+    );
   }
 }

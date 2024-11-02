@@ -133,7 +133,9 @@ class _DialogSuccesPageState extends ConsumerState<DialogSuccesPage> {
                         ))),
                   ),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.goNamed('attedantlog');
+                      },
                       child: const Text('View Attendace Log')),
                   const SizedBox(
                     height: 24,

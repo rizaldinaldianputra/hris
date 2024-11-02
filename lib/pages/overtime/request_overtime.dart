@@ -9,6 +9,7 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/global_function.dart';
 import 'package:hris/models/user_model.dart';
 import 'package:hris/riverpod/overtime.dart';
+import 'package:hris/riverpod/session.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:hris/utility/globalwidget.dart';
 import 'package:file_picker/file_picker.dart';
@@ -93,300 +94,291 @@ class _RequestOvertimeState extends ConsumerState<RequestOvertime> {
   @override
   void initState() {
     notifikasi = Notifikasi(context);
+    _loadUserData();
     super.initState();
+  }
+
+  UserModel? _user; // Variabel untuk menyimpan data user
+
+  Future<void> _loadUserData() async {
+    final user = await UserPreferences.getUser();
+    setState(() {
+      _user = user; // Update state dengan data user
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final userData = ref.watch(userDataProvider(context));
-
-    return userData.when(
-      loading: () => const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-      error: (error, stackTrace) => Scaffold(
-        body: Text(error.toString()),
-      ),
-      data: (data) {
-        final overtimeProvider =
-            ref.watch(overtimeTypeProvider(context, data!.companyId!));
-        return isLoading
-            ? const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              )
-            : Scaffold(
-                appBar: appBarWidget('Overtime Request Form'),
-                body: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: Column(
+    final overtimeProvider =
+        ref.watch(overtimeTypeProvider(context, _user?.companyId ?? ''));
+    return isLoading
+        ? const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          )
+        : Scaffold(
+            appBar: appBarWidget('Overtime Request Form'),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Overtime Date',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Container(
-                              height: 50,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: HexColor('#D9D9D9'), width: 1),
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                        right: BorderSide(
-                                            color: HexColor('#D9D9D9'),
-                                            width: 1),
-                                      ),
-                                    ),
-                                    child: Image.asset('assets/leave/date.png'),
-                                  ),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: overtimeController,
-                                      decoration: InputDecoration(
-                                        contentPadding:
-                                            const EdgeInsets.only(left: 16),
-                                        hintText: 'Choose date',
-                                        hintStyle: GoogleFonts.inter(
-                                            color: HexColor('#B3B3B3')),
-                                        border: InputBorder.none,
-                                      ),
-                                      readOnly:
-                                          true, // Membuat field hanya bisa dibaca
-                                      onTap: () async {
-                                        await _selectDate(
-                                            overtimeController); // Panggil fungsi untuk memilih tanggal
-                                      },
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        Text(
+                          'Overtime Date',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
                         ),
-                        const SizedBox(
-                          height: 20,
+                        const SizedBox(height: 5),
+                        Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: HexColor('#D9D9D9'), width: 1),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    right: BorderSide(
+                                        color: HexColor('#D9D9D9'), width: 1),
+                                  ),
+                                ),
+                                child: Image.asset('assets/leave/date.png'),
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: overtimeController,
+                                  decoration: InputDecoration(
+                                    contentPadding:
+                                        const EdgeInsets.only(left: 16),
+                                    hintText: 'Choose date',
+                                    hintStyle: GoogleFonts.inter(
+                                        color: HexColor('#B3B3B3')),
+                                    border: InputBorder.none,
+                                  ),
+                                  readOnly:
+                                      true, // Membuat field hanya bisa dibaca
+                                  onTap: () async {
+                                    await _selectDate(
+                                        overtimeController); // Panggil fungsi untuk memilih tanggal
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        overtimeProvider.when(
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                          error: (error, stackTrace) => Text(error.toString()),
-                          data: (data) {
-                            List<String> value = [];
-                            Map<String, String> leaveTypeMap = {};
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    overtimeProvider.when(
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (error, stackTrace) => Text(error.toString()),
+                      data: (data) {
+                        List<String> value = [];
+                        Map<String, String> leaveTypeMap = {};
 
-                            for (var element in data) {
-                              value.add(element.value ?? '');
-                              leaveTypeMap[element.value ?? ''] = element.key ??
-                                  ''; // Menyimpan key untuk setiap value
-                            }
+                        for (var element in data) {
+                          value.add(element.value ?? '');
+                          leaveTypeMap[element.value ?? ''] = element.key ??
+                              ''; // Menyimpan key untuk setiap value
+                        }
 
-                            return dropdownIcon(
-                              listiem: value,
-                              hinttitle: 'Choose Shift',
-                              selectedValue: selectedValue,
-                              title: 'Overtime Shift',
-                              icons: Image.asset(
-                                  'assets/overtime/overtimeshift.png'),
-                              onchange: (newValue) {
-                                setState(() {
-                                  selectedValue =
-                                      newValue; // Memperbarui selectedValue
-                                  overtimetypeid = leaveTypeMap[
-                                      newValue!]; // Mengambil key berdasarkan value yang dipilih
-                                });
-                              },
-                            );
+                        return dropdownIcon(
+                          listiem: value,
+                          hinttitle: 'Choose Shift',
+                          selectedValue: selectedValue,
+                          title: 'Overtime Shift',
+                          icons:
+                              Image.asset('assets/overtime/overtimeshift.png'),
+                          onchange: (newValue) {
+                            setState(() {
+                              selectedValue =
+                                  newValue; // Memperbarui selectedValue
+                              overtimetypeid = leaveTypeMap[
+                                  newValue!]; // Mengambil key berdasarkan value yang dipilih
+                            });
                           },
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        dateTimePicker(
-                            'Start Shift (start date & time)',
-                            'Choose Duration',
-                            overtimeStartController,
-                            Image.asset('assets/overtime/clock.png')),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        dateTimePicker(
-                            'End Shift (end date & time)',
-                            'Choose Duration',
-                            overtimeEndController,
-                            Image.asset('assets/overtime/clock.png')),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Compensation',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: HexColor(
-                                        '#D9D9D9')), // Mengatur border untuk keseluruhan
-                                borderRadius: BorderRadius.circular(
-                                    10), // Mengatur sudut border
-                              ),
-                              child: TextField(
-                                readOnly: true,
-                                decoration: InputDecoration(
-                                  filled: true, // Mengaktifkan fill color
-
-                                  fillColor: HexColor('#F1F1F1'),
-                                  hintStyle: GoogleFonts.inter(
-                                      color: HexColor('#B3B3B3')),
-                                  hintText: 'Paid Overtime', // Placeholder text
-                                  border: InputBorder
-                                      .none, // Menghilangkan border default
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                      vertical:
-                                          8.0), // Padding di dalam TextField
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Work note',
-                              style: GoogleFonts.inter(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: HexColor(
-                                        '#D9D9D9')), // Mengatur border untuk keseluruhan
-                                borderRadius: BorderRadius.circular(
-                                    10), // Mengatur sudut border
-                              ),
-                              child: TextField(
-                                maxLines: 3, // Membatasi maksimum 3 baris
-                                controller: workNoteController,
-                                decoration: InputDecoration(
-                                  hintStyle: GoogleFonts.inter(
-                                      color: HexColor('#B3B3B3')),
-                                  hintText: '(Optional)', // Placeholder text
-                                  border: InputBorder
-                                      .none, // Menghilangkan border default
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0,
-                                      vertical:
-                                          8.0), // Padding di dalam TextField
-                                ),
-                              ),
-                            ),
-                          ],
+                        );
+                      },
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    dateTimePicker(
+                        'Start Shift (start date & time)',
+                        'Choose Duration',
+                        overtimeStartController,
+                        Image.asset('assets/overtime/clock.png')),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    dateTimePicker(
+                        'End Shift (end date & time)',
+                        'Choose Duration',
+                        overtimeEndController,
+                        Image.asset('assets/overtime/clock.png')),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Compensation',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
-                        GestureDetector(
-                          onTap: _pickFile,
-                          child: Container(
-                            height: 40,
-                            width: 124,
-                            margin: const EdgeInsets.all(10.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(color: HexColor('#757575'))),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add,
-                                  size: 18,
-                                  color: HexColor('#757575'),
-                                ),
-                                const SizedBox(
-                                  width: 5,
-                                ),
-                                Text(
-                                  'Upload File',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: HexColor('#757575'),
-                                  ),
-                                )
-                              ],
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: HexColor(
+                                    '#D9D9D9')), // Mengatur border untuk keseluruhan
+                            borderRadius: BorderRadius.circular(
+                                10), // Mengatur sudut border
+                          ),
+                          child: TextField(
+                            readOnly: true,
+                            decoration: InputDecoration(
+                              filled: true, // Mengaktifkan fill color
+
+                              fillColor: HexColor('#F1F1F1'),
+                              hintStyle:
+                                  GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                              hintText: 'Paid Overtime', // Placeholder text
+                              border: InputBorder
+                                  .none, // Menghilangkan border default
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                  vertical: 8.0), // Padding di dalam TextField
                             ),
                           ),
                         ),
-                        // Tampilkan gambar yang dipilih
-                        if (selectedFile != null && selectedFile!.path != null)
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Image.file(
-                              File(selectedFile!
-                                  .path!), // Menampilkan file gambar
-                              height:
-                                  150, // Atur tinggi gambar sesuai kebutuhan
-                              width: 150, // Atur lebar gambar sesuai kebutuhan
-                              fit: BoxFit
-                                  .cover, // Mengatur cara gambar diubah ukurannya
-                            ),
-                          ),
                       ],
                     ),
-                  ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Work note',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                                color: HexColor(
+                                    '#D9D9D9')), // Mengatur border untuk keseluruhan
+                            borderRadius: BorderRadius.circular(
+                                10), // Mengatur sudut border
+                          ),
+                          child: TextField(
+                            maxLines: 3, // Membatasi maksimum 3 baris
+                            controller: workNoteController,
+                            decoration: InputDecoration(
+                              hintStyle:
+                                  GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                              hintText: '(Optional)', // Placeholder text
+                              border: InputBorder
+                                  .none, // Menghilangkan border default
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10.0,
+                                  vertical: 8.0), // Padding di dalam TextField
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    GestureDetector(
+                      onTap: _pickFile,
+                      child: Container(
+                        height: 40,
+                        width: 124,
+                        margin: const EdgeInsets.all(10.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: HexColor('#757575'))),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add,
+                              size: 18,
+                              color: HexColor('#757575'),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Upload File',
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: HexColor('#757575'),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Tampilkan gambar yang dipilih
+                    if (selectedFile != null && selectedFile!.path != null)
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Image.file(
+                          File(selectedFile!.path!), // Menampilkan file gambar
+                          height: 150, // Atur tinggi gambar sesuai kebutuhan
+                          width: 150, // Atur lebar gambar sesuai kebutuhan
+                          fit: BoxFit
+                              .cover, // Mengatur cara gambar diubah ukurannya
+                        ),
+                      ),
+                  ],
                 ),
-                bottomNavigationBar: bootomSubmit(
-                  'Submit Request',
-                  Image.asset('assets/submit.png'),
-                  () => submitOvertimeRequest(),
-                ),
-              );
-      },
-    );
+              ),
+            ),
+            bottomNavigationBar: bootomSubmit(
+              'Submit Request',
+              Image.asset('assets/submit.png'),
+              () => submitOvertimeRequest(),
+            ),
+          );
   }
 
   Widget dateTimePicker(String title, String hinttitle,

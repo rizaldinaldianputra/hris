@@ -82,6 +82,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
         body: Column(
           children: [
             TabBar(
+              physics: const NeverScrollableScrollPhysics(),
               controller: tabController,
               labelColor: HexColor('#01A2E9'),
               unselectedLabelColor: Colors.black,
@@ -127,6 +128,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TabBarView(
+                  physics: const NeverScrollableScrollPhysics(),
                   controller: tabController,
                   children: [
                     Column(

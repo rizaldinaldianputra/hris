@@ -12,7 +12,9 @@ import 'package:hris/helper/global_function.dart';
 import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/expenses_model.dart';
 import 'package:hris/models/reimbursement%20_expense_model.dart';
+import 'package:hris/models/user_model.dart';
 import 'package:hris/riverpod/reimbusment.dart';
+import 'package:hris/riverpod/session.dart';
 import 'package:hris/riverpod/user.dart';
 import 'package:hris/service/reimburstment_service.dart';
 import 'package:hris/utility/globalwidget.dart';
@@ -65,6 +67,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
     notifikasi = Notifikasi(context);
     reimburstmentService = ReimburstmentService(context);
     getAllDropdownTypeExpense();
+    _loadUserData();
     super.initState();
   }
 
@@ -79,30 +82,27 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
     });
   }
 
+  UserModel? _user; // Variabel untuk menyimpan data user
+
+  Future<void> _loadUserData() async {
+    final user = await UserPreferences.getUser();
+    setState(() {
+      _user = user; // Update state dengan data user
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final expensesList = ref.watch(reimbursementExpenseNotifierProvider);
     final imageList = ref.watch(reimbursementImageProvider);
-    final userData = ref.watch(userDataProvider(context));
-    return userData.when(
-        loading: () => const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            ),
-        error: (error, stackTrace) {
-          return Scaffold(
-            body: Center(
-              child: IconButton(
-                  onPressed: () {
-                    ref.refresh(userDataProvider(context));
-                  },
-                  icon: const Icon(Icons.refresh)),
-            ),
-          );
-        },
-        data: (data) {
-          final reimbusmentProvider =
-              ref.watch(reimbusmentTypeProvider(context, data!.companyId!));
-          return Scaffold(
+
+    final reimbusmentProvider =
+        ref.watch(reimbusmentTypeProvider(context, _user?.companyId ?? ''));
+    return isLoading
+        ? const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          )
+        : Scaffold(
             appBar: appBarWidget('Rebursement Request Form'),
             body: SingleChildScrollView(
               child: Padding(
@@ -121,8 +121,9 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                           icons: Image.asset('assets/reimbursment/date.png')),
                     ),
                     reimbusmentProvider.when(
-                      loading: () => const Scaffold(
-                        body: Center(child: CircularProgressIndicator()),
+                      loading: () => const SizedBox(
+                        height: 80,
+                        child: Center(child: CircularProgressIndicator()),
                       ),
                       error: (error, stackTrace) {
                         return Scaffold(
@@ -161,7 +162,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
                     Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        'Remaining balance: Rp. ${data.reimbursementLimit}' ??
+                        'Remaining balance: Rp. ${_user?.reimbursementLimit}' ??
                             '0',
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w400,
@@ -309,10 +310,9 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
             bottomNavigationBar: bootomSubmit(
               'Submit Request',
               Image.asset('assets/submit.png'),
-              () => submitLeaveRequest(selectExpense),
+              () => submit(selectExpense),
             ),
           );
-        });
   }
 
   void _showAddExpenseBottomSheet(BuildContext context) {
@@ -728,23 +728,10 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
     );
   }
 
-  void submitLeaveRequest(expensesList) {
+  void submit(expensesList) {
     setState(() {
       isLoading = true; // Set loading menjadi true saat submit
     });
-
-    Map<String, dynamic> buildData() {
-      if (selectedFile != null) {
-        final mimeType = getMimeType(selectedFile!.path);
-        return {
-          "date": rebursementController.text,
-          "reimbursementTypeId": reimbusmenttypeid,
-          "expenses": expensesList
-          // "files": ["data:$mimeType;base64,$base64String"],
-        };
-      }
-      return {}; // Kembalikan map kosong jika tidak ada file yang diupload
-    }
 
     Map<String, dynamic> dataSubmit = {
       "date": rebursementController.text,
@@ -765,7 +752,7 @@ class _RequestRebursementState extends ConsumerState<RequestRebursement> {
 
       if (response.statusCode == 200) {
         notifikasi!.showSuccessToast(message);
-        context.pushReplacementNamed('reimbursment');
+        context.goNamed('home');
       } else {
         notifikasi!.showErrorToast(
             message); // Menggunakan showErrorToast untuk kesalahan
