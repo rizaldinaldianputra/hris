@@ -2,10 +2,20 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:hris/config/constant.dart';
+import 'package:hris/service/common_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   final Dio _dio = Dio();
+
+  late CommonService api;
+  late Response response;
+  String url = API_URL;
+  String connErr = 'Please check your internet connection and try again';
+
+  AuthService(context) {
+    api = CommonService(context);
+  }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     const String url = '$API_URL/auth/login';
@@ -35,6 +45,30 @@ class AuthService {
         'success': false,
         'message': e.response?.data['message'] ?? 'Terjadi kesalahan',
         'statusCode': e.response?.statusCode,
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> changePassword(
+      String oldPassword, String newPassword, String reNewPassword) async {
+    const String url = '$API_URL/change-password';
+
+    try {
+      final response = await api.putHTTP(url, {
+        "oldPassword": oldPassword,
+        "newPassword": newPassword,
+        "reNewPassword": reNewPassword,
+      });
+
+      return {
+        'success': response.data['status'] == 'success',
+        'message': response.data['message'] ?? 'Password updated successfully',
+      };
+    } on DioException catch (e) {
+      print(e);
+      return {
+        'success': false,
+        'message': e.response?.data['message'] ?? 'Terjadi kesalahan',
       };
     }
   }

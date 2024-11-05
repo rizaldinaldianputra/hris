@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hris/pages/attedance_logs/camera_preview.dart';
+import 'package:hris/service/auth_services.dart';
+import 'package:hris/service/user_service.dart';
 import 'package:hris/utility/globalwidget.dart';
+import 'package:hris/utility/notifikasiwidget.dart';
 
 // Provider untuk mengelola state submit button
 final submitButtonProvider = StateProvider<bool>((ref) => false);
@@ -18,15 +23,36 @@ class _ChangepasswordPageState extends ConsumerState<ChangepasswordPage> {
   bool _isObscureCurrent = true;
   bool _isObscureNew = true;
   bool _isObscureReenter = true;
-
+  Notifikasi? notifikasi;
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _reenterPasswordController = TextEditingController();
+  @override
+  void initState() {
+    notifikasi = Notifikasi(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan nilai dari provider
-    final isSubmitted = ref.watch(submitButtonProvider.notifier).state;
+    Future<void> changePassword(
+        String oldPassword, String newPassword, String rePassword) async {
+      if (rePassword != newPassword) {
+        notifikasi!
+            .showErrorToast('Password Baru & Ulangi Password tidak sama');
+      } else {
+        final authService = AuthService(context);
+        final response = await authService.changePassword(
+            oldPassword, newPassword, rePassword);
+
+        if (response['success'] == true) {
+          notifikasi!.showSuccessToastTOP(response['message']);
+          context.goNamed('login');
+        } else {
+          notifikasi!.showErrorToast(response['message']);
+        }
+      }
+    }
 
     return Scaffold(
       appBar: appBarWidget('Change Password'),
@@ -82,7 +108,32 @@ class _ChangepasswordPageState extends ConsumerState<ChangepasswordPage> {
               ),
             ),
             const SizedBox(height: 16),
-            _buildChangePasswordButton(),
+            GestureDetector(
+              onTap: () {
+                changePassword(
+                    _currentPasswordController.text,
+                    _newPasswordController.text,
+                    _reenterPasswordController.text);
+              },
+              child: Container(
+                height: 48,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  color: colorBackground(),
+                ),
+                child: Center(
+                  child: Text(
+                    'Change Password',
+                    style: GoogleFonts.inter(
+                      color: colorText(),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),
@@ -145,28 +196,6 @@ class _ChangepasswordPageState extends ConsumerState<ChangepasswordPage> {
           ),
         ),
       ],
-    );
-  }
-
-  // Membuat method untuk tombol "Change Password"
-  Widget _buildChangePasswordButton() {
-    return Container(
-      height: 48,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-        color: colorBackground(),
-      ),
-      child: Center(
-        child: Text(
-          'Change Password',
-          style: GoogleFonts.inter(
-            color: colorText(),
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
     );
   }
 

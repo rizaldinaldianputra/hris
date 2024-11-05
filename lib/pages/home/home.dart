@@ -7,6 +7,7 @@ import 'package:hris/pages/attedance_logs/attedant.dart';
 import 'package:hris/pages/home/attedant_view.dart';
 import 'package:hris/pages/home/dashboard.dart';
 import 'package:hris/pages/home/inbox.dart';
+import 'package:hris/pages/home/request.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -38,7 +39,7 @@ class _HomePageState extends ConsumerState<HomePage>
   final List<Widget> widgetOptions = <Widget>[
     const DashboardPage(),
     const AttedantView(),
-    const Center(child: Text('', style: TextStyle(fontSize: 24))),
+    const RequesPage(),
     const InboxPage(),
     const AccountPage()
   ];

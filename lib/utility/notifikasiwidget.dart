@@ -33,6 +33,28 @@ class Notifikasi {
     );
   }
 
+  void showSuccessToastTOP(String message) {
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: const BoxDecoration(
+        color: Colors.greenAccent,
+      ),
+      child: ListTile(
+        leading: const Icon(Icons.error, color: Colors.white),
+        title: Text(
+          message,
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.TOP,
+      toastDuration: const Duration(seconds: 3),
+    );
+  }
+
   // Notifikasi error
   void showErrorToast(String message) {
     Widget toast = Container(

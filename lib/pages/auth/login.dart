@@ -29,13 +29,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Future<void> doLogin(String email, String password) async {
     ref.read(loadingProvider.notifier).state = true; // Set loading ke true
 
-    final authService = AuthService();
+    final authService = AuthService(context);
     final response = await authService.login(email, password);
 
     ref.read(loadingProvider.notifier).state = false; // Set loading ke false
 
     if (response['success']) {
-      context.pushReplacementNamed('home');
       // Mengambil data user setelah login sukses
       final userService = UserService(context);
       final user = await userService.findUser();
@@ -44,6 +43,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       final prefs = await SharedPreferences.getInstance();
       final userJson = jsonEncode(user.toJson()); // Konversi ke JSON
       prefs.setString('user', userJson);
+      context.pushReplacementNamed('home');
     } else {
       Fluttertoast.showToast(
         msg: response['message'] ?? "Login Gagal. Silakan coba lagi.",
