@@ -1,3 +1,8 @@
-git add codemagic.yaml
-git commit -m 'Add first workflow'
-git push
+workflows:
+  flutter-build:
+    name: Build and Test Flutter App
+    max_build_duration: 60
+    jobs:
+      - name: Build APK
+        script:
+          - flutter build apk
