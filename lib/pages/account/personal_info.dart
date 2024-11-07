@@ -340,7 +340,7 @@ class _PersonalInfoPageState extends ConsumerState<PersonalInfoPage> {
           ),
         ),
         bottomNavigationBar: bootomSubmit(
-          'Submit Request',
+          'Save',
           Container(),
           () async {
             UserModel userModel = UserModel.blank();

@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/user_model.dart';
 import 'package:hris/service/user_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -64,3 +66,11 @@ class UserUpdate extends _$UserUpdate {
     return response;
   }
 }
+
+final selectedIndexProvider = StateProvider<int>((ref) => 0);
+final pageControllerProvider = Provider<PageController>((ref) {
+  return PageController();
+});
+
+final listMonth = StateProvider<List<DropdownModel>>((ref) => []);
+final listYears = StateProvider<List<DropdownModel>>((ref) => []);

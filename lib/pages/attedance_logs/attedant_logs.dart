@@ -6,7 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/global_function.dart';
 import 'package:hris/models/attedance_model.dart';
+import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/riverpod/attedant.dart';
+import 'package:hris/riverpod/masterdropdown.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:intl/intl.dart';
 
@@ -22,22 +24,8 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
   final ScrollController _scrollController = ScrollController();
 
   int selectedIndex = DateTime.now().month - 1;
-  List<String> months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-  ];
 
-  String monthvalue = 'Choice Month';
+  String monthvalue = 'Month';
 
   TextEditingController choiceMonthController = TextEditingController();
   TextEditingController choiceYearController = TextEditingController();
@@ -45,6 +33,9 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
   int selectedMonth = 0;
 
   int selectYears = DateTime.now().year;
+
+  String monthValue = '';
+  String keyValue = '';
 
   @override
   void initState() {
@@ -63,11 +54,13 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
 
     // Set parameters pertama kali
     attendanceLogProvider.setParameters(
-      monthParam: 10,
-      yearParam: 2024,
+      monthParam: DateTime.now().month,
+      yearParam: DateTime.now().year,
       contextParam: context,
     );
     attendanceLogProvider.pagingController;
+    List<DropdownModel> months = ref.watch(dropdownMonthProvider);
+    List<DropdownModelYears> years = ref.watch(dropdownYearsProvider);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -136,7 +129,7 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                 ),
                                                 const SizedBox(height: 40),
                                                 const Text(
-                                                  'Choose Month',
+                                                  'Month',
                                                   style: TextStyle(
                                                     fontSize: 18,
                                                     fontWeight: FontWeight.bold,
@@ -149,6 +142,10 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                     itemExtent: 50,
                                                     onSelectedItemChanged:
                                                         (index) {
+                                                      monthValue =
+                                                          months[index].value!;
+                                                      keyValue =
+                                                          months[index].key!;
                                                       setState(() {
                                                         selectedIndex = index;
                                                       });
@@ -183,8 +180,8 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                                           .all(
                                                                           16),
                                                                   child: Text(
-                                                                    months[
-                                                                        index],
+                                                                    months[index]
+                                                                        .value!,
                                                                     style: GoogleFonts
                                                                         .inter(
                                                                       fontSize:
@@ -220,25 +217,15 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                 GestureDetector(
                                                   onTap: () {
                                                     // Ambil tanggal bulan sekarang
-                                                    selectedMonth = selectedIndex +
-                                                        1; // +1 karena bulan dimulai dari 0
-                                                    final int currentYear =
-                                                        DateTime.now().year;
-                                                    final DateTime
-                                                        selectedDate = DateTime(
-                                                            currentYear,
-                                                            selectedMonth,
-                                                            1);
 
-                                                    String monthName = months[
-                                                        selectedDate.month - 1];
                                                     // Ambil nama bulan
 
                                                     setState(() {
                                                       choiceMonthController
-                                                          .text = monthName;
+                                                          .text = monthValue;
                                                     });
-
+                                                    selectedMonth =
+                                                        int.parse(keyValue);
                                                     attendanceLogProvider
                                                         .updateDate(
                                                       newYear: selectYears,
@@ -287,7 +274,7 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.only(
                                     top: 12, left: 16, right: 16, bottom: 12),
-                                hintText: 'Choice Month',
+                                hintText: 'Month',
                                 suffixIcon: const Icon(Icons.arrow_drop_down),
                                 hintStyle: GoogleFonts.inter(
                                     color: HexColor('#B3B3B3')),
@@ -336,14 +323,6 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                   backgroundColor: Colors.white,
                                   isScrollControlled: true,
                                   builder: (BuildContext context) {
-                                    int selectedIndex =
-                                        0; // Default ke tahun pertama
-                                    List<String> years =
-                                        List.generate(100, (index) {
-                                      return (DateTime.now().year - index)
-                                          .toString(); // Daftar tahun
-                                    });
-
                                     return StatefulBuilder(
                                       builder: (context, setState) {
                                         return SizedBox(
@@ -388,6 +367,7 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                         years.length, (index) {
                                                       bool isSelected = index ==
                                                           selectedIndex;
+
                                                       return Container(
                                                         decoration:
                                                             BoxDecoration(
@@ -398,7 +378,9 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                         ),
                                                         child: Center(
                                                           child: Text(
-                                                            years[index],
+                                                            years[index]
+                                                                .value
+                                                                .toString(),
                                                             style: GoogleFonts
                                                                 .inter(
                                                               fontSize: 14,
@@ -421,7 +403,9 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                                                   onTap: () {
                                                     // Ambil tahun yang dipilih
                                                     String selectedYear =
-                                                        years[selectedIndex];
+                                                        years[selectedIndex]
+                                                            .key
+                                                            .toString();
                                                     choiceYearController.text =
                                                         selectedYear; // Set ke controller
 
@@ -478,7 +462,7 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.only(
                                     top: 12, left: 16, right: 16, bottom: 12),
-                                hintText: 'Choice Year',
+                                hintText: 'Year',
                                 suffixIcon: const Icon(Icons.arrow_drop_down),
                                 hintStyle: GoogleFonts.inter(
                                     color: HexColor('#B3B3B3')),

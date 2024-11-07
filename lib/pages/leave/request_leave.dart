@@ -87,17 +87,18 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
                       }
 
                       return dropdownIcon(
-                        listiem: value,
-                        hinttitle: 'Choose Type',
+                        context: context,
+                        listItems: value,
+                        hintTitle: 'Choose Type',
                         selectedValue: selectedValue,
                         title: 'Leave Type',
                         icons: Image.asset('assets/leave/leavetype.png'),
-                        onchange: (newValue) {
+                        onChange: (newValue) {
                           setState(() {
                             selectedValue =
                                 newValue; // Memperbarui selectedValue
                             leavetypeid = leaveTypeMap[
-                                newValue!]; // Mengambil key berdasarkan value yang dipilih
+                                newValue]; // Mengambil key berdasarkan value yang dipilih
                           });
                         },
                       );
@@ -379,13 +380,15 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
     );
   }
 
-  Widget dropdownIcon(
-      {required String title,
-      required selectedValue,
-      required List listiem,
-      required String hinttitle,
-      required Widget icons,
-      required Function onchange}) {
+  Widget dropdownIcon({
+    required BuildContext context,
+    required String title,
+    required String? selectedValue,
+    required List<String> listItems,
+    required String hintTitle,
+    required Widget icons,
+    required Function(String) onChange,
+  }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,71 +401,98 @@ class _RequestLeavePageState extends ConsumerState<RequestLeavePage> {
             color: Colors.black,
           ),
         ),
-        const SizedBox(
-          height: 5,
-        ),
-        Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-                color:
-                    HexColor('#D9D9D9')), // Mengatur border untuk keseluruhan
-            borderRadius: BorderRadius.circular(10), // Mengatur sudut border
-          ),
-          child: DropdownButtonFormField<String>(
-            isExpanded: true,
-            // Membuat dropdown melebar sesuai lebar container
-            hint: Padding(
-              padding: const EdgeInsets.only(left: 16.0),
-              child: Text(
-                hinttitle,
-                maxLines: 2, // Membatasi teks maksimal 2 baris
-                overflow:
-                    TextOverflow.ellipsis, // Memotong teks jika terlalu panjang
-                style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                    color: HexColor('#B3B3B3')),
-              ),
-            ),
-            value: selectedValue,
-            decoration: InputDecoration(
-              contentPadding: const EdgeInsets.only(
-                  top: 12, left: 16.0, right: 12, bottom: 12),
-
-              border: InputBorder.none, // Menghilangkan border default
-              prefixIcon: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                        color: HexColor(
-                            '#D9D9D9')), // Border di sebelah kanan ikon
+        const SizedBox(height: 5),
+        GestureDetector(
+          onTap: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                    color: Colors.white,
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: icons,
-                ),
-              ),
-            ),
-            items: listiem.map((item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    item,
-                    maxLines: 2, // Membatasi teks maksimal 2 baris
-                    overflow: TextOverflow
-                        .ellipsis, // Memotong teks jika terlalu panjang
+                  child: Column(
+                    children: [
+                      const Text(
+                        'Leave Type',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: Colors.black),
+                      ),
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: listItems.length,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                  onTap: () {
+                                    onChange(listItems[
+                                        index]); // Setel nilai baru saat dipilih
+                                    Navigator.pop(context);
+                                  },
+                                  title: Text(listItems[index]));
+                            }),
+                      )
+                    ],
                   ),
+                );
+              },
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: HexColor('#D9D9D9'),
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 50,
+                      height: 50,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right:
+                              BorderSide(color: HexColor('#D9D9D9'), width: 1),
+                        ),
+                      ),
+                      child: icons,
+                    ),
+                    const SizedBox(width: 10),
+                    // Tampilkan teks dengan batasan karakter
+                    Text(
+                      (selectedValue ?? hintTitle).length > 30
+                          ? '${(selectedValue ?? hintTitle).substring(0, 30)}...'
+                          : (selectedValue ?? hintTitle),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: selectedValue == null
+                            ? HexColor('#B3B3B3')
+                            : Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                onchange(value); // Panggil fungsi onchange dengan nilai baru
-              });
-            },
+                const Icon(Icons.arrow_drop_down),
+              ],
+            ),
           ),
         ),
       ],

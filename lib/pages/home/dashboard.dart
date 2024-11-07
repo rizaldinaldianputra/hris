@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,12 +9,16 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/models/user_model.dart';
+import 'package:hris/pages/home/inbox.dart';
 import 'package:hris/riverpod/attedant.dart';
+import 'package:hris/riverpod/masterdropdown.dart';
 import 'package:hris/riverpod/session.dart';
 import 'package:hris/riverpod/user.dart';
+import 'package:hris/service/dropdown_services.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -51,7 +56,6 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
   void initState() {
     super.initState();
     _loadUserData();
-
     formattedDate = _getFormattedDate();
     _startTimer();
     _initializeCamera();
@@ -198,21 +202,28 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                       ),
                     ),
                     const Spacer(),
-                    Container(
-                      height: 36,
-                      width: 36,
-                      padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: SvgPicture.asset(
-                          'assets/bell.svg',
+                    GestureDetector(
+                      onTap: () {
+                        ref.read(selectedIndexProvider.notifier).state =
+                            3; // Ubah ke index Inbox
+                        ref.watch(pageControllerProvider).jumpToPage(3);
+                      },
+                      child: Container(
+                        height: 36,
+                        width: 36,
+                        padding: const EdgeInsets.all(10),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SizedBox(
                           width: 16,
                           height: 16,
+                          child: SvgPicture.asset(
+                            'assets/bell.svg',
+                            width: 16,
+                            height: 16,
+                          ),
                         ),
                       ),
                     ),

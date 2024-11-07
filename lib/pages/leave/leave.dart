@@ -59,7 +59,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
       "December"
     ];
 
-    String monthvalue = 'Choice Month';
+    String monthvalue = 'Month';
     TextEditingController choiceYearController = TextEditingController();
     TextEditingController choiceStatusYearController = TextEditingController();
 
@@ -76,6 +76,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
             'Leave Request', Image.asset('assets/filter.png')),
         body: Column(
           children: [
+            const SizedBox(
+              height: 17,
+            ),
             TabBar(
               physics: const NeverScrollableScrollPhysics(),
               controller: tabController,
@@ -366,7 +369,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Month',
+                                          hintText: 'Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -454,7 +457,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Year',
+                                                            'Years',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -593,7 +596,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Year',
+                                          hintText: 'Years',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -608,9 +611,11 @@ class _LeavePageState extends ConsumerState<LeavePage>
                             ),
                           ],
                         ),
+
                         const SizedBox(
-                          height: 8,
+                          height: 16,
                         ),
+                        // List Leave
                         Expanded(
                           child: PagedListView<int, LeaveModel>(
                             shrinkWrap: true,
@@ -666,29 +671,13 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            color: statusColor(item.status!),
-                                            child: Text(
-                                              item.status!,
-                                              style: GoogleFonts.inter(
-                                                textStyle: TextStyle(
-                                                    color: statusColorText(
-                                                        item.status!),
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14),
-                                              ),
-                                            )),
-                                      ),
+                                      statusWidget(item.status ?? '')
                                     ],
                                   ),
                                 );
                               },
-                              noItemsFoundIndicatorBuilder: (_) => const Center(
-                                  child: Text('No leave logs found')),
+                              noItemsFoundIndicatorBuilder: (_) =>
+                                  dataNotFound('There is no leave request yet'),
                               firstPageErrorIndicatorBuilder: (_) =>
                                   const Center(
                                 child: Text('Failed to load data'),
@@ -944,7 +933,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Month',
+                                          hintText: 'Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -1032,7 +1021,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Year',
+                                                            'Years',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -1171,7 +1160,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Year',
+                                          hintText: 'Years',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -1244,30 +1233,13 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            color: statusColor(item.status!),
-                                            child: Text(
-                                              item.status!,
-                                              style: GoogleFonts.inter(
-                                                textStyle: TextStyle(
-                                                    color: statusColorText(
-                                                        item.status!),
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14),
-                                              ),
-                                            )),
-                                      ),
+                                      statusWidget(item.status ?? '')
                                     ],
                                   ),
                                 );
                               },
-                              noItemsFoundIndicatorBuilder: (_) => const Center(
-                                child: Text('No leave logs found'),
-                              ),
+                              noItemsFoundIndicatorBuilder: (_) =>
+                                  dataNotFound('There is no leave request yet'),
                               firstPageErrorIndicatorBuilder: (_) =>
                                   const Center(
                                 child: Text('Failed to load data'),

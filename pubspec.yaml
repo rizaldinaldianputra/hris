@@ -39,6 +39,7 @@ dependencies:
   printing: ^5.13.3
   riverpod: ^2.5.1
   riverpod_annotation: ^2.3.5
+  scroll_date_picker: ^3.8.0
   scroll_wheel_date_picker: ^0.0.2+1
   shared_preferences: ^2.2.3
   shimmer: ^3.0.0

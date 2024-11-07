@@ -65,7 +65,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
       "December"
     ];
 
-    String monthvalue = 'Choice Month';
+    String monthvalue = ' Month';
     TextEditingController choiceYearController = TextEditingController();
     TextEditingController choiceStatusYearController = TextEditingController();
 
@@ -198,7 +198,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Month',
+                                                            'Month',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -370,7 +370,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Month',
+                                          hintText: ' Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -458,7 +458,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Year',
+                                                            'Years',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -597,7 +597,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Year',
+                                          hintText: 'Years',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -613,7 +613,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                           ],
                         ),
                         const SizedBox(
-                          height: 8,
+                          height: 16,
                         ),
                         Expanded(
                           child: PagedListView<int, Overtime>(
@@ -672,38 +672,17 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            color:
-                                                statusColor(item.status ?? ''),
-                                            child: Text(
-                                              item.status ?? '',
-                                              style: GoogleFonts.inter(
-                                                textStyle: TextStyle(
-                                                    color: statusColorText(
-                                                        item.status ?? ''),
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14),
-                                              ),
-                                            )),
-                                      ),
+                                      statusWidget(item.status ?? '')
                                     ],
                                   ),
                                 );
                               },
-                              noItemsFoundIndicatorBuilder: (_) => const Center(
-                                child: Center(child: Text('No Overtime found')),
-                              ),
+                              noItemsFoundIndicatorBuilder: (_) => dataNotFound(
+                                  'There is no overtime request yet'),
                               firstPageErrorIndicatorBuilder: (_) =>
-                                  const Center(
-                                child: Text('Failed to load data'),
-                              ),
-                              newPageErrorIndicatorBuilder: (_) => const Center(
-                                child: Text('Failed to load more data'),
-                              ),
+                                  dataNotFound('Failed to Load Data'),
+                              newPageErrorIndicatorBuilder: (_) =>
+                                  dataNotFound('Failed to Load Data'),
                             ),
                           ),
                         ),
@@ -778,7 +757,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Month',
+                                                            'Month',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -950,7 +929,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Month',
+                                          hintText: ' Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -1038,7 +1017,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Year',
+                                                            'Years',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -1177,7 +1156,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Choice Year',
+                                          hintText: ' Years',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -1193,7 +1172,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                           ],
                         ),
                         const SizedBox(
-                          height: 8,
+                          height: 16,
                         ),
                         Expanded(
                           child: PagedListView<int, Overtime>(
@@ -1252,38 +1231,17 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                       const SizedBox(
                                         height: 10,
                                       ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10.0),
-                                        child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            color:
-                                                statusColor(item.status ?? ''),
-                                            child: Text(
-                                              item.status ?? '',
-                                              style: GoogleFonts.inter(
-                                                textStyle: TextStyle(
-                                                    color: statusColorText(
-                                                        item.status ?? ''),
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: 14),
-                                              ),
-                                            )),
-                                      ),
+                                      statusWidget(item.status ?? '')
                                     ],
                                   ),
                                 );
                               },
-                              noItemsFoundIndicatorBuilder: (_) => const Center(
-                                child: Center(child: Text('No Overtime found')),
-                              ),
+                              noItemsFoundIndicatorBuilder: (_) => dataNotFound(
+                                  'There is no overtime request yet'),
                               firstPageErrorIndicatorBuilder: (_) =>
-                                  const Center(
-                                child: Text('Failed to load data'),
-                              ),
-                              newPageErrorIndicatorBuilder: (_) => const Center(
-                                child: Text('Failed to load more data'),
-                              ),
+                                  dataNotFound('Failed No Load Data'),
+                              newPageErrorIndicatorBuilder: (_) =>
+                                  dataNotFound('Failed No Load Data'),
                             ),
                           ),
                         ),

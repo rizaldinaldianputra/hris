@@ -70,7 +70,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
       "December"
     ];
 
-    String monthvalue = 'Choice Month';
+    String monthvalue = 'Month';
     TextEditingController choiceYearController = TextEditingController();
     TextEditingController choiceStatusYearController = TextEditingController();
 
@@ -101,100 +101,94 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
         return Scaffold(
             appBar: appBarWidgetWithTralling(
                 'Reimbursement', Image.asset('assets/filter.png')),
-            body: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Container(
-                    height: 105,
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          HexColor('#01A2E9'),
-                          Colors.lightBlue,
-                          Colors.lightBlue,
-                        ],
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Remaining Balance:',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w400,
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          data?.reimbursementLimit.toString() ?? '0',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 24,
-                            color: Colors.white,
-                          ),
-                        ),
+            body: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        HexColor('#01A2E9'),
+                        HexColor('#284894'),
                       ],
                     ),
                   ),
-                  // TabBar di bawah balance
-                  TabBar(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Remaining Balance:',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text(
+                        data?.reimbursementLimit.toString() ?? '0',
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 24,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // TabBar di bawah balance
+                TabBar(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: _tabController,
+                  tabs: const [
+                    Tab(text: 'Request'),
+                    Tab(text: 'Approved'),
+                  ],
+                  labelColor: Colors.blue,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.blue,
+                  onTap: (value) {
+                    if (value == 0) {
+                      reimbusmentPending.setParameters(
+                        monthParam: (choiceMonthController.text.isNotEmpty)
+                            ? int.parse(choiceMonthController.text)
+                            : DateTime.now().month,
+                        yearParam: (choiceYearController.text.isNotEmpty)
+                            ? int.parse(choiceYearController.text)
+                            : DateTime.now().year,
+                        contextParam: context,
+                      );
+                    } else {
+                      reimbusmentApproved.setParameters(
+                        monthParam:
+                            (choiceStatusMonthController.text.isNotEmpty)
+                                ? int.parse(choiceStatusMonthController.text)
+                                : DateTime.now().month,
+                        yearParam: (choiceStatusYearController.text.isNotEmpty)
+                            ? int.parse(choiceStatusYearController.text)
+                            : DateTime.now().year,
+                        contextParam: context,
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                Expanded(
+                  child: TabBarView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Request'),
-                      Tab(text: 'Approved'),
-                    ],
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: Colors.blue,
-                    onTap: (value) {
-                      if (value == 0) {
-                        reimbusmentPending.setParameters(
-                          monthParam: (choiceMonthController.text.isNotEmpty)
-                              ? int.parse(choiceMonthController.text)
-                              : DateTime.now().month,
-                          yearParam: (choiceYearController.text.isNotEmpty)
-                              ? int.parse(choiceYearController.text)
-                              : DateTime.now().year,
-                          contextParam: context,
-                        );
-                      } else {
-                        reimbusmentApproved.setParameters(
-                          monthParam:
-                              (choiceStatusMonthController.text.isNotEmpty)
-                                  ? int.parse(choiceStatusMonthController.text)
-                                  : DateTime.now().month,
-                          yearParam:
-                              (choiceStatusYearController.text.isNotEmpty)
-                                  ? int.parse(choiceStatusYearController.text)
-                                  : DateTime.now().year,
-                          contextParam: context,
-                        );
-                      }
-                    },
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
-
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Expanded(
-                    child: TabBarView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      controller: _tabController,
-                      children: [
-                        Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: [
                             Row(
                               children: [
@@ -431,7 +425,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                       left: 16,
                                                       right: 16,
                                                       bottom: 12),
-                                              hintText: 'Choice Month',
+                                              hintText: 'Month',
                                               suffixIcon: const Icon(
                                                   Icons.arrow_drop_down),
                                               hintStyle: GoogleFonts.inter(
@@ -523,7 +517,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                               const SizedBox(
                                                                   height: 40),
                                                               const Text(
-                                                                'Choose Year',
+                                                                'Years',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 18,
@@ -665,7 +659,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                       left: 16,
                                                       right: 16,
                                                       bottom: 12),
-                                              hintText: 'Choice Year',
+                                              hintText: 'Years',
                                               suffixIcon: const Icon(
                                                   Icons.arrow_drop_down),
                                               hintStyle: GoogleFonts.inter(
@@ -679,6 +673,9 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(
+                              height: 16,
                             ),
                             Expanded(
                               child: PagedListView<int, ReimbursementModel>(
@@ -708,7 +705,6 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               SizedBox(
-                                                width: 300,
                                                 child: Text(
                                                   item.reimbursementType.name ??
                                                       '',
@@ -723,53 +719,39 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                                       .w600)),
                                                 ),
                                               ),
-                                              const Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 18,
-                                              )
+                                              statusWidget(item.status)
                                             ],
                                           ),
                                           const SizedBox(
-                                            height: 10,
+                                            height: 4,
+                                          ),
+                                          Text(
+                                            'Paid Rp ${item.total}',
+                                            style: GoogleFonts.inter(
+                                                textStyle: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
                                           ),
                                           Text(
                                             formatDate(item.date),
                                             style: GoogleFonts.inter(
                                                 textStyle: const TextStyle(
+                                                    color: Colors.grey,
                                                     fontSize: 12,
                                                     fontWeight:
                                                         FontWeight.w500)),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10.0),
-                                            child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(5),
-                                                color: statusColor(item.status),
-                                                child: Text(
-                                                  item.status,
-                                                  style: GoogleFonts.inter(
-                                                    textStyle: TextStyle(
-                                                        color: statusColorText(
-                                                            'Rejected'),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14),
-                                                  ),
-                                                )),
                                           ),
                                         ],
                                       ),
                                     );
                                   },
                                   noItemsFoundIndicatorBuilder: (_) =>
-                                      const Center(
-                                    child: Text('No reimbusment logs found'),
-                                  ),
+                                      dataNotFound(
+                                          'There is no reimbrusment request yet'),
                                   firstPageErrorIndicatorBuilder: (_) =>
                                       const Center(
                                     child: Text('Failed to load data'),
@@ -783,7 +765,10 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                             ),
                           ],
                         ),
-                        Column(
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: [
                             Row(
                               children: [
@@ -1021,7 +1006,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                       left: 16,
                                                       right: 16,
                                                       bottom: 12),
-                                              hintText: 'Choice Month',
+                                              hintText: 'Month',
                                               suffixIcon: const Icon(
                                                   Icons.arrow_drop_down),
                                               hintStyle: GoogleFonts.inter(
@@ -1114,7 +1099,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                               const SizedBox(
                                                                   height: 40),
                                                               const Text(
-                                                                'Choose Year',
+                                                                'Years',
                                                                 style:
                                                                     TextStyle(
                                                                   fontSize: 18,
@@ -1256,7 +1241,7 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                       left: 16,
                                                       right: 16,
                                                       bottom: 12),
-                                              hintText: 'Choice Year',
+                                              hintText: 'Years',
                                               suffixIcon: const Icon(
                                                   Icons.arrow_drop_down),
                                               hintStyle: GoogleFonts.inter(
@@ -1299,7 +1284,6 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               SizedBox(
-                                                width: 300,
                                                 child: Text(
                                                   item.reimbursementType.name ??
                                                       '',
@@ -1314,53 +1298,39 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                                                                       .w600)),
                                                 ),
                                               ),
-                                              const Icon(
-                                                Icons.arrow_forward_ios,
-                                                size: 18,
-                                              )
+                                              statusWidget(item.status)
                                             ],
                                           ),
                                           const SizedBox(
-                                            height: 10,
+                                            height: 4,
+                                          ),
+                                          Text(
+                                            'Paid Rp ${item.total}',
+                                            style: GoogleFonts.inter(
+                                                textStyle: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w400)),
+                                          ),
+                                          const SizedBox(
+                                            height: 4,
                                           ),
                                           Text(
                                             formatDate(item.date),
                                             style: GoogleFonts.inter(
                                                 textStyle: const TextStyle(
+                                                    color: Colors.grey,
                                                     fontSize: 12,
                                                     fontWeight:
                                                         FontWeight.w500)),
-                                          ),
-                                          const SizedBox(
-                                            height: 10,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 10.0),
-                                            child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(5),
-                                                color: statusColor(item.status),
-                                                child: Text(
-                                                  item.status,
-                                                  style: GoogleFonts.inter(
-                                                    textStyle: TextStyle(
-                                                        color: statusColorText(
-                                                            item.status),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14),
-                                                  ),
-                                                )),
                                           ),
                                         ],
                                       ),
                                     );
                                   },
                                   noItemsFoundIndicatorBuilder: (_) =>
-                                      const Center(
-                                    child: Text('No attendance logs found'),
-                                  ),
+                                      dataNotFound(
+                                          'There is no reimbrusment request yet'),
                                   firstPageErrorIndicatorBuilder: (_) =>
                                       const Center(
                                     child: Text('Failed to load data'),
@@ -1374,13 +1344,13 @@ class _ReimbursmentPageState extends ConsumerState<ReimbursmentPage>
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
+                ),
 
-                  // tabbar approved
-                ],
-              ),
+                // tabbar approved
+              ],
             ),
             bottomNavigationBar: bootomSubmit(
                 'Reimbursement Request',

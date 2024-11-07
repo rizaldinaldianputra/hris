@@ -72,7 +72,7 @@ class _InboxPageState extends State<InboxPage>
                 child: Center(
                   child: Text(
                     index == 0
-                        ? 'Shift'
+                        ? 'Notification'
                         : 'Need Approval', // Mengubah teks untuk setiap tab
                     style: TextStyle(
                       color: isSelected

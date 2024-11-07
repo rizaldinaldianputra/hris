@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:hris/helper/status_color.dart';
+import 'package:hris/models/dropdown_model.dart';
+import 'package:hris/riverpod/attedant.dart';
+import 'package:hris/service/common_services.dart';
 import 'package:scroll_wheel_date_picker/scroll_wheel_date_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -71,12 +77,6 @@ AppBar appBarWidgetWithTralling(String title, Widget action) {
     iconTheme: const IconThemeData(
       color: Colors.white, // Ubah warna ikon back
     ),
-    actions: [
-      Padding(
-        padding: const EdgeInsets.only(right: 15),
-        child: action,
-      ),
-    ],
     toolbarHeight: 56,
   );
 }
@@ -297,6 +297,214 @@ Widget shimmerLoadingCard() {
             color: Colors.black26,
             blurRadius: 4.0,
             offset: Offset(0, 2),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget dataNotFound(String title) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: [
+      const SizedBox(
+        height: 100,
+      ),
+      Image.asset('assets/notfound.png'),
+      const SizedBox(
+        height: 16,
+      ),
+      Text(
+        title,
+        style: const TextStyle(
+            fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black),
+      ),
+    ],
+  );
+}
+
+statusWidget(String data) {
+  return Container(
+    padding: const EdgeInsets.only(right: 12, left: 12, top: 6, bottom: 6),
+    decoration: BoxDecoration(
+      borderRadius: const BorderRadius.all(Radius.circular(4)),
+      color: statusColor(data),
+    ),
+    child: Text(
+      data,
+      style: GoogleFonts.inter(
+        textStyle: TextStyle(
+            color: statusColorText(data),
+            fontWeight: FontWeight.w400,
+            fontSize: 14),
+      ),
+    ),
+  );
+}
+
+Widget dropdownMonth(TextEditingController controller, BuildContext context,
+    List<DropdownModel> list) {
+  String selectedValue = '';
+  int selectedIndex = 0;
+
+  return Expanded(
+    child: Container(
+      height: 50,
+      decoration: BoxDecoration(
+        border: Border.all(color: HexColor('#D9D9D9'), width: 1),
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              border: Border(
+                right: BorderSide(color: HexColor('#D9D9D9'), width: 1),
+              ),
+            ),
+            child: const Icon(
+              Icons.calendar_today,
+              color: Colors.grey,
+            ),
+          ),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.white,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return StatefulBuilder(
+                      builder: (context, setState) {
+                        return SizedBox(
+                          height: 350,
+                          width: double.infinity,
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 8),
+                                Container(
+                                  height: 6,
+                                  width: 40,
+                                  decoration: BoxDecoration(
+                                    color: HexColor('#EAEBEB'),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(200)),
+                                  ),
+                                ),
+                                const SizedBox(height: 40),
+                                const Text(
+                                  'Choose Month',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 120,
+                                  height: 170,
+                                  child: ListWheelScrollView.useDelegate(
+                                    itemExtent: 70,
+                                    onSelectedItemChanged: (index) {
+                                      setState(() {
+                                        selectedIndex = index;
+                                        selectedValue =
+                                            list[index].value.toString();
+                                      });
+                                    },
+                                    childDelegate:
+                                        ListWheelChildBuilderDelegate(
+                                      builder: (context, index) {
+                                        bool isSelected =
+                                            index == selectedIndex;
+                                        return GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedIndex = index;
+                                              selectedValue =
+                                                  list[index].value.toString();
+                                            });
+                                          },
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.all(16),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  list[index].value.toString(),
+                                                  style: GoogleFonts.inter(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 14,
+                                                    color: isSelected
+                                                        ? Colors.black
+                                                        : Colors.grey,
+                                                  ),
+                                                ),
+                                              ),
+                                              const Divider(
+                                                  color: Colors.black),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                      childCount: list.length,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                GestureDetector(
+                                  onTap: () {
+                                    controller.text = selectedValue;
+                                    Navigator.of(context).pop(); // Tutup modal
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: HexColor('#01A2E9'),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(8)),
+                                    ),
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.all(16),
+                                    height: 48,
+                                    child: Center(
+                                      child: Text(
+                                        'View',
+                                        style: GoogleFonts.inter(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+              readOnly: true,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.only(
+                    top: 12, left: 16, right: 16, bottom: 12),
+                hintText: 'Choice Month',
+                suffixIcon: const Icon(Icons.arrow_drop_down),
+                hintStyle: GoogleFonts.inter(color: HexColor('#B3B3B3')),
+                border: InputBorder.none,
+              ),
+            ),
           ),
         ],
       ),

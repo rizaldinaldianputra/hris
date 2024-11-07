@@ -7,7 +7,9 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hris/riverpod/masterdropdown.dart';
 import 'package:hris/service/auth_services.dart';
+import 'package:hris/service/dropdown_services.dart';
 import 'package:hris/service/user_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,11 +40,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       // Mengambil data user setelah login sukses
       final userService = UserService(context);
       final user = await userService.findUser();
+      final prefs = await SharedPreferences.getInstance();
 
       // Konversi objek Users ke JSON string dan simpan ke SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
       final userJson = jsonEncode(user.toJson()); // Konversi ke JSON
       prefs.setString('user', userJson);
+
       context.pushReplacementNamed('home');
     } else {
       Fluttertoast.showToast(

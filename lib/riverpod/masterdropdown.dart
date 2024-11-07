@@ -1,7 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/service/dropdown_services.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter/widgets.dart'; // Untuk BuildContext
+import 'package:flutter/widgets.dart';
 
 part 'masterdropdown.g.dart';
 
@@ -21,3 +22,43 @@ class MasterDropdownList extends _$MasterDropdownList {
     return response;
   }
 }
+
+class DropDownMonth extends StateNotifier<List<DropdownModel>> {
+  DropDownMonth() : super([]);
+
+  // Menyimpan data dropdown
+  void setDropdownList(List<DropdownModel> newList) {
+    state = newList;
+  }
+
+  // Menambah item ke list
+  void addDropdownItem(DropdownModel item) {
+    state = [...state, item];
+  }
+}
+
+// StateNotifierProvider untuk mengakses dan mengelola List<DropdownModel>
+final dropdownMonthProvider =
+    StateNotifierProvider<DropDownMonth, List<DropdownModel>>((ref) {
+  return DropDownMonth();
+});
+
+class DropDownYears extends StateNotifier<List<DropdownModelYears>> {
+  DropDownYears() : super([]);
+
+  // Menyimpan data dropdown
+  void setDropdownList(List<DropdownModelYears> newList) {
+    state = newList;
+  }
+
+  // Menambah item ke list
+  void addDropdownItem(DropdownModelYears item) {
+    state = [...state, item];
+  }
+}
+
+// StateNotifierProvider untuk mengakses dan mengelola List<DropdownModel>
+final dropdownYearsProvider =
+    StateNotifierProvider<DropDownYears, List<DropdownModelYears>>((ref) {
+  return DropDownYears();
+});
