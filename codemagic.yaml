@@ -1,9 +1,10 @@
 workflows:
-  flutter-build:
-    name: Build and Test Flutter App
+  ios-build:
+    name: Build iOS App
     max_build_duration: 60
     jobs:
-      - name: Build APK
-        scripts:
-          - flutter pub get
-          - flutter build apk
+      - name: Build iOS App
+        macos: true  # Menentukan bahwa pekerjaan ini membutuhkan macOS runner
+        script:
+          - flutter pub get  # Mendapatkan dependensi Flutter
+          - flutter build ios --release --no-codesign  # Membangun aplikasi iOS dalam mode release tanpa penandatanganan kode
