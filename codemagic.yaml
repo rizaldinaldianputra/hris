@@ -4,5 +4,6 @@ workflows:
     max_build_duration: 60
     jobs:
       - name: Build APK
-        script:
+        scripts:
+          - flutter pub get
           - flutter build apk
