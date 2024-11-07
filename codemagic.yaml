@@ -1,10 +1,10 @@
-workflows:
-  ios-build:
-    name: Build iOS App
-    max_build_duration: 60
-    jobs:
-      - name: Build iOS App
-        macos: true  # Menentukan bahwa pekerjaan ini membutuhkan macOS runner
-        script:
-          - flutter pub get  # Mendapatkan dependensi Flutter
-          - flutter build ios --release --no-codesign  # Membangun aplikasi iOS dalam mode release tanpa penandatanganan kode
+- name: Build iOS unsigned      # this will generate .app file
+  script: |
+    xcodebuild build -project "MyXcodeProject.xcodeproj" \
+    -scheme "MyScheme" \
+    CODE_SIGN_INDENTITY="" \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGNING_ALLOWED=NO    
+
+- name: Build iOS signed      # this will generate .ipa file
+  script: xcode-project build-ipa --project "MyXcodeProject.xcodeproj" --scheme "MyScheme"
