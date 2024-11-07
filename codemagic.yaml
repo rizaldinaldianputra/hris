@@ -1,10 +1,5 @@
-- name: Build iOS unsigned      # this will generate .app file
-  script: |
-    xcodebuild build -project "MyXcodeProject.xcodeproj" \
-    -scheme "MyScheme" \
-    CODE_SIGN_INDENTITY="" \
-    CODE_SIGNING_REQUIRED=NO \
-    CODE_SIGNING_ALLOWED=NO    
-
-- name: Build iOS signed      # this will generate .ipa file
-  script: xcode-project build-ipa --project "MyXcodeProject.xcodeproj" --scheme "MyScheme"
+workflows:
+  ios-build:
+    name: Build iOS App
+    max_build_duration: 60
+  
