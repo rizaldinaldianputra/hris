@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:hris/helper/status_color.dart';
+import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/overtime_model.dart';
+import 'package:hris/riverpod/masterdropdown.dart';
 import 'package:hris/riverpod/overtime.dart';
 
 import 'package:hris/utility/globalwidget.dart';
@@ -24,6 +25,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
   TabController? tabController;
 
   String? status;
+
+  String monthValue = '';
+  String keyValue = '';
 
   @override
   void initState() {
@@ -50,22 +54,8 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
 
     int selectedIndex = DateTime.now().month - 1;
 
-    List<String> months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
-
-    String monthvalue = ' Month';
+    List<DropdownModel> months = ref.watch(dropdownMonthProvider);
+    List<DropdownModelYears> years = ref.watch(dropdownYearsProvider);
     TextEditingController choiceYearController = TextEditingController();
     TextEditingController choiceStatusYearController = TextEditingController();
 
@@ -214,6 +204,12 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               itemExtent: 50,
                                                               onSelectedItemChanged:
                                                                   (index) {
+                                                                monthValue =
+                                                                    months[index]
+                                                                        .value!;
+                                                                keyValue =
+                                                                    months[index]
+                                                                        .key!;
                                                                 setState(() {
                                                                   selectedIndex =
                                                                       index;
@@ -255,7 +251,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                                 const EdgeInsets.all(16),
                                                                             child:
                                                                                 Text(
-                                                                              months[index],
+                                                                              months[index].value!,
                                                                               style: GoogleFonts.inter(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.w400,
@@ -287,32 +283,17 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           GestureDetector(
                                                             onTap: () {
                                                               // Ambil tanggal bulan sekarang
-                                                              selectedMonth =
-                                                                  selectedIndex +
-                                                                      1; // +1 karena bulan dimulai dari 0
-                                                              final int
-                                                                  currentYear =
-                                                                  DateTime.now()
-                                                                      .year;
-                                                              final DateTime
-                                                                  selectedDate =
-                                                                  DateTime(
-                                                                      currentYear,
-                                                                      selectedMonth,
-                                                                      1);
 
-                                                              String monthName =
-                                                                  months[selectedDate
-                                                                          .month -
-                                                                      1];
                                                               // Ambil nama bulan
 
                                                               setState(() {
                                                                 choiceMonthController
                                                                         .text =
-                                                                    monthName;
+                                                                    monthValue;
                                                               });
-
+                                                              selectedMonth =
+                                                                  int.parse(
+                                                                      keyValue);
                                                               overtimePending
                                                                   .updateDate(
                                                                 newYear:
@@ -337,6 +318,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               ),
                                                               width: double
                                                                   .infinity,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(16),
                                                               height: 48,
                                                               child: Center(
                                                                 child: Text(
@@ -370,7 +354,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: ' Month',
+                                          hintText: 'Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -421,15 +405,6 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                             backgroundColor: Colors.white,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
-                                              int selectedIndex =
-                                                  0; // Default ke tahun pertama
-                                              List<String> years =
-                                                  List.generate(100, (index) {
-                                                return (DateTime.now().year -
-                                                        index)
-                                                    .toString(); // Daftar tahun
-                                              });
-
                                               return StatefulBuilder(
                                                 builder: (context, setState) {
                                                   return SizedBox(
@@ -458,7 +433,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Years',
+                                                            'Choose Year',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -489,6 +464,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                     isSelected =
                                                                     index ==
                                                                         selectedIndex;
+
                                                                 return Container(
                                                                   decoration:
                                                                       BoxDecoration(
@@ -500,8 +476,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                   ),
                                                                   child: Center(
                                                                     child: Text(
-                                                                      years[
-                                                                          index],
+                                                                      years[index]
+                                                                          .value
+                                                                          .toString(),
                                                                       style: GoogleFonts
                                                                           .inter(
                                                                         fontSize:
@@ -525,8 +502,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               // Ambil tahun yang dipilih
                                                               String
                                                                   selectedYear =
-                                                                  years[
-                                                                      selectedIndex];
+                                                                  years[selectedIndex]
+                                                                      .key
+                                                                      .toString();
                                                               choiceYearController
                                                                       .text =
                                                                   selectedYear; // Set ke controller
@@ -597,7 +575,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Years',
+                                          hintText: 'Year',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -722,7 +700,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                     ),
                                     Expanded(
                                       child: TextField(
-                                        controller: choiceStatusMonthController,
+                                        controller: choiceMonthController,
                                         onTap: () {
                                           showModalBottomSheet(
                                               context: context,
@@ -773,6 +751,12 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               itemExtent: 50,
                                                               onSelectedItemChanged:
                                                                   (index) {
+                                                                monthValue =
+                                                                    months[index]
+                                                                        .value!;
+                                                                keyValue =
+                                                                    months[index]
+                                                                        .key!;
                                                                 setState(() {
                                                                   selectedIndex =
                                                                       index;
@@ -814,7 +798,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                                 const EdgeInsets.all(16),
                                                                             child:
                                                                                 Text(
-                                                                              months[index],
+                                                                              months[index].value!,
                                                                               style: GoogleFonts.inter(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.w400,
@@ -846,32 +830,17 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           GestureDetector(
                                                             onTap: () {
                                                               // Ambil tanggal bulan sekarang
-                                                              selectedMonth =
-                                                                  selectedIndex +
-                                                                      1; // +1 karena bulan dimulai dari 0
-                                                              final int
-                                                                  currentYear =
-                                                                  DateTime.now()
-                                                                      .year;
-                                                              final DateTime
-                                                                  selectedDate =
-                                                                  DateTime(
-                                                                      currentYear,
-                                                                      selectedMonth,
-                                                                      1);
 
-                                                              String monthName =
-                                                                  months[selectedDate
-                                                                          .month -
-                                                                      1];
                                                               // Ambil nama bulan
 
                                                               setState(() {
-                                                                choiceStatusMonthController
+                                                                choiceMonthController
                                                                         .text =
-                                                                    monthName;
+                                                                    monthValue;
                                                               });
-
+                                                              selectedMonth =
+                                                                  int.parse(
+                                                                      keyValue);
                                                               overtimeApproved
                                                                   .updateDate(
                                                                 newYear:
@@ -896,6 +865,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               ),
                                                               width: double
                                                                   .infinity,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(16),
                                                               height: 48,
                                                               child: Center(
                                                                 child: Text(
@@ -929,7 +901,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: ' Month',
+                                          hintText: 'Month',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -973,22 +945,13 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                     ),
                                     Expanded(
                                       child: TextField(
-                                        controller: choiceStatusYearController,
+                                        controller: choiceYearController,
                                         onTap: () {
                                           showModalBottomSheet(
                                             context: context,
                                             backgroundColor: Colors.white,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
-                                              int selectedIndex =
-                                                  0; // Default ke tahun pertama
-                                              List<String> years =
-                                                  List.generate(100, (index) {
-                                                return (DateTime.now().year -
-                                                        index)
-                                                    .toString(); // Daftar tahun
-                                              });
-
                                               return StatefulBuilder(
                                                 builder: (context, setState) {
                                                   return SizedBox(
@@ -1017,7 +980,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Years',
+                                                            'Choose Year',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -1048,6 +1011,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                     isSelected =
                                                                     index ==
                                                                         selectedIndex;
+
                                                                 return Container(
                                                                   decoration:
                                                                       BoxDecoration(
@@ -1059,8 +1023,9 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                                   ),
                                                                   child: Center(
                                                                     child: Text(
-                                                                      years[
-                                                                          index],
+                                                                      years[index]
+                                                                          .value
+                                                                          .toString(),
                                                                       style: GoogleFonts
                                                                           .inter(
                                                                         fontSize:
@@ -1084,15 +1049,16 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                                               // Ambil tahun yang dipilih
                                                               String
                                                                   selectedYear =
-                                                                  years[
-                                                                      selectedIndex];
-                                                              choiceStatusYearController
+                                                                  years[selectedIndex]
+                                                                      .key
+                                                                      .toString();
+                                                              choiceYearController
                                                                       .text =
                                                                   selectedYear; // Set ke controller
 
                                                               selectYears =
                                                                   int.parse(
-                                                                      choiceStatusYearController
+                                                                      choiceYearController
                                                                           .text);
                                                               overtimeApproved
                                                                   .updateDate(
@@ -1156,7 +1122,7 @@ class _OvertimePageState extends ConsumerState<OvertimePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: ' Years',
+                                          hintText: 'Year',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(

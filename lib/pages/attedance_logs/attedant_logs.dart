@@ -25,8 +25,6 @@ class _AttedantLogsPageState extends ConsumerState<AttedantLogsPage> {
 
   int selectedIndex = DateTime.now().month - 1;
 
-  String monthvalue = 'Month';
-
   TextEditingController choiceMonthController = TextEditingController();
   TextEditingController choiceYearController = TextEditingController();
 

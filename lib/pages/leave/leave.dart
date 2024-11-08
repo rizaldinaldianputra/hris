@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:hris/helper/status_color.dart';
+import 'package:hris/models/dropdown_model.dart';
 import 'package:hris/models/leave_model.dart';
 import 'package:hris/riverpod/leave.dart';
+import 'package:hris/riverpod/masterdropdown.dart';
 
 import 'package:hris/utility/globalwidget.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -35,6 +37,8 @@ class _LeavePageState extends ConsumerState<LeavePage>
     super.dispose();
   }
 
+  String monthValue = '';
+  String keyValue = '';
   @override
   Widget build(BuildContext context) {
     final leaveApproved = ref.watch(leaveApprovedProvider.notifier);
@@ -44,22 +48,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
     TextEditingController choiceMonthController = TextEditingController();
     TextEditingController choiceStatusMonthController = TextEditingController();
 
-    List<String> months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
+    List<DropdownModel> months = ref.watch(dropdownMonthProvider);
+    List<DropdownModelYears> years = ref.watch(dropdownYearsProvider);
 
-    String monthvalue = 'Month';
     TextEditingController choiceYearController = TextEditingController();
     TextEditingController choiceStatusYearController = TextEditingController();
 
@@ -197,7 +188,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Month',
+                                                            'Month',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -213,6 +204,12 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               itemExtent: 50,
                                                               onSelectedItemChanged:
                                                                   (index) {
+                                                                monthValue =
+                                                                    months[index]
+                                                                        .value!;
+                                                                keyValue =
+                                                                    months[index]
+                                                                        .key!;
                                                                 setState(() {
                                                                   selectedIndex =
                                                                       index;
@@ -254,7 +251,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                                 const EdgeInsets.all(16),
                                                                             child:
                                                                                 Text(
-                                                                              months[index],
+                                                                              months[index].value!,
                                                                               style: GoogleFonts.inter(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.w400,
@@ -286,32 +283,17 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           GestureDetector(
                                                             onTap: () {
                                                               // Ambil tanggal bulan sekarang
-                                                              selectedMonth =
-                                                                  selectedIndex +
-                                                                      1; // +1 karena bulan dimulai dari 0
-                                                              final int
-                                                                  currentYear =
-                                                                  DateTime.now()
-                                                                      .year;
-                                                              final DateTime
-                                                                  selectedDate =
-                                                                  DateTime(
-                                                                      currentYear,
-                                                                      selectedMonth,
-                                                                      1);
 
-                                                              String monthName =
-                                                                  months[selectedDate
-                                                                          .month -
-                                                                      1];
                                                               // Ambil nama bulan
 
                                                               setState(() {
                                                                 choiceMonthController
                                                                         .text =
-                                                                    monthName;
+                                                                    monthValue;
                                                               });
-
+                                                              selectedMonth =
+                                                                  int.parse(
+                                                                      keyValue);
                                                               leavePending
                                                                   .updateDate(
                                                                 newYear:
@@ -336,6 +318,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               ),
                                                               width: double
                                                                   .infinity,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(16),
                                                               height: 48,
                                                               child: Center(
                                                                 child: Text(
@@ -420,15 +405,6 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                             backgroundColor: Colors.white,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
-                                              int selectedIndex =
-                                                  0; // Default ke tahun pertama
-                                              List<String> years =
-                                                  List.generate(100, (index) {
-                                                return (DateTime.now().year -
-                                                        index)
-                                                    .toString(); // Daftar tahun
-                                              });
-
                                               return StatefulBuilder(
                                                 builder: (context, setState) {
                                                   return SizedBox(
@@ -457,7 +433,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Years',
+                                                            'Choose Year',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -488,6 +464,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                     isSelected =
                                                                     index ==
                                                                         selectedIndex;
+
                                                                 return Container(
                                                                   decoration:
                                                                       BoxDecoration(
@@ -499,8 +476,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                   ),
                                                                   child: Center(
                                                                     child: Text(
-                                                                      years[
-                                                                          index],
+                                                                      years[index]
+                                                                          .value
+                                                                          .toString(),
                                                                       style: GoogleFonts
                                                                           .inter(
                                                                         fontSize:
@@ -524,8 +502,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               // Ambil tahun yang dipilih
                                                               String
                                                                   selectedYear =
-                                                                  years[
-                                                                      selectedIndex];
+                                                                  years[selectedIndex]
+                                                                      .key
+                                                                      .toString();
                                                               choiceYearController
                                                                       .text =
                                                                   selectedYear; // Set ke controller
@@ -596,7 +575,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Years',
+                                          hintText: 'Year',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
@@ -726,7 +705,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                     ),
                                     Expanded(
                                       child: TextField(
-                                        controller: choiceStatusMonthController,
+                                        controller: choiceMonthController,
                                         onTap: () {
                                           showModalBottomSheet(
                                               context: context,
@@ -761,7 +740,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Choose Month',
+                                                            'Month',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -777,6 +756,12 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               itemExtent: 50,
                                                               onSelectedItemChanged:
                                                                   (index) {
+                                                                monthValue =
+                                                                    months[index]
+                                                                        .value!;
+                                                                keyValue =
+                                                                    months[index]
+                                                                        .key!;
                                                                 setState(() {
                                                                   selectedIndex =
                                                                       index;
@@ -818,7 +803,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                                 const EdgeInsets.all(16),
                                                                             child:
                                                                                 Text(
-                                                                              months[index],
+                                                                              months[index].value!,
                                                                               style: GoogleFonts.inter(
                                                                                 fontSize: 14,
                                                                                 fontWeight: FontWeight.w400,
@@ -850,32 +835,17 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           GestureDetector(
                                                             onTap: () {
                                                               // Ambil tanggal bulan sekarang
-                                                              selectedMonth =
-                                                                  selectedIndex +
-                                                                      1; // +1 karena bulan dimulai dari 0
-                                                              final int
-                                                                  currentYear =
-                                                                  DateTime.now()
-                                                                      .year;
-                                                              final DateTime
-                                                                  selectedDate =
-                                                                  DateTime(
-                                                                      currentYear,
-                                                                      selectedMonth,
-                                                                      1);
 
-                                                              String monthName =
-                                                                  months[selectedDate
-                                                                          .month -
-                                                                      1];
                                                               // Ambil nama bulan
 
                                                               setState(() {
-                                                                choiceStatusMonthController
+                                                                choiceMonthController
                                                                         .text =
-                                                                    monthName;
+                                                                    monthValue;
                                                               });
-
+                                                              selectedMonth =
+                                                                  int.parse(
+                                                                      keyValue);
                                                               leaveApproved
                                                                   .updateDate(
                                                                 newYear:
@@ -900,6 +870,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               ),
                                                               width: double
                                                                   .infinity,
+                                                              margin:
+                                                                  const EdgeInsets
+                                                                      .all(16),
                                                               height: 48,
                                                               child: Center(
                                                                 child: Text(
@@ -977,22 +950,13 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                     ),
                                     Expanded(
                                       child: TextField(
-                                        controller: choiceStatusYearController,
+                                        controller: choiceYearController,
                                         onTap: () {
                                           showModalBottomSheet(
                                             context: context,
                                             backgroundColor: Colors.white,
                                             isScrollControlled: true,
                                             builder: (BuildContext context) {
-                                              int selectedIndex =
-                                                  0; // Default ke tahun pertama
-                                              List<String> years =
-                                                  List.generate(100, (index) {
-                                                return (DateTime.now().year -
-                                                        index)
-                                                    .toString(); // Daftar tahun
-                                              });
-
                                               return StatefulBuilder(
                                                 builder: (context, setState) {
                                                   return SizedBox(
@@ -1021,7 +985,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                           const SizedBox(
                                                               height: 40),
                                                           const Text(
-                                                            'Years',
+                                                            'Choose Year',
                                                             style: TextStyle(
                                                               fontSize: 18,
                                                               fontWeight:
@@ -1052,6 +1016,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                     isSelected =
                                                                     index ==
                                                                         selectedIndex;
+
                                                                 return Container(
                                                                   decoration:
                                                                       BoxDecoration(
@@ -1063,8 +1028,9 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                                   ),
                                                                   child: Center(
                                                                     child: Text(
-                                                                      years[
-                                                                          index],
+                                                                      years[index]
+                                                                          .value
+                                                                          .toString(),
                                                                       style: GoogleFonts
                                                                           .inter(
                                                                         fontSize:
@@ -1088,15 +1054,16 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                                               // Ambil tahun yang dipilih
                                                               String
                                                                   selectedYear =
-                                                                  years[
-                                                                      selectedIndex];
-                                                              choiceStatusYearController
+                                                                  years[selectedIndex]
+                                                                      .key
+                                                                      .toString();
+                                                              choiceYearController
                                                                       .text =
                                                                   selectedYear; // Set ke controller
 
                                                               selectYears =
                                                                   int.parse(
-                                                                      choiceStatusYearController
+                                                                      choiceYearController
                                                                           .text);
                                                               leaveApproved
                                                                   .updateDate(
@@ -1160,7 +1127,7 @@ class _LeavePageState extends ConsumerState<LeavePage>
                                               left: 16,
                                               right: 16,
                                               bottom: 12),
-                                          hintText: 'Years',
+                                          hintText: 'Year',
                                           suffixIcon:
                                               const Icon(Icons.arrow_drop_down),
                                           hintStyle: GoogleFonts.inter(
